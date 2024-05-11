@@ -40,7 +40,8 @@ def test_get_string_raises_exceptions(used_names):
     (1, "Bob"),
     (2, "Eve"),
     (3, None)
-])
+]) 
+
 def test_get_string(used_names, new_names, name_id, expected_string):
     """Test if get_string returns the expected string."""
     # Name is present
