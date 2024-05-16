@@ -66,6 +66,8 @@ class Names:
         if not isinstance(name_string, str): 
             raise TypeError('Need String argument')
         
+        if name_string == "": 
+            raise ValueError('Null Strings are not accepted')
         curr_list = self.name_table
 
         if name_string in curr_list: 
@@ -112,6 +114,8 @@ class Names:
         if not isinstance(name_id, int): 
             raise TypeError('Name ID must be an integer')
         
+        if not name_id >= 0: 
+            raise ValueError("Integer must be greater than or equal to 0")
         curr_list = self.name_table
 
         if name_id < len(curr_list): 
