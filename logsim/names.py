@@ -38,9 +38,14 @@ class Names:
                         the name ID. Returns None if the ID is not present.
     """
 
+    
+
     def __init__(self):
         """Initialise names list."""
+
         self.error_code_count = 0  # how many error codes have been declared
+        names_list = []
+        self.name_table = names_list
 
     def unique_error_codes(self, num_error_codes):
         """Return a list of unique integer error codes."""
@@ -56,14 +61,20 @@ class Names:
         If the name string is not present in the names list, return None.
         """
 
+        # same as in prelim exercise - if name_string in the table, return position, else None
+
     def lookup(self, name_string_list):
         """Return a list of name IDs for each name string in name_string_list.
 
         If the name string is not present in the names list, add it.
         """
 
+        # Call query each time for name in name_string_list, if None - add it and return the length of list (at point)
+
     def get_name_string(self, name_id):
         """Return the corresponding name string for name_id.
 
         If the name_id is not an index in the names list, return None.
         """
+
+        # return id from name table
