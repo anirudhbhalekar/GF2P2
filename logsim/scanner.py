@@ -58,8 +58,17 @@ class Scanner:
 
         # read up on initialisation tech
 
+        self.names = names
+        self.symbol_type_list = [self.COMMA, self.SEMICOLON, self.EQUALS,
+        self.KEYWORD, self.NUMBER, self.NAME, self.EOF] = range(7)
+        self.keywords_list = ["DEFINE", "WITH","input", "initial", "cycle_rep", "CONNECT", "MONITOR", "END"]
+        [self.DEFINE_ID, self.WITH_ID, self.input_ID, self.initial_ID, self.cycle_re_ID, self.CONNECT_ID, self.MONITOR_ID,
+        self.END_ID] = self.names.lookup(self.keywords_list)
+        self.current_character = ""
+
+
+
     def get_symbol(self):
         """Translate the next sequence of characters into a symbol."""
 
         # get the next symbol in the file when called - this is fairly simple to implement
-        

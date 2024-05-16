@@ -62,6 +62,17 @@ class Names:
         """
 
         # same as in prelim exercise - if name_string in the table, return position, else None
+        
+        if not isinstance(name_string, str): 
+            raise TypeError('Need String argument')
+        
+        curr_list = self.name_table
+
+        if name_string in curr_list: 
+            return curr_list.index(name_string)
+        else: 
+            return None
+
 
     def lookup(self, name_string_list):
         """Return a list of name IDs for each name string in name_string_list.
@@ -71,10 +82,40 @@ class Names:
 
         # Call query each time for name in name_string_list, if None - add it and return the length of list (at point)
 
+        id_arr = []
+        if not isinstance(name_string_list, list): 
+            raise TypeError("Name list argument must be a list") 
+        
+        for name in name_string_list: 
+
+            if not isinstance(name, str): 
+                raise TypeError("Names must be strings")
+            
+            id = self.query(name)
+            if id is None: 
+                curr_list = self.name_table
+                id = len(curr_list)
+                curr_list.append(name)
+                self.name_table = curr_list
+                
+            id_arr.append(id) 
+
+        return id_arr
+
+
     def get_name_string(self, name_id):
         """Return the corresponding name string for name_id.
 
         If the name_id is not an index in the names list, return None.
         """
+        # return string from name table
+        if not isinstance(name_id, int): 
+            raise TypeError('Name ID must be an integer')
+        
+        curr_list = self.name_table
 
-        # return id from name table
+        if name_id < len(curr_list): 
+            return curr_list[name_id]
+        else: 
+            return None
+        
