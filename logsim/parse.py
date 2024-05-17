@@ -183,15 +183,21 @@ class Parser:
         """Parse the circuit definition file."""
         # Initial design to only analyse definition file (no network/devices)
         
-        # Define overall flow, falling relevant non-terminal rules and ending in terminal rules, to be implemented.
+        # Define overall flow, falling relevant non-terminal rules and ending in terminal rules, to be implemented
 
+        # While loop to continuously call get_symbol, then match with the following cases and functions above
+
+        # Will implement the following terminal rules with corresponding error codes seen above
         # define name
         # define notation
         # define end
         # define letter
         # define digit
         # define device_type
-        # stopping symbol is either , or ; depending on error
+        # stopping symbol is either , or ; depending on error, implemented within each checking step
+
+    # Semantic analysis and network construction
+    # def connection(self)
 
         return True
     
