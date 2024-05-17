@@ -58,14 +58,12 @@ class Scanner:
     def __init__(self, path, names):
         """Open specified file and initialise reserved words and IDs."""
 
-        # read up on initialisation tech
-
         try: 
             file = open(path, 'r')
         except FileNotFoundError: 
             raise FileNotFoundError
         
-
+    
         self.file = file
         self.names = names
 
@@ -73,40 +71,56 @@ class Scanner:
 
         self.symbol_type_list = [self.COMMA, self.SEMICOLON, self.EQUALS,
                                 self.KEYWORD, self.NUMBER, self.NAME, self.COMMENT, 
-                                self.DOT, self.DEVICE, self.NOTATION, self.PARAM, self.EOF] = range(12)
+                                self.DOT, self.DEVICE, self.NOTATION, self.PARAM, self.INPUT, self.EOF] = range(13)
+        
         self.keywords_list = ["DEFINE", "WITH", "CONNECT", "MONITOR", "END"]
         self.param_list = ["input", "initial", "cycle_rep"]
         self.device_list = ["CLOCK" , "SWITCH" , "NAND" , "AND" , "OR" , "NOR" , "DTYPE" , "XOR"]
-        self.notation_list = ["I", "Q" , "QBAR" , "DATA" , "CLK" , "CLEAR" , "SET"]
-        [self.DEFINE_ID, self.WITH_ID, self.input_ID, self.initial_ID, self.cycle_rep_ID, self.CONNECT_ID, self.MONITOR_ID,
-        self.END_ID] = self.names.lookup(self.keywords_list)     
+        self.notation_list = ["Q" , "QBAR" , "DATA" , "CLK" , "CLEAR" , "SET"]
+        
+        [self.DEFINE_ID, self.WITH_ID, self.CONNECT_ID, self.MONITOR_ID,
+            self.END_ID] = self.names.lookup(self.keywords_list)   
+
+        [self.input_ID, self.initial_ID, self.cycle_rep_ID] = self.names.lookup(self.param_list)
+        
+        [self.CLOCK_ID, self.SWITCH_ID, self.NAND_ID, self.AND_ID, self.OR_ID,
+            self.NOR_ID, self.DTYPE_ID, self.XOR_ID] = self.names.lookup(self.device_list)
+        
+        [self.Q_ID, self.QBAR_ID, self.DATA_ID, self.CLK_ID, 
+            self.CLEAR_ID, self.SET_ID] = self.names.lookup(self.notation_list)
+
         self.current_character = ""
 
         self.file.seek(0)
 
     def skip_spaces(self): 
-        
+        """ Skips spaces to next symbol and sets file pointer"""
+
         self.advance()
         while self.current_character.isspace(): 
             self.advance()
 
     def advance(self): 
+        """Advances self.current_character"""
+
         self.current_character = self.file.read(1)
 
     def get_name(self): 
+        """Gets name (if first char is alphabet - reads until non alnum char is reached)"""
 
         name_string = ''
         name_string += self.current_character
 
         self.advance()
 
-        while self.current_character.isalnum(): 
+        while self.current_character.isalnum() or self.current_character == "_": 
             name_string += self.current_character
             self.advance()
             
         return name_string
 
     def get_number(self): 
+        """Gets number (so appends digits together)"""
 
         number_string = ''
         number_string += self.current_character
@@ -118,7 +132,7 @@ class Scanner:
             self.advance()
         
         return number_string
-    
+
         
     def get_symbol(self):
         """Translate the next sequence of characters into a symbol."""
@@ -139,6 +153,19 @@ class Scanner:
 
             if name_string in self.keywords_list: 
                 symbol.type = self.KEYWORD
+            
+            elif name_string in self.param_list: 
+                symbol.type = self.PARAM
+
+            elif name_string in self.notation_list: 
+                symbol.type = self.NOTATION
+            
+            elif name_string in self.device_list:
+                symbol.type = self.DEVICE
+            
+            elif name_string[1:].isnumeric() and name_string[0] == "I": 
+                symbol.type = self.INPUT
+                
             else: 
                 symbol.type = self.NAME
             
