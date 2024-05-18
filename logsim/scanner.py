@@ -9,6 +9,7 @@ Scanner - reads definition file and translates characters into symbols.
 Symbol - encapsulates a symbol and stores its properties.
 """
 
+from devices import Devices
 
 class Symbol:
 
@@ -71,23 +72,18 @@ class Scanner:
 
         self.symbol_type_list = [self.COMMA, self.SEMICOLON, self.EQUALS,
                                 self.KEYWORD, self.NUMBER, self.NAME, self.COMMENT, 
-                                self.DOT, self.DEVICE, self.NOTATION, self.PARAM, self.INPUT, self.EOF] = range(13)
+                                self.DOT, self.DEVICE, self.GATE, self.PARAM, self.DTYPE_INPUT,
+                                self.DTYPE_OUTPUT, self.EOF] = range(14)
         
         self.keywords_list = ["DEFINE", "WITH", "CONNECT", "MONITOR", "END"]
         self.param_list = ["input", "initial", "cycle_rep"]
-        self.device_list = ["CLOCK" , "SWITCH" , "NAND" , "AND" , "OR" , "NOR" , "DTYPE" , "XOR"]
-        self.notation_list = ["Q" , "QBAR" , "DATA" , "CLK" , "CLEAR" , "SET"]
+        
         
         [self.DEFINE_ID, self.WITH_ID, self.CONNECT_ID, self.MONITOR_ID,
             self.END_ID] = self.names.lookup(self.keywords_list)   
 
         [self.input_ID, self.initial_ID, self.cycle_rep_ID] = self.names.lookup(self.param_list)
-        
-        [self.CLOCK_ID, self.SWITCH_ID, self.NAND_ID, self.AND_ID, self.OR_ID,
-            self.NOR_ID, self.DTYPE_ID, self.XOR_ID] = self.names.lookup(self.device_list)
-        
-        [self.Q_ID, self.QBAR_ID, self.DATA_ID, self.CLK_ID, 
-            self.CLEAR_ID, self.SET_ID] = self.names.lookup(self.notation_list)
+
 
         self.current_character = ""
 
@@ -141,6 +137,7 @@ class Scanner:
 
         
         symbol = Symbol()
+        devices = Devices()
         char_count = len(self.file.read())
 
         # Find first non-space char
@@ -157,14 +154,17 @@ class Scanner:
             elif name_string in self.param_list: 
                 symbol.type = self.PARAM
 
-            elif name_string in self.notation_list: 
-                symbol.type = self.NOTATION
-            
-            elif name_string in self.device_list:
+            elif name_string in devices.devices_list: 
                 symbol.type = self.DEVICE
             
-            elif name_string[1:].isnumeric() and name_string[0] == "I": 
-                symbol.type = self.INPUT
+            elif name_string in devices.gate_types: 
+                symbol.type = self.GATE
+            
+            elif name_string in devices.dtype_input_ids: 
+                symbol.type = self.DTYPE_INPUT
+            
+            elif name_string in devices.dtype_output_ids: 
+                symbol.type = self.DTYPE_OUTPUT
                 
             else: 
                 symbol.type = self.NAME
@@ -172,7 +172,6 @@ class Scanner:
             [symbol.id] = self.names.lookup([name_string])
 
         elif self.current_character.isdigit(): 
-            
             # This is a number - we get the number string and pass it as the id
             number_string = self.get_number()
             symbol.id = number_string
@@ -193,10 +192,12 @@ class Scanner:
         elif self.current_character == ";": 
             symbol.type = self.SEMICOLON
             self.advance()
+
         elif self.current_character == "%":
             # Comments start and end with a % symbol 
             symbol.type = self.COMMENT
             self.advance()
+
         elif self.current_character == "\n":
             # we update line number only and don't pass a symbol 
             self.line_count += 1
