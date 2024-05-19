@@ -33,7 +33,7 @@ class Parser:
     parse_network(self): Parses the circuit definition file.
     """
     # Error codes
-    INVALID_FIRST_CHAR_IN_NAME = 1
+    EXPECTED_NAME = 1
     INVALID_CHAR_IN_NAME = 2
     NULL_DEVICE_IN_CONNECT = 3
     INVALID_CONNECT_DELIMITER = 4
@@ -64,7 +64,7 @@ class Parser:
     def get_error_message(self, error_code):
         """Return the error message corresponding to the error code."""
         error_messages = {
-            self.INVALID_FIRST_CHAR_IN_NAME: "Invalid first character in name",
+            self.EXPECTED_NAME: "Expected a name",
             self.INVALID_CHAR_IN_NAME: "Invalid character in name",
             self.NULL_DEVICE_IN_CONNECT: "CONNECT list cannot have null devices",
             self.INVALID_CONNECT_DELIMITER: "CONNECT list must have individual connections delimited by ','",
@@ -190,7 +190,7 @@ class Parser:
         if self.symbol.type == self.scanner.NAME:
             self.symbol = self.scanner.get_symbol()
         else:
-            self.error(self.INVALID_FIRST_CHAR_IN_NAME)
+            self.error(self.EXPECTED_NAME)
 
     def con(self):
         """Implements rule con = name, ["." notation];"""
