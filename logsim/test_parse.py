@@ -7,9 +7,6 @@ from scanner import *
 import pytest
 
 
-# NOTE: global variables are not encourages in test files - but this is 
-# the folder for all the definition files (for ease of reference in tests)
-
 @pytest.fixture
 def folder_path():
     return 'definition_files/'
