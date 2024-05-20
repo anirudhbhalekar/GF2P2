@@ -45,6 +45,7 @@ class Parser:
     MISSING_END_STATEMENT = 10
     EXPECTED_NUMBER = 11
     EXPECTED_PUNCTUATION = 12
+    INVALID_PIN_REF = 13
 
     def __init__(self, names, devices, network, monitors, scanner):
         """Initialise constants."""
@@ -77,6 +78,7 @@ class Parser:
             self.MISSING_END_STATEMENT: "No END statement after MONITOR clause",
             self.EXPECTED_NUMBER: "Expected a number",
             self.EXPECTED_PUNCTUATION: "Expected a punctuation mark"
+            self.INVALID_PIN_REF: "Invalid pin reference"
         }
         return error_messages.get(error_code, "Unknown error")
 
@@ -103,26 +105,6 @@ class Parser:
         self.monitor()
         self.end()
 
-    # def definition(self):
-    #     """Implements rule definition = "DEFINE", name, "AS", device_type, ["WITH", param_list], ";";"""
-    #     if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.DEFINE:
-    #         self.symbol = self.scanner.get_symbol()
-    #         self.name()
-    #         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS:
-    #             self.symbol = self.scanner.get_symbol()
-    #             self.device_type()
-    #             if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH:
-    #                 self.symbol = self.scanner.get_symbol()
-    #                 self.param_list()
-    #             if self.symbol.type == self.scanner.SEMICOLON:
-    #                 self.symbol = self.scanner.get_symbol()
-    #             else:
-    #                 self.error(self.MISSING_SEMICOLON)
-    #         else:
-    #             self.error(self.INVALID_KEYWORD)
-    #     else:
-    #         self.error(self.INVALID_KEYWORD)
-
     def definition(self):
         """Implements rule definition = "DEFINE", [def_list], ";";"""
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.DEFINE:
@@ -135,11 +117,16 @@ class Parser:
                 self.error(self.MISSING_SEMICOLON)
 
     def def_list(self):
-        """Implements rule def_list = name, "AS", device_type, ["WITH", param_list], {",", name, "AS", device_type, ["WITH", param_list]};"""
+        """Implements rule def_list = name, "AS", (device | gate), ["WITH", param_list], {",", name, "AS", (device | gate), ["WITH", param_list]};"""
         self.name()
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS:
             self.symbol = self.scanner.get_symbol()
-            self.device_type()
+            if self.symbol.type == self.scanner.DEVICE:
+                self.device()
+            elif self.symbol.type == self.scanner.GATE:
+                self.gate()
+            else:
+                self.error(self.INVALID_KEYWORD)
             if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH:
                 self.symbol = self.scanner.get_symbol()
                 self.param_list()
@@ -148,7 +135,12 @@ class Parser:
                 self.name()
                 if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS:
                     self.symbol = self.scanner.get_symbol()
-                    self.device_type()
+                    if self.symbol.type == self.scanner.DEVICE:
+                        self.device()
+                    elif self.symbol.type == self.scanner.GATE:
+                        self.gate()
+                    else:
+                        self.error(self.INVALID_KEYWORD)
                     if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH:
                         self.symbol = self.scanner.get_symbol()
                         self.param_list()
@@ -204,23 +196,6 @@ class Parser:
         else:
             self.error(self.INVALID_KEYWORD)
 
-    # def con_list(self):
-    #     """Implements rule con_list = con, "=", con, {",", con, "=", con};"""
-    #     self.con()
-    #     if self.symbol.type == self.scanner.EQUALS:
-    #         self.symbol = self.scanner.get_symbol()
-    #         self.con()
-    #         while self.symbol.type == self.scanner.COMMA:
-    #             self.symbol = self.scanner.get_symbol()
-    #             self.con()
-    #             if self.symbol.type == self.scanner.EQUALS:
-    #                 self.symbol = self.scanner.get_symbol()
-    #                 self.con()
-    #             else:
-    #                 self.error(self.INVALID_CONNECT_DELIMITER)
-    #     else:
-    #         self.error(self.INVALID_CONNECT_DELIMITER)
-
     def con_list(self):
         """Implement rule con_list = input_con, "=", output_con, {",", input_con, "=", output_con} ;"""
         self.input_con()
@@ -263,17 +238,16 @@ class Parser:
             if self.symbol.id[0] == "I" and self.symbol.id[1:].isnumeric():
                 self.symbol = self.scanner.get_symbol()
             else:
-                self.error(self.INVALID_KEYWORD)
+                self.error(self.INVALID_PIN_REF)
         else:
-            self.error(self.INVALID_KEYWORD)
+            self.error(self.INVALID_PIN_REF)
 
     def output_notation(self):
         """Implements rule output_notation =  "Q" | "QBAR" ;"""
         if self.symbol.type == self.scanner.DTYPE_OUTPUT:
             self.symbol = self.scanner.get_symbol()
         else:
-            self.error(self.INVALID_KEYWORD)
-
+            self.error(self.INVALID_PIN_REF)
 
     def name(self):
         """Implements name = letter, {letter | digit};, but name is returned as a full symbol from scanner"""
@@ -281,19 +255,6 @@ class Parser:
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.EXPECTED_NAME)
-
-
-    def notation(self):
-        """Implements rule notation = "I", digit, {digit} | "Q" | "QBAR" | "DATA" | "CLK" | "CLEAR" | "SET";"""
-        if self.symbol.type == self.scanner.DTYPE_INPUT:
-            self.symbol = self.scanner.get_symbol()
-            self.digit()
-            # Again, digit gets full number, and so we don't do a while loop here
-        elif self.symbol.type in [self.scanner.DTYPE_OUTPUT, self.scanner.PARAM]:
-            self.symbol = self.scanner.get_symbol()
-        else:
-            self.error(self.INVALID_KEYWORD)
-
 
     def monitor(self):
         """Implements rule monitor = "MONITOR", [name, {",", name}], ";";"""
@@ -330,13 +291,17 @@ class Parser:
         else:
             self.error(self.EXPECTED_NUMBER)
 
-    def device_type(self):
-        """Implements devices rule, but uses devices module for modularity"""
+    def device(self):
+        """Implements rule device = "CLOCK" | "SWITCH" | "DTYPE";"""
         if self.symbol.type == self.scanner.DEVICE:
-            if self.symbol.value in self.devices.devices_list:
-                self.symbol = self.scanner.get_symbol()
-            else:
-                self.error(self.INVALID_KEYWORD)
+            self.symbol = self.scanner.get_symbol()
+        else:
+            self.error(self.INVALID_KEYWORD)
+
+    def gate(self):
+        """Implement rule gate = "NAND" | "AND" | "OR" | "NOR" | "XOR";"""
+        if self.symbol.type == self.scanner.GATE:
+            self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.INVALID_KEYWORD)
 
