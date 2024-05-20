@@ -260,14 +260,19 @@ class Gui(wx.Frame):
         side_sizer = wx.BoxSizer(wx.VERTICAL)
 
         main_sizer.Add(self.canvas, 5, wx.EXPAND | wx.ALL, 5)
+        # canvas should expand to fill any extra space available and should have a border of 5 pixels around it  
+        
         main_sizer.Add(side_sizer, 1, wx.ALL, 5)
-
+        ''' The main sizer arranges the canvas and the side sizer horizontally side by side, with the canvas
+        taking up 5 times the horizontal width of the side sizer. The side sizer consists of the different widgets,
+        which are arranged vertically to the side of the canvas.'''
         side_sizer.Add(self.text, 1, wx.TOP, 10)
         side_sizer.Add(self.spin, 1, wx.ALL, 5)
         side_sizer.Add(self.run_button, 1, wx.ALL, 5)
-        side_sizer.Add(self.text_box, 1, wx.ALL, 5)
+        # make the text input box bigger (vertically) than the other widgets
+        side_sizer.Add(self.text_box, 3, wx.ALL, 5)
 
-        self.SetSizeHints(600, 600)
+        self.SetSizeHints(600, 600) # minimum size
         self.SetSizer(main_sizer)
 
     def on_menu(self, event):
