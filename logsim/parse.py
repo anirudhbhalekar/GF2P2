@@ -77,7 +77,7 @@ class Parser:
             self.INVALID_BLOCK_ORDER: "Invalid order of DEFINE, CONNECT, and MONITOR blocks",
             self.MISSING_END_STATEMENT: "No END statement after MONITOR clause",
             self.EXPECTED_NUMBER: "Expected a number",
-            self.EXPECTED_PUNCTUATION: "Expected a punctuation mark"
+            self.EXPECTED_PUNCTUATION: "Expected a punctuation mark",
             self.INVALID_PIN_REF: "Invalid pin reference"
         }
         return error_messages.get(error_code, "Unknown error")
