@@ -1,8 +1,8 @@
 spec_file = definition, {definition}, connection, monitor, end;
 
-definition = "DEFINE", [def_list], ";"
+definition = "DEFINE", [def_list], ";";
 
-def_list = name, "AS", device_type, ["WITH", param_list], ";";
+def_list = name, "AS", device_type, ["WITH", param_list], {",", name, "AS", device_type, ["WITH", param_list]};
 
 param_list = param, "=", value, {",", param, "=", value};
 
