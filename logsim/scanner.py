@@ -145,6 +145,8 @@ class Scanner:
 
         
         symbol = Symbol()
+        devices = Devices(None)
+
         char_count = len(self.file.read())
 
         # Find first non-space char
