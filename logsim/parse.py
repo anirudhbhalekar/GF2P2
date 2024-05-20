@@ -81,7 +81,7 @@ class Parser:
     def parse_network(self):
         """Parse the circuit definition file."""
         try:
-            self.symbol = self.scanner.getsymbol()
+            self.symbol = self.scanner.get_symbol()
             self.spec_file()
             return self.error_count == 0
         except SyntaxError as e:
@@ -103,23 +103,59 @@ class Parser:
         self.monitor()
         self.end()
 
+    # def definition(self):
+    #     """Implements rule definition = "DEFINE", name, "AS", device_type, ["WITH", param_list], ";";"""
+    #     if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.DEFINE:
+    #         self.symbol = self.scanner.get_symbol()
+    #         self.name()
+    #         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS:
+    #             self.symbol = self.scanner.get_symbol()
+    #             self.device_type()
+    #             if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH:
+    #                 self.symbol = self.scanner.get_symbol()
+    #                 self.param_list()
+    #             if self.symbol.type == self.scanner.SEMICOLON:
+    #                 self.symbol = self.scanner.get_symbol()
+    #             else:
+    #                 self.error(self.MISSING_SEMICOLON)
+    #         else:
+    #             self.error(self.INVALID_KEYWORD)
+    #     else:
+    #         self.error(self.INVALID_KEYWORD)
+
     def definition(self):
-        """Implements rule definition = "DEFINE", name, "AS", device_type, ["WITH", param_list], ";";"""
+        """Implements rule definition = "DEFINE", [def_list], ";";"""
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.DEFINE:
             self.symbol = self.scanner.get_symbol()
-            self.name()
-            if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS:
+            if self.symbol.type != self.scanner.SEMICOLON:
+                self.def_list()
+            if self.symbol.type == self.scanner.SEMICOLON:
                 self.symbol = self.scanner.get_symbol()
-                self.device_type()
-                if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH:
+            else:
+                self.error(self.MISSING_SEMICOLON)
+
+    def def_list(self):
+        """Implements rule def_list = name, "AS", device_type, ["WITH", param_list], {",", name, "AS", device_type, ["WITH", param_list]};"""
+        self.name()
+        if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS:
+            self.symbol = self.scanner.get_symbol()
+            self.device_type()
+            if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH:
+                self.symbol = self.scanner.get_symbol()
+                self.param_list()
+            while self.symbol.type == self.scanner.COMMA:
+                self.symbol = self.scanner.get_symbol()
+                self.name()
+                if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS:
                     self.symbol = self.scanner.get_symbol()
-                    self.param_list()
-                if self.symbol.type == self.scanner.SEMICOLON:
-                    self.symbol = self.scanner.get_symbol()
+                    self.device_type()
+                    if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH:
+                        self.symbol = self.scanner.get_symbol()
+                        self.param_list()
+                    else:
+                        self.error(self.MISSING_SEMICOLON)
                 else:
                     self.error(self.MISSING_SEMICOLON)
-            else:
-                self.error(self.INVALID_KEYWORD)
         else:
             self.error(self.INVALID_KEYWORD)
 
@@ -168,22 +204,44 @@ class Parser:
         else:
             self.error(self.INVALID_KEYWORD)
 
+    # def con_list(self):
+    #     """Implements rule con_list = con, "=", con, {",", con, "=", con};"""
+    #     self.con()
+    #     if self.symbol.type == self.scanner.EQUALS:
+    #         self.symbol = self.scanner.get_symbol()
+    #         self.con()
+    #         while self.symbol.type == self.scanner.COMMA:
+    #             self.symbol = self.scanner.get_symbol()
+    #             self.con()
+    #             if self.symbol.type == self.scanner.EQUALS:
+    #                 self.symbol = self.scanner.get_symbol()
+    #                 self.con()
+    #             else:
+    #                 self.error(self.INVALID_CONNECT_DELIMITER)
+    #     else:
+    #         self.error(self.INVALID_CONNECT_DELIMITER)
+
     def con_list(self):
-        """Implements rule con_list = con, "=", con, {",", con, "=", con};"""
-        self.con()
-        if self.symbol.type == self.scanner.EQUALS:
+        """Implement rule 
+        
+            self.
+            if 
+
+
+    def input_con(self):
+        """Implements rule input_con = name, ".", input_notation;"""
+        self.name()
+        if self.symbol.type == self.scanner.DOT:
             self.symbol = self.scanner.get_symbol()
-            self.con()
-            while self.symbol.type == self.scanner.COMMA:
-                self.symbol = self.scanner.get_symbol()
-                self.con()
-                if self.symbol.type == self.scanner.EQUALS:
-                    self.symbol = self.scanner.get_symbol()
-                    self.con()
-                else:
-                    self.error(self.INVALID_CONNECT_DELIMITER)
+            self.input_notation()
         else:
-            self.error(self.INVALID_CONNECT_DELIMITER)
+            self.error(self.)
+
+# output_con = name, [".", output_notation];
+
+# input_notation = "I", digit, {digit} | "DATA" | "CLK" | "CLEAR" | "SET";
+
+# output_notation =  "Q" | "QBAR" ;
 
     def name(self):
         """Implements name = letter, {letter | digit};, but name is returned as a full symbol from scanner"""
@@ -191,13 +249,6 @@ class Parser:
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.EXPECTED_NAME)
-
-    def con(self):
-        """Implements rule con = name, ["." notation];"""
-        self.name()
-        if self.symbol.type == self.scanner.DOT:
-            self.symbol = self.scanner.get_symbol()
-            self.notation()
 
 
     def notation(self):
