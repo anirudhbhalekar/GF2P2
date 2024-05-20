@@ -1,4 +1,4 @@
-spec_file = definition, {definition}, connection, monitor, end;
+spec_file = definition, connection, monitor, end;
 
 definition = "DEFINE", [def_list], ";";
 
