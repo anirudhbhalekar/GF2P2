@@ -1,0 +1,36 @@
+spec_file = definition, {definition}, connection, monitor, end;
+
+definition = "DEFINE", name, "AS", device_type, ["WITH", param_list], ";";
+
+param_list = param, "=", value, {",", param, "=", value};
+
+param = "input" | "initial" | "cycle_rep";
+
+value = digit, [{digit}| “.”, {digit}];
+
+connection = "CONNECT", [con_list], ";";
+
+con_list = input_con, "=", output_con, {",", input_con, "=", output_con};
+
+name = letter, {letter | digit};
+
+input_con = name, [".", input_notation];
+
+output_con = name, [".", output_notation];
+
+input_notation = "I", digit, {digit} | "DATA" | "CLK" | "CLEAR" | "SET";
+
+output_notation =  "Q" | "QBAR" ;
+
+monitor = "MONITOR", [name, {",", name}], ";";
+
+end = "END", ";";
+
+letter = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" |
+"N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" |"Y" | "Z" |
+"a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" |
+"n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" |"y" | "z" ;
+
+digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+
+device_type = "CLOCK" | "SWITCH" | "NAND" | "AND" | "OR" | "NOR" | "DTYPE" | "XOR";

@@ -7,10 +7,20 @@ from scanner import *
 import pytest
 
 
+# NOTE: global variables are not encourages in test files - but this is 
+# the folder for all the definition files (for ease of reference in tests)
 
-def test_file_1(): 
-    ''''''
+folder_path = 'definition_files/'
 
-    
+def test_example_null(): 
+    ''' Tests the null file'''
+
+    file_path = folder_path + 'example_null.txt'
+
+    names = Names()
+    network = Network()
+    scanner = Scanner()
+    monitor = Monitors()
+    parser = Parser()    
     pass
 
