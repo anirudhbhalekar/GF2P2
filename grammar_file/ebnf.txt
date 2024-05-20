@@ -1,6 +1,8 @@
 spec_file = definition, {definition}, connection, monitor, end;
 
-definition = "DEFINE", name, "AS", device_type, ["WITH", param_list], ";";
+definition = "DEFINE", [def_list], ";";
+
+def_list = name, "AS", device_type, ["WITH", param_list], {",", name, "AS", device_type, ["WITH", param_list]};
 
 param_list = param, "=", value, {",", param, "=", value};
 
@@ -14,7 +16,7 @@ con_list = input_con, "=", output_con | output_con, "=", input_con, {",", input_
 
 name = letter, {letter | digit};
 
-input_con = name, [".", input_notation];
+input_con = name, ".", input_notation;
 
 output_con = name, [".", output_notation];
 
