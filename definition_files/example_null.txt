@@ -1,0 +1,7 @@
+DEFINE abc AS NAND WITH inputs=2;
+
+CONNECT;
+
+MONITOR; 
+
+END;
