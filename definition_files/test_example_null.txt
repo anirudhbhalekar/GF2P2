@@ -2,7 +2,6 @@ DEFINE
     abs AS NAND WITH input = 2, 
     tgf AS AND WITH input = 3;
 
-
 CONNECT 
     tgf.I1 = abs;
 
