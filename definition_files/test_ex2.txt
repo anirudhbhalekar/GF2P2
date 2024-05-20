@@ -15,7 +15,7 @@ CONNECT CLK1 = DTYPE1, % not specifying which port of DTYPE1 should give error %
     DTYPE1.QBAR = DTYPE1.DATA,
     DTYPE1.Q = DTYPE2.CLK,
     DTYPE2.QBAR = DTYPE2.DATA,
-    DTYPE2.Q = DTYPE3.DATA,
+    DTYPE3.DATA = DTYPE2.Q, % input/output order flipped %
     DTYPE3.Q = G1.I2,
     G2.I1, % missing equals sign/arg should give error %
     SW11 = G2.I2; % there is no 'SW11' defined, should give error %
