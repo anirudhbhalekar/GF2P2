@@ -15,6 +15,7 @@ CONNECT
 statements to the same level as the initial statement %
 
 MONITOR 
-    G1, G2;
+    G1,
+    G2;
 
 END;
