@@ -81,7 +81,7 @@ class Parser:
     def parse_network(self):
         """Parse the circuit definition file."""
         try:
-            self.symbol = self.scanner.getsymbol()
+            self.symbol = self.scanner.get_symbol()
             self.spec_file()
             return self.error_count == 0
         except SyntaxError as e:

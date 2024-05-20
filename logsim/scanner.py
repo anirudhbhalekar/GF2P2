@@ -72,8 +72,8 @@ class Scanner:
 
         self.symbol_type_list = [self.COMMA, self.SEMICOLON, self.EQUALS,
                                 self.KEYWORD, self.NUMBER, self.NAME, 
-                                self.DOT, self.DEVICE, self.GATE, self.PARAM, self.DTYPE_INPUT,
-                                self.DTYPE_OUTPUT, self.EOF] = range(13)
+                                self.DOT, self.DEVICE, self.GATE, self.PARAM, 
+                                self.EOF] = range(11)
         
         self.keywords_list = ["DEFINE", "WITH", "CONNECT", "MONITOR", "END"]
         self.param_list = ["input", "initial", "cycle_rep"]
@@ -145,7 +145,6 @@ class Scanner:
 
         
         symbol = Symbol()
-        devices = Devices()
         char_count = len(self.file.read())
 
         # Find first non-space char
@@ -167,13 +166,6 @@ class Scanner:
             
             elif name_string in devices.gate_types: 
                 symbol.type = self.GATE
-            
-            elif name_string in devices.dtype_input_ids: 
-                symbol.type = self.DTYPE_INPUT
-            
-            elif name_string in devices.dtype_output_ids: 
-                symbol.type = self.DTYPE_OUTPUT
-                
             else: 
                 symbol.type = self.NAME
             

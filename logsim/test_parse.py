@@ -28,7 +28,7 @@ def test_example_null(folder_path):
     monitors = Monitors(names, devices, network)
     parser = Parser(names, devices, network, monitors, scanner) 
 
-    assert parser.error_count == 0
+    assert parser.parse_network()
 
 
 
