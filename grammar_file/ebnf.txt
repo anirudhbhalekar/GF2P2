@@ -16,7 +16,7 @@ con_list = input_con, "=", output_con, {",", input_con, "=", output_con};
 
 name = letter, {letter | digit};
 
-input_con = name, [".", input_notation];
+input_con = name, ".", input_notation;
 
 output_con = name, [".", output_notation];
 
