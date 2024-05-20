@@ -143,9 +143,8 @@ class Scanner:
 
         # get the next symbol in the file when called - this is fairly simple to implement
 
-        
         symbol = Symbol()
-        devices = Devices(None)
+        devices = Devices(self.names)
 
         char_count = len(self.file.read())
 

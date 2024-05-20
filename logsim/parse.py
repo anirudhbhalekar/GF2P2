@@ -106,7 +106,7 @@ class Parser:
         self.end()
 
     def definition(self):
-        """Implements rule definition = "DEFINE", [def_list], ";";"""
+        """Implements rule definition = "DEFINE", name, "AS", device_type, ["WITH", param_list], ";";"""
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.DEFINE:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
@@ -148,6 +148,8 @@ class Parser:
                         self.error(self.MISSING_SEMICOLON)
                 else:
                     self.error(self.MISSING_SEMICOLON)
+            else:
+                self.error(self.INVALID_KEYWORD)
         else:
             self.error(self.INVALID_KEYWORD)
 
@@ -218,7 +220,15 @@ class Parser:
         self.name()
         if self.symbol.type == self.scanner.DOT:
             self.symbol = self.scanner.get_symbol()
-            self.input_notation()
+            self.con()
+            while self.symbol.type == self.scanner.COMMA:
+                self.symbol = self.scanner.get_symbol()
+                self.con()
+                if self.symbol.type == self.scanner.EQUALS:
+                    self.symbol = self.scanner.get_symbol()
+                    self.con()
+                else:
+                    self.error(self.INVALID_CONNECT_DELIMITER)
         else:
             self.error(self.EXPECTED_PUNCTUATION)
     
