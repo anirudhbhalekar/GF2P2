@@ -60,8 +60,10 @@ class Parser:
     def error(self, error_code):
         """Print error message and increment error count."""
         self.error_count += 1
-        # Error handling?
-        print(f"Error code {error_code}: {self.get_error_message(error_code)}")
+        line_number = self.symbol.line_number
+        character = self.symbol.character
+        error_message = self.get_error_message(error_code)
+        print(f"Error code {error_code} at line {line_number}, character {character}: {error_message}")
 
     def get_error_message(self, error_code):
         """Return the error message corresponding to the error code."""
@@ -86,6 +88,7 @@ class Parser:
         """Parse the circuit definition file."""
         try:
             self.symbol = self.scanner.get_symbol()
+            print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
             self.spec_file()
             return self.error_count == 0
         except SyntaxError as e:
@@ -110,9 +113,12 @@ class Parser:
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.DEFINE:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
+                print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
                 self.def_list()
             if self.symbol.type == self.scanner.SEMICOLON:
+                print("Semicolon found")
                 self.symbol = self.scanner.get_symbol()
+                print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
             else:
                 self.error(self.MISSING_SEMICOLON)
 
@@ -126,6 +132,7 @@ class Parser:
             elif self.symbol.type == self.scanner.GATE:
                 self.gate()
             else:
+                print(f"deflist 0 Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
                 self.error(self.INVALID_KEYWORD)
             if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH:
                 self.symbol = self.scanner.get_symbol()
@@ -140,6 +147,7 @@ class Parser:
                     elif self.symbol.type == self.scanner.GATE:
                         self.gate()
                     else:
+                        print(f"def list 1Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
                         self.error(self.INVALID_KEYWORD)
                     if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH:
                         self.symbol = self.scanner.get_symbol()
@@ -149,6 +157,7 @@ class Parser:
                 else:
                     self.error(self.MISSING_SEMICOLON)
             else:
+                print(f"def list Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
                 self.error(self.INVALID_KEYWORD)
         else:
             self.error(self.INVALID_KEYWORD)
@@ -175,15 +184,14 @@ class Parser:
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id in [self.scanner.input_ID, self.scanner.initial_ID, self.scanner.cycle_rep_ID]:
             self.symbol = self.scanner.get_symbol()
         else:
+            print(f"param Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")    
             self.error(self.INVALID_KEYWORD)
 
     def value(self):
-        """Implements rule value = digit, [{digit}| “.”, {digit}];"""
-        # Because of scanner module implementation, we actually check for a format of number.number
+        """Implements rule value = digit, [{digit}];"""
+        # Because of scanner module implementation, we actually check for a format of number
         self.digit()
-        if self.symbol.type == self.scanner.DOT:
-            self.symbol = self.scanner.get_symbol()
-            self.digit()
+
         
     def connection(self):
         """Implements rule connection = "CONNECT", [con_list], ";";"""
@@ -196,6 +204,7 @@ class Parser:
             else:
                 self.error(self.MISSING_SEMICOLON)
         else:
+            print(f"Connection Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
             self.error(self.INVALID_KEYWORD)
 
     def con_list(self):
@@ -220,15 +229,7 @@ class Parser:
         self.name()
         if self.symbol.type == self.scanner.DOT:
             self.symbol = self.scanner.get_symbol()
-            self.con()
-            while self.symbol.type == self.scanner.COMMA:
-                self.symbol = self.scanner.get_symbol()
-                self.con()
-                if self.symbol.type == self.scanner.EQUALS:
-                    self.symbol = self.scanner.get_symbol()
-                    self.con()
-                else:
-                    self.error(self.INVALID_CONNECT_DELIMITER)
+            self.input_notation()
         else:
             self.error(self.EXPECTED_PUNCTUATION)
     
@@ -238,6 +239,8 @@ class Parser:
         if self.symbol.type == self.scanner.DOT:
             self.symbol = self.scanner.get_symbol()
             self.output_notation()
+        else:
+            self.error(self.EXPECTED_PUNCTUATION)
 
     def input_notation(self):
         """Implements rule input_notation = "I", digit, {digit} | "DATA" | "CLK" | "CLEAR" | "SET";"""
@@ -291,6 +294,7 @@ class Parser:
             else:
                 self.error(self.MISSING_SEMICOLON)
         else:
+            print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
             self.error(self.MISSING_END_STATEMENT)
     
     def digit(self):

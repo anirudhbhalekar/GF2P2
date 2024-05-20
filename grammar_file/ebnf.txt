@@ -8,7 +8,7 @@ param_list = param, "=", value, {",", param, "=", value};
 
 param = "input" | "initial" | "cycle_rep";
 
-value = digit, [{digit}| “.”, {digit}];
+value = digit, [{digit}];
 
 connection = "CONNECT", [con_list], ";";
 

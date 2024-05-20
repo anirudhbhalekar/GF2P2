@@ -1,5 +1,7 @@
 import pytest
 from scanner import Symbol, Scanner
+from names import Names
+
 
 # Symbol class tests
 def test_symbol_initialization():
@@ -24,15 +26,22 @@ def test_symbol_properties():
 # Scanner class tests
 @pytest.fixture
 def new_scanner():
-    return Scanner()
+    """Return a new instance of the Scanner class."""
+    return Scanner("definition_files/test_example_null.txt", Names())
 
-@pytest.fixture
-def scanner(mock_names, mock_devices):
-    # Creating a fake file-like object using StringIO
-    file_content = "DEFINE name1 123\nWITH name2\nCONNECT DEVICE1\nMONITOR GATE1\nEND\n"
-    # Patch the Devices import in Scanner to use the MockDevices
-    scanner = Scanner(file_content, mock_names)
-    scanner.devices = mock_devices
-    return scanner
+def test_scanner_initialization(new_scanner):
+    assert new_scanner.file is not None
+    assert new_scanner.names is not None
 
-# To be implemented
+def test_get_symbol(new_scanner):
+    symbol = new_scanner.get_symbol()
+    print(symbol)
+    assert symbol is not None
+    assert symbol.type == "KEYWORD"
+    assert symbol.id == "DEFINE"
+    assert symbol.line_number == 1
+    assert symbol.character == "DEFINE"
+
+
+
+
