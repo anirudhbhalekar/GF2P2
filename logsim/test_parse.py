@@ -10,17 +10,26 @@ import pytest
 # NOTE: global variables are not encourages in test files - but this is 
 # the folder for all the definition files (for ease of reference in tests)
 
-folder_path = 'definition_files/'
+@pytest.fixture
+def folder_path():
+    return 'definition_files/'
 
-def test_example_null(): 
+
+def test_example_null(folder_path): 
     ''' Tests the null file'''
-
-    file_path = folder_path + 'example_null.txt'
+    
+    file_path = folder_path + 'test_example_null.txt'
 
     names = Names()
-    network = Network()
-    scanner = Scanner()
-    monitor = Monitors()
-    parser = Parser()    
-    pass
+    scanner = Scanner(file_path, names)
+
+    devices = Devices(names)
+    network = Network(names, devices)
+    monitors = Monitors(names, devices, network)
+    parser = Parser(names, devices, network, monitors, scanner) 
+
+    assert parser.error_count == 0
+
+
+
 

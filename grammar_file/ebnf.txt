@@ -10,7 +10,7 @@ value = digit, [{digit}| “.”, {digit}];
 
 connection = "CONNECT", [con_list], ";";
 
-con_list = input_con, "=", output_con, {",", input_con, "=", output_con};
+con_list = input_con, "=", output_con | output_con, "=", input_con, {",", input_con, "=", output_con | output_con, "=", input_con} ;
 
 name = letter, {letter | digit};
 
