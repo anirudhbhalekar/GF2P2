@@ -35,7 +35,7 @@ def test_scanner_initialization(new_scanner):
 
 def test_get_symbol(new_scanner):
     symbol = new_scanner.get_symbol()
-    print(symbol)
+    print(f"Symbol: {symbol}, {symbol.type}, {symbol.id}, {symbol.line_number}, {symbol.character}")
     assert symbol is not None
     assert symbol.type == "KEYWORD"
     assert symbol.id == "DEFINE"
