@@ -206,6 +206,12 @@ class Scanner:
             self.skip_comment()
             self.advance()
 
+        elif self.current_character == "#": 
+            #
+            while not self.current_character == "\n": 
+                self.advance()
+            self.advance()
+
         elif self.current_character == "\n":
             # we update line number only and don't pass a symbol 
             self.line_count += 1
@@ -218,3 +224,4 @@ class Scanner:
         symbol.character = self.file.tell()
 
         return symbol 
+    
