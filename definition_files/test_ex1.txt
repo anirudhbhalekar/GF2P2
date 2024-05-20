@@ -1,20 +1,28 @@
-% Contains intentional errors for testing the parser/scanner
-Based on interim1_ex0.txt %
-
-DEFINE
-    G1 AS NAND WITH inputs=2;
-DEFINE % 2 'DEFINE' statements, should only be 1 so should give an error %
-    G2 AS NAND WITH inputs=2;
+DEFINE 
     SW1 AS SWITCH WITH initial=0;
-    SW2 AS SWITCH WITH initial=0;	
+    SW2 AS SWITCH WITH initial=0;
+    SW3 AS SWITCH WITH initial=0;
+    G1 AS NAND WITH inputs=2; 
+    G2 AS XOR;
+    G3 AS OR WITH inputs=3;
+    G4 AS XOR;
+    G5 AS AND WITH inputs=2;
 
-CONNECT 
-    SW1 = G1.I1,   
+CONNECT SW1 = G1.I1,
+    SW1 = G1.I2,
+    SW1 = G2.I1,
+    SW1 = G3.I1, 
     SW2 = G2.I2,
-    G1 = G2.I1; % semicolon before all defined and then another statement after should give error %
-    G2 = G1.I2;
+    SW2 = G3.I2,
+    SW3 = G3.I3,
+    G1 = G4.I1,
+    G2 = G4.I2,
+    G2 = G5.I1,
+    G3 = G5.I2;
 
-MONITOR; % extra semicolon where not expected should give error %  
-    G1, G2;
+MONITOR 
+    G1.I3, % G1 only has 2 inputs, so this should give an error % 
+    G4, 
+    G5;
 
-END % missing semicolon should give error %
+END;
