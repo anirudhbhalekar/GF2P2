@@ -44,6 +44,7 @@ class Parser:
     INVALID_BLOCK_ORDER = 9
     MISSING_END_STATEMENT = 10
     EXPECTED_NUMBER = 11
+    EXPECTED_PUNCTUATION = 12
 
     def __init__(self, names, devices, network, monitors, scanner):
         """Initialise constants."""
@@ -74,7 +75,8 @@ class Parser:
             self.INVALID_COMMENT_SYMBOL: "Comments starting or terminating with the wrong symbol",
             self.INVALID_BLOCK_ORDER: "Invalid order of DEFINE, CONNECT, and MONITOR blocks",
             self.MISSING_END_STATEMENT: "No END statement after MONITOR clause",
-            self.EXPECTED_NUMBER: "Expected a number"
+            self.EXPECTED_NUMBER: "Expected a number",
+            self.EXPECTED_PUNCTUATION: "Expected a punctuation mark"
         }
         return error_messages.get(error_code, "Unknown error")
 
@@ -97,8 +99,6 @@ class Parser:
     def spec_file(self):
         """Implements rule spec_file = definition, {definition}, connection, monitor, end;."""
         self.definition()
-        while self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.DEFINE:
-            self.definition()
         self.connection()
         self.monitor()
         self.end()
@@ -169,9 +169,26 @@ class Parser:
             self.error(self.INVALID_KEYWORD)
 
     def con_list(self):
-        """Implements rule con_list = con, "=", con, {",", con, "=", con};"""
-        self.con()
+        """Implement rule con_list = input_con, "=", output_con, {",", input_con, "=", output_con} ;"""
+        self.input_con()
         if self.symbol.type == self.scanner.EQUALS:
+            self.symbol = self.scanner.get_symbol()
+            self.output_con()
+            while self.symbol.type == self.scanner.COMMA:
+                self.symbol = self.scanner.get_symbol()
+                self.input_con()
+                if self.symbol.type == self.scanner.EQUALS:
+                    self.symbol = self.scanner.get_symbol()
+                    self.output_con()
+                else:
+                    self.error(self.INVALID_CONNECT_DELIMITER)
+        else:
+            self.error(self.INVALID_CONNECT_DELIMITER)
+
+    def input_con(self):
+        """Implements rule input_con = name, ".", input_notation;"""
+        self.name()
+        if self.symbol.type == self.scanner.DOT:
             self.symbol = self.scanner.get_symbol()
             self.con()
             while self.symbol.type == self.scanner.COMMA:
@@ -183,7 +200,35 @@ class Parser:
                 else:
                     self.error(self.INVALID_CONNECT_DELIMITER)
         else:
-            self.error(self.INVALID_CONNECT_DELIMITER)
+            self.error(self.EXPECTED_PUNCTUATION)
+    
+    def output_con(self):
+        """Implements rule output_con = name, [".", output_notation];"""
+        self.name()
+        if self.symbol.type == self.scanner.DOT:
+            self.symbol = self.scanner.get_symbol()
+            self.output_notation()
+
+    def input_notation(self):
+        """Implements rule input_notation = "I", digit, {digit} | "DATA" | "CLK" | "CLEAR" | "SET";"""
+        # Check if proper dtype input, or if not the first letter must be "I", followed by digits (isnumeric)
+        if self.symbol.type == self.scanner.DTYPE_INPUT:
+            self.symbol = self.scanner.get_symbol()
+        elif self.symbol.type == self.scanner.NAME:
+            if self.symbol.id[0] == "I" and self.symbol.id[1:].isnumeric():
+                self.symbol = self.scanner.get_symbol()
+            else:
+                self.error(self.INVALID_KEYWORD)
+        else:
+            self.error(self.INVALID_KEYWORD)
+
+    def output_notation(self):
+        """Implements rule output_notation =  "Q" | "QBAR" ;"""
+        if self.symbol.type == self.scanner.DTYPE_OUTPUT:
+            self.symbol = self.scanner.get_symbol()
+        else:
+            self.error(self.INVALID_KEYWORD)
+
 
     def name(self):
         """Implements name = letter, {letter | digit};, but name is returned as a full symbol from scanner"""
