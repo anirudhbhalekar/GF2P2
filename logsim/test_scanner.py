@@ -78,16 +78,52 @@ def test_skip_comment(scanner_test_ex0):
     assert symbol.line_number == 4
     assert symbol.character == 85
 
-def test_symbol_sequence(scanner_test_ex0):
-    """Tests symbol sequence for the first define statemetn"""
+def test_def_symbol_sequence(scanner_test_ex0):
+    """Tests symbol sequence for the first define statement"""
     expected_types = [scanner_test_ex0.KEYWORD, scanner_test_ex0.NAME, scanner_test_ex0.KEYWORD,
         scanner_test_ex0.GATE, scanner_test_ex0.KEYWORD, scanner_test_ex0.PARAM,
         scanner_test_ex0.EQUALS, scanner_test_ex0.NUMBER, scanner_test_ex0.SEMICOLON]
 
     for expected_type in expected_types:
-        symbol = scanner_test_ex0.get_symbol()
         assert symbol.type == expected_type
- 
+        symbol = scanner_test_ex0.get_symbol()
+        
+
+def test_con_symbol_sequence(scanner_test_ex0):
+    while not scanner_test_ex0.symbol.id == scanner_test_ex0.CONNECT_ID:
+        scanner_test_ex0.get_symbol()
+    expected_types = [
+        "KEYWORD",   # CONNECT
+        "NAME",      # SW1
+        "EQUALS",    # =
+        "NAME",      # G1
+        "DOT",       # .
+        "NAME",      # I1
+        "COMMA",     # ,
+        "NAME",      # SW2
+        "EQUALS",    # =
+        "NAME",      # G2
+        "DOT",       # .
+        "NAME",      # I2
+        "COMMA",     # ,
+        "NAME",      # G1
+        "EQUALS",    # =
+        "NAME",      # G2
+        "DOT",       # .
+        "NAME",      # I1
+        "SEMICOLON", # ;
+        "NAME",      # G2
+        "EQUALS",    # =
+        "NAME",      # G1
+        "DOT",       # .
+        "NAME",      # I2
+        "SEMICOLON"  # ;
+    ]
+    for expected_type in expected_types:
+        assert symbol.type == expected_type
+        symbol = scanner_test_ex0.get_symbol()
+        
+
 
 
 
