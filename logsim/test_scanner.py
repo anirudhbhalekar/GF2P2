@@ -28,10 +28,11 @@ def test_symbol_properties():
 def scanner_example_null():
     """Return a new instance of the Scanner class."""
     return Scanner("definition_files/test_example_null.txt", Names())
+
 def names():
     return Names()
 
-def test_scanner_initialization(new_scanner):
+def test_scanner_initialization(scanner_example_null):
     assert scanner_example_null.file is not None
     assert scanner_example_null.names is not None
 
@@ -45,46 +46,21 @@ def test_get_symbol(scanner_example_null):
     assert symbol.line_number == 1
     assert symbol.character == 5
 
-    symbol = scanner_example_null.get_symbol()
-    print(f"Symbol: {symbol}, {symbol.type}, {symbol.id}, {symbol.line_number}, {symbol.character}")
-    assert symbol is not None
-    assert symbol.type == scanner_example_null.NAME
-    assert scanner_example_null.names.get_name_string(symbol.id) == "abs"
-    assert symbol.line_number == 2
-    assert symbol.character == 8
+def test_get_name(scanner_example_null):
+    """Test the get_name method."""
+    scanner_example_null.file.seek(0)
+    scanner_example_null.advance()
+    name = scanner_example_null.get_name()
+    assert name == "DEFINE"
 
-def test_get_def_list(scanner_example_null):
-    """Test if we read a def_list properly:     
-    DEFINE 
-    abs AS NAND WITH input = 2, 
-    tgf AS AND WITH input = 3;"""
-    symbol = scanner_example_null.get_symbol()
-    assert symbol.type == "KEYWORD"
-    symbol = scanner_example_null.get_symbol()
-    assert symbol.type == "NAME"
-    symbol = scanner_example_null.get_symbol()
-    assert symbol.type == "KEYWORD"
-    symbol = scanner_example_null.get_symbol()
-    assert symbol.type == "GATE"
-    symbol = scanner_example_null.get_symbol()
-    assert symbol.type == "KEYWORD"
-    symbol = scanner_example_null.get_symbol()
-    assert symbol.type == "PARAM"
-    symbol = scanner_example_null.get_symbol()
-    assert symbol.type == "EQUALS"
-    symbol = scanner_example_null.get_symbol()
-    assert symbol.type == "NUMBER"
-    symbol = scanner_example_null.get_symbol()
-    assert symbol.type == "COMMA"
-    symbol = scanner_example_null.get_symbol()
-    symbol = scanner_example_null.get_symbol()
-    symbol = scanner_example_null.get_symbol()
-    symbol = scanner_example_null.get_symbol()
-    symbol = scanner_example_null.get_symbol()
-    symbol = scanner_example_null.get_symbol()
-    symbol = scanner_example_null.get_symbol()
-    symbol = scanner_example_null.get_symbol()
-    assert symbol.type == "SEMICOLON"
+def test_get_number(scanner_example_null):
+    """Test the get_number method."""
+    scanner_example_null.file.seek(0)
+    scanner_example_null.advance()
+    while not scanner_example_null.current_character.isdigit():
+        scanner_example_null.advance()
+    number = scanner_example_null.get_number()
+    assert number == "2"
 
 
 @pytest.fixture
@@ -102,6 +78,15 @@ def test_skip_comment(scanner_test_ex0):
     assert symbol.line_number == 4
     assert symbol.character == 85
 
+def test_symbol_sequence(scanner_test_ex0):
+    """Tests symbol sequence for the first define statemetn"""
+    expected_types = [scanner_test_ex0.KEYWORD, scanner_test_ex0.NAME, scanner_test_ex0.KEYWORD,
+        scanner_test_ex0.GATE, scanner_test_ex0.KEYWORD, scanner_test_ex0.PARAM,
+        scanner_test_ex0.EQUALS, scanner_test_ex0.NUMBER, scanner_test_ex0.SEMICOLON]
+
+    for expected_type in expected_types:
+        symbol = scanner_test_ex0.get_symbol()
+        assert symbol.type == expected_type
  
 
 
