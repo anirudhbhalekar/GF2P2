@@ -75,11 +75,11 @@ class Scanner:
                                 self.DOT, self.DEVICE, self.GATE, self.PARAM, 
                                 self.EOF] = range(11)
         
-        self.keywords_list = ["DEFINE", "WITH", "CONNECT", "MONITOR", "END"]
+        self.keywords_list = ["DEFINE", "AS", "WITH", "CONNECT", "MONITOR", "END"]
         self.param_list = ["input", "initial", "cycle_rep"]
         
         
-        [self.DEFINE_ID, self.WITH_ID, self.CONNECT_ID, self.MONITOR_ID,
+        [self.DEFINE_ID, self.AS_ID, self.WITH_ID, self.CONNECT_ID, self.MONITOR_ID,
             self.END_ID] = self.names.lookup(self.keywords_list)   
 
         [self.input_ID, self.initial_ID, self.cycle_rep_ID] = self.names.lookup(self.param_list)

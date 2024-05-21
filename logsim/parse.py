@@ -110,7 +110,7 @@ class Parser:
 
     def definition(self):
         """Implements rule definition = "DEFINE", name, "AS", device_type, ["WITH", param_list], ";";"""
-        if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.DEFINE:
+        if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.DEFINE_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
                 print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
@@ -125,7 +125,7 @@ class Parser:
     def def_list(self):
         """Implements rule def_list = name, "AS", (device | gate), ["WITH", param_list], {",", name, "AS", (device | gate), ["WITH", param_list]};"""
         self.name()
-        if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS:
+        if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type == self.scanner.DEVICE:
                 self.device()
@@ -134,13 +134,13 @@ class Parser:
             else:
                 print(f"deflist 0 Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
                 self.error(self.INVALID_KEYWORD)
-            if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH:
+            if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                 self.symbol = self.scanner.get_symbol()
                 self.param_list()
             while self.symbol.type == self.scanner.COMMA:
                 self.symbol = self.scanner.get_symbol()
                 self.name()
-                if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS:
+                if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS_ID:
                     self.symbol = self.scanner.get_symbol()
                     if self.symbol.type == self.scanner.DEVICE:
                         self.device()
@@ -149,7 +149,7 @@ class Parser:
                     else:
                         print(f"def list 1Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
                         self.error(self.INVALID_KEYWORD)
-                    if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH:
+                    if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                         self.symbol = self.scanner.get_symbol()
                         self.param_list()
                     else:
@@ -195,7 +195,7 @@ class Parser:
         
     def connection(self):
         """Implements rule connection = "CONNECT", [con_list], ";";"""
-        if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.CONNECT:
+        if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.CONNECT_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
                 self.con_list()
@@ -248,7 +248,8 @@ class Parser:
         if self.symbol.type == self.scanner.DTYPE_INPUT:
             self.symbol = self.scanner.get_symbol()
         elif self.symbol.type == self.scanner.NAME:
-            if self.symbol.id[0] == "I" and self.symbol.id[1:].isnumeric():
+            input_string = self.names.get_name_string(self.symbol.id)
+            if input_string[0] == "I" and input_string[1:].isnumeric():
                 self.symbol = self.scanner.get_symbol()
             else:
                 self.error(self.INVALID_PIN_REF)
