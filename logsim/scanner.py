@@ -83,7 +83,7 @@ class Scanner:
                                 self.COMMENT, self.NEWLINE, self.EOF] = symbol_type_list
         
         self.keywords_list = ["DEFINE", "AS", "WITH", "CONNECT", "MONITOR", "END"]
-        self.param_list = ["input", "initial", "cycle_rep"]
+        self.param_list = ["inputs", "initial", "cycle_rep"]
         
         
         [self.DEFINE_ID, self.AS_ID, self.WITH_ID, self.CONNECT_ID, self.MONITOR_ID,
@@ -162,11 +162,12 @@ class Scanner:
             elif name_string in self.param_list: 
                 symbol.type = self.PARAM
 
-            elif name_string in devices.devices_list: 
+            elif name_string in devices.device_strings: 
                 symbol.type = self.DEVICE
             
-            elif name_string in devices.gate_types: 
+            elif name_string in devices.gate_strings: 
                 symbol.type = self.GATE
+
             else: 
                 symbol.type = self.NAME
             

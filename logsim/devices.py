@@ -104,10 +104,10 @@ class Devices:
 
         self.devices_list = []
 
-        gate_strings = ["AND", "OR", "NAND", "NOR", "XOR"]
-        device_strings = ["CLOCK", "SWITCH", "DTYPE"]
-        dtype_inputs = ["CLK", "SET", "CLEAR", "DATA"]
-        dtype_outputs = ["Q", "QBAR"]
+        self.gate_strings = ["AND", "OR", "NAND", "NOR", "XOR"]
+        self.device_strings = ["CLOCK", "SWITCH", "DTYPE"]
+        self.dtype_inputs = ["CLK", "SET", "CLEAR", "DATA"]
+        self.dtype_outputs = ["Q", "QBAR"]
 
         [self.NO_ERROR, self.INVALID_QUALIFIER, self.NO_QUALIFIER,
          self.BAD_DEVICE, self.QUALIFIER_PRESENT,
@@ -116,13 +116,13 @@ class Devices:
         self.signal_types = [self.LOW, self.HIGH, self.RISING,
                              self.FALLING, self.BLANK] = range(5)
         self.gate_types = [self.AND, self.OR, self.NAND, self.NOR,
-                           self.XOR] = self.names.lookup(gate_strings)
+                           self.XOR] = self.names.lookup(self.gate_strings)
         self.device_types = [self.CLOCK, self.SWITCH,
-                             self.D_TYPE] = self.names.lookup(device_strings)
+                             self.D_TYPE] = self.names.lookup(self.device_strings)
         self.dtype_input_ids = [self.CLK_ID, self.SET_ID, self.CLEAR_ID,
-                                self.DATA_ID] = self.names.lookup(dtype_inputs)
+                                self.DATA_ID] = self.names.lookup(self.dtype_inputs)
         self.dtype_output_ids = [
-            self.Q_ID, self.QBAR_ID] = self.names.lookup(dtype_outputs)
+            self.Q_ID, self.QBAR_ID] = self.names.lookup(self.dtype_outputs)
 
         self.max_gate_inputs = 16
 

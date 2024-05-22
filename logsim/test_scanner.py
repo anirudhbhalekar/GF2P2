@@ -88,8 +88,12 @@ def test_def_symbol_sequence(scanner_test_ex0):
     expected_types = [scanner_test_ex0.KEYWORD, scanner_test_ex0.NAME, scanner_test_ex0.KEYWORD,
         scanner_test_ex0.GATE, scanner_test_ex0.KEYWORD, scanner_test_ex0.PARAM,
         scanner_test_ex0.EQUALS, scanner_test_ex0.NUMBER, scanner_test_ex0.SEMICOLON]
+    
+    symbol = scanner_test_ex0.get_symbol() # This returns the next symbol
+    symbol = scanner_test_ex0.get_symbol()
 
-    for expected_type in expected_types:
+    for i, expected_type in enumerate(expected_types):
+        print(i)
         symbol = scanner_test_ex0.get_symbol()        
         assert symbol.type == expected_type
         
