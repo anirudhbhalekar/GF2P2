@@ -11,6 +11,7 @@ import os
 def folder_path():
     return 'definition_files/'
 
+
 def get_all_files(folder):
     ''' Return a list of all files in the given folder. '''
     return [os.path.join(folder, f) for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]

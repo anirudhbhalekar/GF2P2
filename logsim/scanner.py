@@ -10,6 +10,7 @@ Symbol - encapsulates a symbol and stores its properties.
 """
 
 from devices import Devices
+from names import Names
 
 class Symbol:
 
@@ -68,12 +69,18 @@ class Scanner:
         self.file = file
         self.names = names
 
-        self.line_count = 0 
+        self.line_count = 1
+        self.total_char_count = 0
+        self.line_char_count = 0
 
+        symbol_type_list = ["COMMA", "SEMICOLON", "EQUALS", "KEYWORD", "NUMBER", "NAME"
+                            , "DOT", "DEVICE", "GATE", "PARAM", "COMMENT", "NEWLINE"
+                            , "EOF"]
+        
         self.symbol_type_list = [self.COMMA, self.SEMICOLON, self.EQUALS,
                                 self.KEYWORD, self.NUMBER, self.NAME, 
                                 self.DOT, self.DEVICE, self.GATE, self.PARAM, 
-                                self.EOF] = range(11)
+                                self.COMMENT, self.NEWLINE, self.EOF] = symbol_type_list
         
         self.keywords_list = ["DEFINE", "AS", "WITH", "CONNECT", "MONITOR", "END"]
         self.param_list = ["input", "initial", "cycle_rep"]
@@ -84,33 +91,35 @@ class Scanner:
 
         [self.input_ID, self.initial_ID, self.cycle_rep_ID] = self.names.lookup(self.param_list)
 
-
-        self.current_character = ""
-
         self.file.seek(0)
-
-    def skip_spaces(self): 
-        """ Skips spaces to next symbol and sets file pointer"""
-
-        self.advance()
-        while self.current_character.isspace(): 
-            self.advance()
+        self.current_character = ""
 
     def advance(self): 
         """Advances self.current_character"""
 
-        self.current_character = self.file.read(1)
+        self.file.seek(self.total_char_count)
+
+        next_char = self.file.read(1)
+        self.current_character = next_char
+        
+        self.total_char_count += 1
+        self.line_char_count  += 1
+
+    def skip_spaces(self): 
+        """ Skips spaces to next symbol and sets file pointer"""
+        
+        while self.current_character.isspace(): 
+            self.advance()
+
+
 
     def get_name(self): 
         """Gets name (if first char is alphabet - reads until non alnum char is reached)"""
 
         name_string = ''
-        name_string += self.current_character
 
-        self.advance()
-
-        while self.current_character.isalnum() or self.current_character == "_": 
-            name_string += self.current_character
+        while self.current_character.isalnum():
+            name_string = name_string + self.current_character
             self.advance()
             
         return name_string
@@ -119,9 +128,6 @@ class Scanner:
         """Gets number (so appends digits together)"""
 
         number_string = ''
-        number_string += self.current_character
-
-        self.advance()
 
         while self.current_character.isdigit(): 
             number_string += self.current_character
@@ -134,28 +140,22 @@ class Scanner:
         self.advance()
 
         while not self.current_character == "%": 
-            self.advance()
-        
+            self.advance()        
 
-        
     def get_symbol(self):
         """Translate the next sequence of characters into a symbol."""
 
         # get the next symbol in the file when called - this is fairly simple to implement
-
         symbol = Symbol()
         devices = Devices(self.names)
-
         char_count = len(self.file.read())
 
         # Find first non-space char
         self.skip_spaces()
-
+        
         if self.current_character.isalpha(): 
             # This is a name
-
             name_string = self.get_name()
-
             if name_string in self.keywords_list: 
                 symbol.type = self.KEYWORD
             
@@ -197,24 +197,52 @@ class Scanner:
         elif self.current_character == "%":
             # Comments start and end with a % symbol 
             self.skip_comment()
+            symbol.type = self.COMMENT
             self.advance()
 
         elif self.current_character == "#": 
-            #
+            # Single line comment
             while not self.current_character == "\n": 
                 self.advance()
+
+            symbol.type = self.COMMENT
+            self.line_count += 1
+            self.line_char_count = 0 
             self.advance()
 
         elif self.current_character == "\n":
-            # we update line number only and don't pass a symbol 
+            # we update line number only and don't pass a symbol   
+
             self.line_count += 1
+            self.line_char_count = 0    
 
         else: 
             # Invalid character just pass over
             self.advance()
 
         symbol.line_number = self.line_count
-        symbol.character = self.file.tell()
+        symbol.character = self.total_char_count
 
         return symbol 
     
+    
+
+if __name__ == "__main__": 
+    
+    names = Names()
+    scanner = Scanner("definition_files/test_ex_null.txt", names)
+
+    print(scanner.character_count)
+    sym = scanner.get_symbol()
+
+    print(sym.type)
+
+    #symbol = scanner.get_symbol()
+    print(sym.id)
+
+    sym = scanner.get_symbol()
+
+    print(sym.type)
+
+    #symbol = scanner.get_symbol()
+    print(sym.id)
