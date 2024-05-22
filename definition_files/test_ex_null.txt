@@ -5,8 +5,7 @@ DEFINE
 CONNECT 
     tgf.I1 = abs;
 
-MONITOR 
-    abs; 
+MONITOR abs; 
 
 END;
 

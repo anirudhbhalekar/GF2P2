@@ -31,3 +31,5 @@ def test_definition_files(file_path):
     parser = Parser(names, devices, network, monitors, scanner) 
 
     assert parser.parse_network()
+
+    

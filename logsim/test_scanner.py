@@ -90,7 +90,7 @@ def test_def_symbol_sequence(scanner_test_ex0):
         
 
 def test_con_symbol_sequence(scanner_test_ex0):
-    while not scanner_test_ex0.symbol.id == scanner_test_ex0.CONNECT_ID:
+    while not scanner_test_ex0.symbol_id == scanner_test_ex0.CONNECT_ID:
         scanner_test_ex0.get_symbol()
     expected_types = [
         "KEYWORD",   # CONNECT
