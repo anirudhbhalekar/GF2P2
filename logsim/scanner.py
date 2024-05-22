@@ -74,7 +74,7 @@ class Scanner:
         self.line_char_count = 0
 
         symbol_type_list = ["COMMA", "SEMICOLON", "EQUALS", "KEYWORD", "NUMBER", "NAME"
-                            , "DOT", "DEVICE", "GATE", "PARAM", "COMMENT", "NEWLINE"
+                            , "DOT", "DEVICE", "GATE", "PARAM", "NEWLINE"
                             , "EOF"]
         
         self.symbol_type_list = [self.COMMA, self.SEMICOLON, self.EQUALS,
@@ -198,18 +198,16 @@ class Scanner:
         elif self.current_character == "%":
             # Comments start and end with a % symbol 
             self.skip_comment()
-            symbol.type = self.COMMENT
-            self.advance()
+            self.get_symbol() # Recursion is not ideal - but dont want to output None symbol type
 
         elif self.current_character == "#": 
             # Single line comment
             while not self.current_character == "\n": 
                 self.advance()
 
-            symbol.type = self.COMMENT
             self.line_count += 1
             self.line_char_count = 0 
-            self.advance()
+            self.get_symbol()
 
         elif self.current_character == "\n":
             # we update line number only and don't pass a symbol   
