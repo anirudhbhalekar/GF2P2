@@ -38,7 +38,7 @@ def test_scanner_initialization(scanner_example_null):
 
 def test_get_symbol(scanner_example_null):
     """Test the get_symbol method."""
-    scanner_example_null.get_symbol()
+
     symbol = scanner_example_null.get_symbol()
 
     print(f"Symbol: {symbol}, {symbol.type}, {symbol.id}, {symbol.line_number}, {symbol.character}")
@@ -72,16 +72,14 @@ def scanner_test_ex0():
 
 def test_skip_comment(scanner_test_ex0):
     """Test if the scanner properly skips a comment"""
-    symbol = scanner_test_ex0.get_symbol() # This will return a COMMENT type symbol 
     symbol = scanner_test_ex0.get_symbol() # This returns the next symbol
-    symbol = scanner_test_ex0.get_symbol()
-
+    
     print(f"Symbol: {symbol}, {symbol.type}, {symbol.id}, {symbol.line_number}, {symbol.character}")
     assert symbol is not None
     assert symbol.type == "KEYWORD"
     assert symbol.id == scanner_test_ex0.DEFINE_ID
-    #assert symbol.line_number == 4
-    #assert symbol.character == 85
+    assert symbol.line_number == 8
+    assert symbol.character == 102
 
 def test_def_symbol_sequence(scanner_test_ex0):
     """Tests symbol sequence for the first define statement"""
@@ -89,11 +87,7 @@ def test_def_symbol_sequence(scanner_test_ex0):
         scanner_test_ex0.GATE, scanner_test_ex0.KEYWORD, scanner_test_ex0.PARAM,
         scanner_test_ex0.EQUALS, scanner_test_ex0.NUMBER, scanner_test_ex0.SEMICOLON]
     
-    symbol = scanner_test_ex0.get_symbol() # This returns the next symbol
-    symbol = scanner_test_ex0.get_symbol()
-
     for i, expected_type in enumerate(expected_types):
-        print(i)
         symbol = scanner_test_ex0.get_symbol()        
         assert symbol.type == expected_type
         
@@ -123,7 +117,6 @@ def test_con_symbol_sequence(scanner_test_ex0):
         "DOT",       # .
         "NAME",      # I1
         "SEMICOLON", # ;
-        "COMMENT",   # COMMENT HERE
         "NAME",      # G2
         "EQUALS",    # =
         "NAME",      # G1
@@ -131,7 +124,8 @@ def test_con_symbol_sequence(scanner_test_ex0):
         "NAME",      # I2
         "SEMICOLON"  # ;
     ]
-    for expected_type in expected_types:
+    for i, expected_type in enumerate(expected_types):
+        print(i)
         assert symbol.type == expected_type
         symbol = scanner_test_ex0.get_symbol()
         

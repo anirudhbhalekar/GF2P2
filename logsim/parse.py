@@ -60,8 +60,8 @@ class Parser:
     def error(self, error_code):
         """Print error message and increment error count."""
         self.error_count += 1
-        line_number = self.symbol.line_number
-        character = self.symbol.character
+        line_number = self.symbol.line_count
+        character = self.symbol.line_char_count
         error_message = self.get_error_message(error_code)
         print(f"Error code {error_code} at line {line_number}, character {character}: {error_message}")
 
@@ -88,7 +88,7 @@ class Parser:
         """Parse the circuit definition file."""
         try:
             self.symbol = self.scanner.get_symbol()
-            print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
+            #print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
             self.spec_file()
             return self.error_count == 0
         except SyntaxError as e:
@@ -113,12 +113,12 @@ class Parser:
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.DEFINE_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
-                print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
+                #print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
                 self.def_list()
             if self.symbol.type == self.scanner.SEMICOLON:
-                print("Semicolon found")
+                #print("Semicolon found")
                 self.symbol = self.scanner.get_symbol()
-                print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
+                #print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
             else:
                 self.error(self.MISSING_SEMICOLON)
 
@@ -132,7 +132,7 @@ class Parser:
             elif self.symbol.type == self.scanner.GATE:
                 self.gate()
             else:
-                print(f"deflist 0 Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
+                #print(f"deflist 0 Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
                 self.error(self.INVALID_KEYWORD)
             if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                 self.symbol = self.scanner.get_symbol()
@@ -147,7 +147,7 @@ class Parser:
                     elif self.symbol.type == self.scanner.GATE:
                         self.gate()
                     else:
-                        print(f"def list 1Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
+                        #print(f"def list 1Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
                         self.error(self.INVALID_KEYWORD)
                     if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                         self.symbol = self.scanner.get_symbol()
@@ -157,7 +157,7 @@ class Parser:
                 else:
                     self.error(self.MISSING_SEMICOLON)
             else:
-                print(f"def list Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
+                #print(f"def list Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
                 self.error(self.INVALID_KEYWORD)
         else:
             self.error(self.INVALID_KEYWORD)
@@ -184,7 +184,7 @@ class Parser:
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id in [self.scanner.input_ID, self.scanner.initial_ID, self.scanner.cycle_rep_ID]:
             self.symbol = self.scanner.get_symbol()
         else:
-            print(f"param Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")    
+            #print(f"param Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")    
             self.error(self.INVALID_KEYWORD)
 
     def value(self):
@@ -204,7 +204,7 @@ class Parser:
             else:
                 self.error(self.MISSING_SEMICOLON)
         else:
-            print(f"Connection Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
+            #print(f"Connection Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
             self.error(self.INVALID_KEYWORD)
 
     def con_list(self):

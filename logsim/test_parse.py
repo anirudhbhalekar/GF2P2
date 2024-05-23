@@ -18,7 +18,8 @@ def get_all_files(folder):
 
 @pytest.mark.parametrize("file_path", get_all_files('definition_files/'))
 
-# use > pytest -k * runs only the test functions containing the kwd *
+#use > pytest -k * runs only the test functions containing the kwd *
+# parameterize with (file_path, num_errors)
 
 def test_definition_files(file_path): 
     ''' Tests the definition files -- these should all return True as they don't contain errors'''
