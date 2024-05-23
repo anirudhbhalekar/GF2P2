@@ -18,10 +18,10 @@ def get_all_files(folder):
 
 @pytest.mark.parametrize("file_path", get_all_files('definition_files/'))
 
-#use > pytest -k * runs only the test functions containing the kwd *
+# use > pytest -k * runs only the test functions containing the kwd *
 
 def test_definition_files(file_path): 
-    ''' Tests the definition files'''
+    ''' Tests the definition files -- these should all return True as they don't contain errors'''
 
     names = Names()
     scanner = Scanner(file_path, names)
@@ -33,4 +33,20 @@ def test_definition_files(file_path):
 
     assert parser.parse_network()
 
+
+@pytest.mark.parametrize("error_file_path", get_all_files('error_definition_files/'))
+
+
+def test_error_definition_files(error_file_path): 
+    ''' Tests the definition files with errors -- these should all return False as they don't contain errors'''
+
+    names = Names()
+    scanner = Scanner(error_file_path, names)
+
+    devices = Devices(names)
+    network = Network(names, devices)
+    monitors = Monitors(names, devices, network)
+    parser = Parser(names, devices, network, monitors, scanner) 
+
+    assert not parser.parse_network()
     
