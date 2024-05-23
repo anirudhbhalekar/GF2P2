@@ -1,11 +1,11 @@
 DEFINE 
-    CLK1 AS CLOCK WITH cycle_rep=1000; 
-    SW1 AS SWITCH WITH initial=1;   
+    CLK1 AS CLOCK WITH cycle_rep=1000, 
+    SW1 AS SWITCH WITH initial=1,  
 
-    G1 AS AND WITH inputs=2; 
-    G2 AS XOR;
-    DTYPE1 AS DTYPE;
-    DTYPE2 AS DTYPE;
+    G1 AS AND WITH inputs=2, 
+    G2 AS XOR,
+    DTYPE1 AS DTYPE,
+    DTYPE2 AS DTYPE,
     DTYPE3 AS DTYPE;
 
 CONNECT CLK1 = DTYPE1.CLK,
