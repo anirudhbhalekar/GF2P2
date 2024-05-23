@@ -229,7 +229,7 @@ class Scanner:
 if __name__ == "__main__": 
     
     names = Names()
-    scanner = Scanner("definition_files/test_ex0.txt", names)
+    scanner = Scanner("error_definition_files/test_ex1.txt", names)
 
     for i in range(10): 
         sym = scanner.get_symbol()
