@@ -121,9 +121,6 @@ class Scanner:
             self.line_char_count  += 1
 
         self.current_character = next_char
-        
-        
-        
 
     def skip_spaces(self): 
         """ Skips spaces to next symbol and sets file pointer"""
@@ -231,7 +228,7 @@ if __name__ == "__main__":
     names = Names()
     scanner = Scanner("error_definition_files/test_ex1.txt", names)
 
-    for i in range(10): 
+    for i in range(20): 
         sym = scanner.get_symbol()
         print(sym.type)
         print(sym.id) 

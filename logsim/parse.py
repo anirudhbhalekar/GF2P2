@@ -181,7 +181,7 @@ class Parser:
 
     def param(self):
         """Implements rule param = "input" | "initial" | "cycle_rep";"""
-        if self.symbol.type == self.scanner.KEYWORD and self.symbol.id in [self.scanner.input_ID, self.scanner.initial_ID, self.scanner.cycle_rep_ID]:
+        if self.symbol.type == self.scanner.PARAM:
             self.symbol = self.scanner.get_symbol()
         else:
             #print(f"param Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")    
