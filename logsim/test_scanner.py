@@ -68,7 +68,7 @@ def test_get_number(scanner_example_null):
 @pytest.fixture
 def scanner_test_ex0():
     """Return a new instance of the Scanner class."""
-    return Scanner("definition_files/test_ex0.txt", Names())
+    return Scanner("error_definition_files/test_ex0.txt", Names())
 
 def test_skip_comment(scanner_test_ex0):
     """Test if the scanner properly skips a comment"""
