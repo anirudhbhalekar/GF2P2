@@ -19,7 +19,6 @@ def get_all_files(folder):
 @pytest.mark.parametrize("file_path", get_all_files('definition_files/'))
 
 #use > pytest -k * runs only the test functions containing the kwd *
-# parameterize with (file_path, num_errors)
 
 def test_definition_files(file_path): 
     ''' Tests the definition files -- these should all return True as they don't contain errors'''
@@ -33,13 +32,19 @@ def test_definition_files(file_path):
     parser = Parser(names, devices, network, monitors, scanner) 
 
     assert parser.parse_network()
+    
+# Hardcoded number of errors for each error definition file
+num_error_list = [4, 1, 9]
 
+# Create iterable tuple for parametrization
+test_tuple = zip(get_all_files('error_definition_files/'), num_error_list)
 
-@pytest.mark.parametrize("error_file_path", get_all_files('error_definition_files/'))
+# Parameterize with (file_path, num_errors)
+@pytest.mark.parametrize("error_file_path, num_errors", test_tuple)
 
-
-def test_error_definition_files(error_file_path): 
-    ''' Tests the definition files with errors -- these should all return False as they don't contain errors'''
+def test_error_definition_files(error_file_path, num_errors): 
+    ''' Tests the definition files with errors -- these should all return False as they don't contain errors.
+    Furthermore the number of errors should be equal to the actual (hardcoded) number of errors in each file'''
 
     names = Names()
     scanner = Scanner(error_file_path, names)
@@ -48,6 +53,6 @@ def test_error_definition_files(error_file_path):
     network = Network(names, devices)
     monitors = Monitors(names, devices, network)
     parser = Parser(names, devices, network, monitors, scanner) 
-
-    assert not parser.parse_network()
+    
+    assert parser.error_count == num_errors
     
