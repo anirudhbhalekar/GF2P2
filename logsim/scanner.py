@@ -59,28 +59,31 @@ class Scanner:
 
     def __init__(self, path, names):
         """Open specified file and initialise reserved words and IDs."""
+        
+        self.names = names
 
         try: 
             file = open(path, 'r')
         except FileNotFoundError: 
             raise FileNotFoundError
         
-    
+        if names is None: 
+            return
+        
         self.file = file
-        self.names = names
-
+    
         self.line_count = 1
         self.total_char_count = 0
         self.line_char_count = 0
 
         symbol_type_list = ["COMMA", "SEMICOLON", "EQUALS", "KEYWORD", "NUMBER", "NAME"
-                            , "DOT", "DEVICE", "GATE", "PARAM", "NEWLINE"
-                            , "EOF"]
+                            ,"DOT", "DEVICE", "GATE", "PARAM", "NEWLINE"
+                            ,"EOF"]
         
         self.symbol_type_list = [self.COMMA, self.SEMICOLON, self.EQUALS,
                                 self.KEYWORD, self.NUMBER, self.NAME, 
                                 self.DOT, self.DEVICE, self.GATE, self.PARAM, 
-                                self.COMMENT, self.NEWLINE, self.EOF] = symbol_type_list
+                                self.NEWLINE, self.EOF] = symbol_type_list
         
         self.keywords_list = ["DEFINE", "AS", "WITH", "CONNECT", "MONITOR", "END"]
         self.param_list = ["inputs", "initial", "cycle_rep"]
@@ -92,7 +95,7 @@ class Scanner:
         [self.input_ID, self.initial_ID, self.cycle_rep_ID] = self.names.lookup(self.param_list)
 
         self.file.seek(0)
-        self.current_character = ""
+        self.current_character = " "
 
     def advance(self): 
         """Advances self.current_character"""
@@ -100,18 +103,39 @@ class Scanner:
         self.file.seek(self.total_char_count)
 
         next_char = self.file.read(1)
-        self.current_character = next_char
-        
         self.total_char_count += 1
         self.line_char_count  += 1
+
+        if next_char == "%": 
+            next_char = self.file.read(1)
+            self.total_char_count += 1
+            self.line_char_count  += 1
+
+            while not next_char == "%":
+                next_char = self.file.read(1)
+                self.total_char_count += 1
+                self.line_char_count  += 1
+            
+            next_char = self.file.read(1)
+            self.total_char_count += 1
+            self.line_char_count  += 1
+
+        self.current_character = next_char
+        
+        
+        
 
     def skip_spaces(self): 
         """ Skips spaces to next symbol and sets file pointer"""
         
-        while self.current_character.isspace(): 
-            self.advance()
+        if self.current_character.isspace() or self.current_character == "\n":
+            self.advance() 
 
-
+            while self.current_character.isspace() or self.current_character == "\n": 
+                if self.current_character == "\n": 
+                    self.line_count += 1
+                    self.line_char_count = 0
+                self.advance()
 
     def get_name(self): 
         """Gets name (if first char is alphabet - reads until non alnum char is reached)"""
@@ -135,20 +159,16 @@ class Scanner:
         
         return number_string
     
-    def skip_comment(self): 
-        
-        self.advance()
-
-        while not self.current_character == "%": 
-            self.advance()        
-
     def get_symbol(self):
         """Translate the next sequence of characters into a symbol."""
 
         # get the next symbol in the file when called - this is fairly simple to implement
+
+        if self.names is None: 
+            return 
+    
         symbol = Symbol()
         devices = Devices(self.names)
-        char_count = len(self.file.read())
 
         # Find first non-space char
         self.skip_spaces()
@@ -195,26 +215,6 @@ class Scanner:
             symbol.type = self.SEMICOLON
             self.advance()
 
-        elif self.current_character == "%":
-            # Comments start and end with a % symbol 
-            self.skip_comment()
-            self.get_symbol() # Recursion is not ideal - but dont want to output None symbol type
-
-        elif self.current_character == "#": 
-            # Single line comment
-            while not self.current_character == "\n": 
-                self.advance()
-
-            self.line_count += 1
-            self.line_char_count = 0 
-            self.get_symbol()
-
-        elif self.current_character == "\n":
-            # we update line number only and don't pass a symbol   
-
-            self.line_count += 1
-            self.line_char_count = 0    
-
         else: 
             # Invalid character just pass over
             self.advance()
@@ -229,19 +229,11 @@ class Scanner:
 if __name__ == "__main__": 
     
     names = Names()
-    scanner = Scanner("definition_files/test_ex_null.txt", names)
+    scanner = Scanner("definition_files/test_ex0.txt", names)
 
-    print(scanner.character_count)
-    sym = scanner.get_symbol()
-
-    print(sym.type)
-
-    #symbol = scanner.get_symbol()
-    print(sym.id)
-
-    sym = scanner.get_symbol()
-
-    print(sym.type)
-
-    #symbol = scanner.get_symbol()
-    print(sym.id)
+    for i in range(10): 
+        sym = scanner.get_symbol()
+        print(sym.type)
+        print(sym.id) 
+        print(sym.line_number)
+        print("----")
