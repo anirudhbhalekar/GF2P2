@@ -60,8 +60,8 @@ class Parser:
     def error(self, error_code):
         """Print error message and increment error count."""
         self.error_count += 1
-        line_number = self.symbol.line_count
-        character = self.symbol.line_char_count
+        line_number = self.symbol.line_number
+        character = self.symbol.character
         error_message = self.get_error_message(error_code)
         print(f"Error code {error_code} at line {line_number}, character {character}: {error_message}")
 
