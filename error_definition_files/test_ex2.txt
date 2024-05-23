@@ -1,4 +1,4 @@
-% Intentional errors. Based off interim1_ex2.txt %
+% Contains 9 Intentional errors. Based off interim1_ex2.txt %
 
 DEFINE 
     CLK1 AS CLOCK; % no args for CLOCK should give error % 

@@ -1,3 +1,4 @@
+% 1 intentional error %
 DEFINE 
     SW1 AS SWITCH WITH initial=0;
     SW2 AS SWITCH WITH initial=0;

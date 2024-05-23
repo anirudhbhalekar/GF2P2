@@ -1,4 +1,4 @@
-% Contains intentional errors for testing the parser/scanner
+% Contains 4 intentional errors for testing the parser/scanner
 Based on interim1_ex0.txt %
 
 
