@@ -77,17 +77,16 @@ class Scanner:
         self.line_char_count = 0
 
         symbol_type_list = ["COMMA", "SEMICOLON", "EQUALS", "KEYWORD", "NUMBER", "NAME"
-                            ,"DOT", "DEVICE", "GATE", "PARAM", "NEWLINE"
+                            ,"DOT", "DEVICE", "GATE", "PARAM", "DTYPE_INPUT", "DTYPE_OUTPUT"
                             ,"EOF"]
         
         self.symbol_type_list = [self.COMMA, self.SEMICOLON, self.EQUALS,
                                 self.KEYWORD, self.NUMBER, self.NAME, 
                                 self.DOT, self.DEVICE, self.GATE, self.PARAM, 
-                                self.NEWLINE, self.EOF] = symbol_type_list
+                                self.DTYPE_INPUT, self.DTYPE_OUTPUT, self.EOF] = symbol_type_list
         
         self.keywords_list = ["DEFINE", "AS", "WITH", "CONNECT", "MONITOR", "END"]
         self.param_list = ["inputs", "initial", "cycle_rep"]
-        
         
         [self.DEFINE_ID, self.AS_ID, self.WITH_ID, self.CONNECT_ID, self.MONITOR_ID,
             self.END_ID] = self.names.lookup(self.keywords_list)   
@@ -106,15 +105,24 @@ class Scanner:
         self.total_char_count += 1
         self.line_char_count  += 1
 
+        if next_char == "\n": 
+            self.line_count += 1
+            self.line_char_count = 0
+
         if next_char == "%": 
             next_char = self.file.read(1)
             self.total_char_count += 1
             self.line_char_count  += 1
 
             while not next_char == "%":
+
                 next_char = self.file.read(1)
                 self.total_char_count += 1
                 self.line_char_count  += 1
+
+                if next_char == "\n": 
+                    self.line_count += 1
+                    self.line_char_count = 0
             
             next_char = self.file.read(1)
             self.total_char_count += 1
@@ -128,10 +136,7 @@ class Scanner:
         if self.current_character.isspace() or self.current_character == "\n":
             self.advance() 
 
-            while self.current_character.isspace() or self.current_character == "\n": 
-                if self.current_character == "\n": 
-                    self.line_count += 1
-                    self.line_char_count = 0
+            while self.current_character.isspace(): 
                 self.advance()
 
     def get_name(self): 
@@ -185,6 +190,12 @@ class Scanner:
             elif name_string in devices.gate_strings: 
                 symbol.type = self.GATE
 
+            elif name_string in devices.dtype_input_ids: 
+                symbol.type = self.DTYPE_INPUT
+            
+            elif name_string in devices.dtype_outputs: 
+                symbol.type = self.DTYPE_OUTPUT
+
             else: 
                 symbol.type = self.NAME
             
@@ -226,7 +237,7 @@ class Scanner:
 if __name__ == "__main__": 
     
     names = Names()
-    scanner = Scanner("error_definition_files/test_ex1.txt", names)
+    scanner = Scanner("definition_files/test_ex_null.txt", names)
 
     for i in range(20): 
         sym = scanner.get_symbol()
