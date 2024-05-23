@@ -94,8 +94,9 @@ class Parser:
         """Parse the circuit definition file."""
         try:
             self.symbol = self.scanner.get_symbol()
-            print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
+            print(f"start Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
             self.spec_file()
+            print(self.error_count)
             return self.error_count == 0
         except SyntaxError as e:
             print(f"Syntax Error: {e}")
@@ -119,13 +120,15 @@ class Parser:
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.DEFINE_ID:
             print("CHECK THIS: DEFINE")
             self.symbol = self.scanner.get_symbol()
+            if self.symbol.type != self.scanner.SEMICOLON:
+                print(f"Def symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
             if self.symbol.type is not self.scanner.SEMICOLON:
                 print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
                 self.def_list()
             if self.symbol.type == self.scanner.SEMICOLON:
                 print("Semicolon found")
                 self.symbol = self.scanner.get_symbol()
-                print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
+                print(f"after semicolon symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
             else:
                 self.error(self.MISSING_SEMICOLON)
 
@@ -306,7 +309,7 @@ class Parser:
             else:
                 self.error(self.MISSING_SEMICOLON)
         else:
-            print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
+            print(f"end Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
             self.error(self.MISSING_END_STATEMENT)
     
     def digit(self):
