@@ -1,12 +1,12 @@
-% Intentional errors. Based off interim1_ex2.txt %
+% Contains 9 Intentional errors. Based off interim1_ex2.txt %
 
 DEFINE 
-    CLK1 AS CLOCK; % no args for CLOCK should give error % 
-    SW1 AS SWITCH WITH ; % missing args for initial condition should give error %   
+    CLK1 AS CLOCK, % no args for CLOCK should give error % 
+    SW1 AS SWITCH WITH , % missing args for initial condition should give error %   
 
-    G1 AS AND WITH inputs=2; 
-    G2 AS ; % no gate type given should give error % 
-    DTYPE1, DTYPE2 AS DTYPE; % no commas in name should give error %
+    G1 AS AND WITH inputs=2,
+    G2 AS , % no gate type given should give error % 
+    DTYPE1, DTYPE2 AS DTYPE, % no commas in name should give error %
     DTYP 3 AS DTYPE; % typo for 'DTYPE' should give error %
 
 CONNECT CLK1 = DTYPE1, % not specifying which port of DTYPE1 should give error %

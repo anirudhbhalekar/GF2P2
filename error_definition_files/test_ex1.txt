@@ -1,11 +1,12 @@
+% 1 intentional error %
 DEFINE 
-    SW1 AS SWITCH WITH initial=0;
-    SW2 AS SWITCH WITH initial=0;
-    SW3 AS SWITCH WITH initial=0;
-    G1 AS NAND WITH inputs=2; 
-    G2 AS XOR;
-    G3 AS OR WITH inputs=3;
-    G4 AS XOR;
+    SW1 AS SWITCH WITH initial=0,
+    SW2 AS SWITCH WITH initial=0,
+    SW3 AS SWITCH WITH initial=0,
+    G1 AS NAND WITH inputs=2,
+    G2 AS XOR,
+    G3 AS OR WITH inputs=3,
+    G4 AS XOR,
     G5 AS AND WITH inputs=2;
 
 CONNECT SW1 = G1.I1,

@@ -1,11 +1,12 @@
-% Contains intentional errors for testing the parser/scanner
+% Contains 4 intentional errors for testing the parser/scanner
 Based on interim1_ex0.txt %
+
 
 DEFINE
     G1 AS NAND WITH inputs=2;
 DEFINE % 2 'DEFINE' statements, should only be 1 so should give an error %
-    G2 AS NAND WITH inputs=2;
-    SW1 AS SWITCH WITH initial=0;
+    G2 AS NAND WITH inputs=2,
+    SW1 AS SWITCH WITH initial=0,
     SW2 AS SWITCH WITH initial=0;	
 
 CONNECT 

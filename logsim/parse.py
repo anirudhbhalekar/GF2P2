@@ -8,7 +8,7 @@ Classes
 -------
 Parser - parses the definition file and builds the logic network.
 """
-
+from scanner import Symbol
 
 class Parser:
 
@@ -55,7 +55,7 @@ class Parser:
         self.monitors = monitors
         self.scanner = scanner
         self.error_count = 0
-        self.symbol = None
+        self.symbol = Symbol()
     
     def error(self, error_code):
         """Print error message and increment error count."""
@@ -133,7 +133,7 @@ class Parser:
             elif self.symbol.type == self.scanner.GATE:
                 self.gate()
             else:
-                print(f"deflist 0 Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
+                #print(f"deflist 0 Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
                 self.error(self.INVALID_KEYWORD)
             if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                 self.symbol = self.scanner.get_symbol()
@@ -148,7 +148,7 @@ class Parser:
                     elif self.symbol.type == self.scanner.GATE:
                         self.gate()
                     else:
-                        print(f"def list 1Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
+                        #print(f"def list 1Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
                         self.error(self.INVALID_KEYWORD)
                     if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                         self.symbol = self.scanner.get_symbol()
@@ -158,7 +158,7 @@ class Parser:
                 else:
                     self.error(self.MISSING_SEMICOLON)
             else:
-                print(f"def list Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
+                #print(f"def list Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
                 self.error(self.INVALID_KEYWORD)
         else:
             self.error(self.INVALID_KEYWORD)
@@ -182,10 +182,10 @@ class Parser:
 
     def param(self):
         """Implements rule param = "input" | "initial" | "cycle_rep";"""
-        if self.symbol.type == self.scanner.KEYWORD and self.symbol.id in [self.scanner.input_ID, self.scanner.initial_ID, self.scanner.cycle_rep_ID]:
+        if self.symbol.type == self.scanner.PARAM:
             self.symbol = self.scanner.get_symbol()
         else:
-            print(f"param Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")    
+            #print(f"param Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")    
             self.error(self.INVALID_KEYWORD)
 
     def value(self):
@@ -205,7 +205,7 @@ class Parser:
             else:
                 self.error(self.MISSING_SEMICOLON)
         else:
-            print(f"Connection Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
+            #print(f"Connection Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
             self.error(self.INVALID_KEYWORD)
 
     def con_list(self):
