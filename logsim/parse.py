@@ -8,7 +8,7 @@ Classes
 -------
 Parser - parses the definition file and builds the logic network.
 """
-
+from scanner import Symbol
 
 class Parser:
 
@@ -55,7 +55,7 @@ class Parser:
         self.monitors = monitors
         self.scanner = scanner
         self.error_count = 0
-        self.symbol = None
+        self.symbol = Symbol()
     
     def error(self, error_code):
         """Print error message and increment error count."""
@@ -88,7 +88,7 @@ class Parser:
         """Parse the circuit definition file."""
         try:
             self.symbol = self.scanner.get_symbol()
-            #print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
+            print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
             self.spec_file()
             return self.error_count == 0
         except SyntaxError as e:
@@ -113,12 +113,12 @@ class Parser:
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.DEFINE_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
-                #print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
+                print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
                 self.def_list()
             if self.symbol.type == self.scanner.SEMICOLON:
-                #print("Semicolon found")
+                print("Semicolon found")
                 self.symbol = self.scanner.get_symbol()
-                #print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
+                print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
             else:
                 self.error(self.MISSING_SEMICOLON)
 
