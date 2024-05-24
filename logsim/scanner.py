@@ -227,6 +227,10 @@ class Scanner:
             symbol.type = self.SEMICOLON
             self.advance()
 
+        elif self.current_character == "" and self.total_char_count is not 0:
+            symbol.type = self.EOF
+            self.advance()
+            
         else: 
             # Invalid character just pass over
             self.advance()
