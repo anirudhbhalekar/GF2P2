@@ -70,7 +70,7 @@ class Parser:
         line_number = self.symbol.line_number
         character = self.symbol.character
         error_message = self.get_error_message(error_code)
-        print(f"Error Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
+        print(f"Error Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}, String: {self.names.get_name_string(self.symbol.id)}")
         print(f"Error code {error_code} at line {line_number}, character {character}: {error_message}")
         while (self.symbol.type != stopping_symbol and self.symbol.type != self.scanner.EOF):
             self.symbol = self.scanner.get_symbol()
@@ -157,7 +157,7 @@ class Parser:
                         self.error(self.INVALID_KEYWORD, stopping_symbols)
                     if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                         self.symbol = self.scanner.get_symbol()
-                        self.param_list(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
+                        self.set_param(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
                     else:
                         self.error(self.MISSING_SEMICOLON, stopping_symbols)
                 else:
