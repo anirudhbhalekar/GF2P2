@@ -70,7 +70,7 @@ class Parser:
         line_number = self.symbol.line_number
         character = self.symbol.character
         error_message = self.get_error_message(error_code)
-        print(f"Error Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}, String: {self.names.get_name_string(self.symbol.id)}")
+        print(f"Error Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}, String: {self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME else ''}")
         print(f"Error code {error_code} at line {line_number}, character {character}: {error_message}")
         while (self.symbol.type != stopping_symbol and self.symbol.type != self.scanner.EOF):
             self.symbol = self.scanner.get_symbol()
@@ -131,7 +131,7 @@ class Parser:
                 self.error(self.MISSING_SEMICOLON, stopping_symbols)
 
     def def_list(self, stopping_symbols):
-        """Implements rule def_list = name, "AS", (device | gate), ["WITH", param_list], {",", name, "AS", (device | gate), ["WITH", param_list]};"""
+        """Implements rule def_list = name, "AS", (device | gate), ["WITH", set_param], {",", name, "AS", (device | gate), ["WITH", set_param]};"""
         self.name(stopping_symbols | {self.scanner.COMMA})
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS_ID:
             self.symbol = self.scanner.get_symbol()
@@ -145,6 +145,7 @@ class Parser:
                 self.symbol = self.scanner.get_symbol()
                 self.set_param(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
             while self.symbol.type == self.scanner.COMMA:
+                print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
                 self.symbol = self.scanner.get_symbol()
                 self.name(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
                 if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS_ID:
@@ -158,8 +159,6 @@ class Parser:
                     if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                         self.symbol = self.scanner.get_symbol()
                         self.set_param(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
-                    else:
-                        self.error(self.MISSING_SEMICOLON, stopping_symbols)
                 else:
                     self.error(self.MISSING_SEMICOLON, stopping_symbols)
         else:
