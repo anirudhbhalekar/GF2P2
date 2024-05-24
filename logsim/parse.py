@@ -52,6 +52,7 @@ class Parser:
     EXPECTED_NUMBER = 11
     EXPECTED_PUNCTUATION = 12
     INVALID_PIN_REF = 13
+    EXPECTED_EQUALS = 14
 
     def __init__(self, names, devices, network, monitors, scanner):
         """Initialise constants."""
@@ -63,13 +64,16 @@ class Parser:
         self.error_count = 0
         self.symbol = Symbol()
     
-    def error(self, error_code):
+    def error(self, error_code, stopping_symbol=None):
         """Print error message and increment error count."""
         self.error_count += 1
         line_number = self.symbol.line_number
         character = self.symbol.character
         error_message = self.get_error_message(error_code)
+        print(f"Error Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
         print(f"Error code {error_code} at line {line_number}, character {character}: {error_message}")
+        while (self.symbol.type != stopping_symbol and self.symbol.type != self.scanner.EOF):
+            self.symbol = self.scanner.get_symbol()
 
     def get_error_message(self, error_code):
         """Return the error message corresponding to the error code."""
@@ -86,7 +90,8 @@ class Parser:
             self.MISSING_END_STATEMENT: "No END statement after MONITOR clause",
             self.EXPECTED_NUMBER: "Expected a number",
             self.EXPECTED_PUNCTUATION: "Expected a punctuation mark",
-            self.INVALID_PIN_REF: "Invalid pin reference"
+            self.INVALID_PIN_REF: "Invalid pin reference",
+            self.EXPECTED_EQUALS: "Expected an equals sign"
         }
         return error_messages.get(error_code, "Unknown error")
 
@@ -94,7 +99,6 @@ class Parser:
         """Parse the circuit definition file."""
         try:
             self.symbol = self.scanner.get_symbol()
-            print(f"start Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
             self.spec_file()
             print(self.error_count)
             return self.error_count == 0
@@ -109,147 +113,131 @@ class Parser:
     # One function for each non-terminal EBNF rule, and each terminal rule calls get_symbol 
 
     def spec_file(self):
-        """Implements rule spec_file = definition, {definition}, connection, monitor, end;."""
-        self.definition()
-        self.connection()
-        self.monitor()
-        self.end()
+        """Implements rule spec_file = definition, connection, monitor, end;."""
+        self.definition({self.scanner.KEYWORD})
+        self.connection({self.scanner.KEYWORD})
+        self.monitor({self.scanner.KEYWORD})
+        self.end({self.scanner.SEMICOLON})
 
-
-    def definition(self):
-        """Implements rule definition = "DEFINE", name, "AS", device_type, ["WITH", param_list], ";";"""
+    def definition(self, stopping_symbols):
+        """Implements rule definition = "DEFINE", [def_list], ";";"""
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.DEFINE_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
-                print(f"Def symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
-            if self.symbol.type is not self.scanner.SEMICOLON:
-                print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
-                self.def_list()
+                self.def_list(stopping_symbols | {self.scanner.SEMICOLON})
             if self.symbol.type == self.scanner.SEMICOLON:
-                print("Semicolon found")
                 self.symbol = self.scanner.get_symbol()
-                print(f"after semicolon symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
             else:
-                self.error(self.MISSING_SEMICOLON)
+                self.error(self.MISSING_SEMICOLON, stopping_symbols)
 
-    def def_list(self):
+    def def_list(self, stopping_symbols):
         """Implements rule def_list = name, "AS", (device | gate), ["WITH", param_list], {",", name, "AS", (device | gate), ["WITH", param_list]};"""
-        self.name()
+        self.name(stopping_symbols | {self.scanner.COMMA})
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type == self.scanner.DEVICE:
-                self.device()
+                self.device(stopping_symbols)
             elif self.symbol.type == self.scanner.GATE:
-                self.gate()
+                self.gate(stopping_symbols)
             else:
-                print(f"deflist 0 Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
-                self.error(self.INVALID_KEYWORD)
-
+                self.error(self.INVALID_KEYWORD, stopping_symbols)
             if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                 self.symbol = self.scanner.get_symbol()
-                self.param_list()
-            else:
-                print(f"def list Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
-                self.error(self.INVALID_KEYWORD)
+                self.set_param(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
             while self.symbol.type == self.scanner.COMMA:
                 self.symbol = self.scanner.get_symbol()
-                self.name()
+                self.name(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
                 if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS_ID:
                     self.symbol = self.scanner.get_symbol()
                     if self.symbol.type == self.scanner.DEVICE:
-                        self.device()
+                        self.device(stopping_symbols)
                     elif self.symbol.type == self.scanner.GATE:
-                        self.gate()
+                        self.gate(stopping_symbols)
                     else:
-                        print(f"def list 1Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
-                        self.error(self.INVALID_KEYWORD)
+                        self.error(self.INVALID_KEYWORD, stopping_symbols)
                     if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                         self.symbol = self.scanner.get_symbol()
-                        self.param_list()
+                        self.param_list(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
                     else:
-                        self.error(self.MISSING_SEMICOLON)
+                        self.error(self.MISSING_SEMICOLON, stopping_symbols)
                 else:
-                    self.error(self.MISSING_SEMICOLON)
-            
+                    self.error(self.MISSING_SEMICOLON, stopping_symbols)
         else:
-            self.error(self.INVALID_KEYWORD)
+            self.error(self.INVALID_KEYWORD, stopping_symbols)
 
-    def param_list(self):
-        """Implements rule param_list = param, "=", value, {",", param, "=", value};"""
-        self.param()
+    def set_param(self, stopping_symbols):
+        """Implements rule set_param = param, "=", value, {",", param, "=", value};"""
+        self.param(stopping_symbols)
         if self.symbol.type == self.scanner.EQUALS:
-
             self.symbol = self.scanner.get_symbol()
-            self.value()
+            self.value(stopping_symbols)
         else:
-            self.error(self.MISSING_SEMICOLON)
+            self.error(self.EXPECTED_EQUALS, stopping_symbols)
 
-    def param(self):
+    def param(self, stopping_symbols):
         """Implements rule param = "input" | "initial" | "cycle_rep";"""
         if self.symbol.type == self.scanner.PARAM:
             self.symbol = self.scanner.get_symbol()
         else:
-            print(f"param Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")    
-            self.error(self.INVALID_KEYWORD)
+            self.error(self.INVALID_KEYWORD, stopping_symbols)
 
-    def value(self):
+    def value(self, stopping_symbols):
         """Implements rule value = digit, [{digit}];"""
         # Because of scanner module implementation, we actually check for a format of number
-        self.digit()
+        self.digit(stopping_symbols)
 
         
-    def connection(self):
+    def connection(self, stopping_symbols):
         """Implements rule connection = "CONNECT", [con_list], ";";"""
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.CONNECT_ID:
-            self.symbol = self.scanner.get_symbol() # this is already a name!
-            if self.symbol.type is not self.scanner.SEMICOLON:
-                self.con_list()
+            self.symbol = self.scanner.get_symbol()
+            if self.symbol.type != self.scanner.SEMICOLON:
+                self.con_list(stopping_symbols | {self.scanner.SEMICOLON})
             if self.symbol.type == self.scanner.SEMICOLON:
                 self.symbol = self.scanner.get_symbol()
             else:
-                self.error(self.MISSING_SEMICOLON)
+                self.error(self.MISSING_SEMICOLON, stopping_symbols)
         else:
-            print(f"Connection Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
-            self.error(self.INVALID_KEYWORD)
+            self.error(self.INVALID_KEYWORD, stopping_symbols)
 
-    def con_list(self):
+    def con_list(self, stopping_symbols):
         """Implement rule con_list = input_con, "=", output_con, {",", input_con, "=", output_con} ;"""
-        self.input_con()
+        self.input_con(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
         if self.symbol.type == self.scanner.EQUALS:
             self.symbol = self.scanner.get_symbol()
-            self.output_con()
+            self.output_con(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
             while self.symbol.type == self.scanner.COMMA:
                 self.symbol = self.scanner.get_symbol()
-                self.input_con()
+                self.input_con(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
                 if self.symbol.type == self.scanner.EQUALS:
                     self.symbol = self.scanner.get_symbol()
-                    self.output_con()
+                    self.output_con(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
                 else:
-                    self.error(self.INVALID_CONNECT_DELIMITER)
+                    self.error(self.INVALID_CONNECT_DELIMITER, stopping_symbols)
         else:
-            self.error(self.INVALID_CONNECT_DELIMITER)
+            self.error(self.INVALID_CONNECT_DELIMITER, stopping_symbols)
 
-    def input_con(self):
+    def input_con(self, stopping_symbols):
         """Implements rule input_con = name, ".", input_notation;"""
-        self.name()
+        self.name(stopping_symbols)
         if self.symbol.type == self.scanner.DOT:
             self.symbol = self.scanner.get_symbol()
-            self.input_notation()
+            self.input_notation(stopping_symbols)
         else:
-            self.error(self.EXPECTED_PUNCTUATION)
+            self.error(self.EXPECTED_PUNCTUATION, stopping_symbols)
     
-    def output_con(self):
+    def output_con(self, stopping_symbols):
         """Implements rule output_con = name, [".", output_notation];"""
-        self.name()
+        self.name(stopping_symbols)
         if self.symbol.type == self.scanner.DOT:
             self.symbol = self.scanner.get_symbol()
-            self.output_notation()
+            self.output_notation(stopping_symbols)
         elif self.symbol.type == self.scanner.SEMICOLON:
             pass
         else:
-            self.error(self.EXPECTED_PUNCTUATION)
+            self.error(self.EXPECTED_PUNCTUATION, stopping_symbols)
 
-    def input_notation(self):
+    def input_notation(self, stopping_symbols):
         """Implements rule input_notation = "I", digit, {digit} | "DATA" | "CLK" | "CLEAR" | "SET";"""
         # Check if proper dtype input, or if not the first letter must be "I", followed by digits (isnumeric)
         if self.symbol.type == self.scanner.DTYPE_INPUT:
@@ -259,86 +247,72 @@ class Parser:
             if input_string[0] == "I" and input_string[1:].isnumeric():
                 self.symbol = self.scanner.get_symbol()
             else:
-                self.error(self.INVALID_PIN_REF)
+                self.error(self.INVALID_PIN_REF, stopping_symbols)
         else:
-            self.error(self.INVALID_PIN_REF)
+            self.error(self.INVALID_PIN_REF, stopping_symbols)
 
-    def output_notation(self):
+    def output_notation(self, stopping_symbols):
         """Implements rule output_notation =  "Q" | "QBAR" ;"""
         if self.symbol.type == self.scanner.DTYPE_OUTPUT:
             self.symbol = self.scanner.get_symbol()
         else:
-            self.error(self.INVALID_PIN_REF)
+            self.error(self.INVALID_PIN_REF, stopping_symbols)
 
-    def name(self):
+    def name(self, stopping_symbols):
         """Implements name = letter, {letter | digit};, but name is returned as a full symbol from scanner"""
         if self.symbol.type == self.scanner.NAME:
             self.symbol = self.scanner.get_symbol()
         else:
-            self.error(self.EXPECTED_NAME)
+            self.error(self.EXPECTED_NAME, stopping_symbols)
 
-    def monitor(self):
+    def monitor(self, stopping_symbols):
         """Implements rule monitor = "MONITOR", [name, {",", name}], ";";"""
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.MONITOR_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
-                self.name()
+                self.name(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
                 while self.symbol.type == self.scanner.COMMA:
                     self.symbol = self.scanner.get_symbol()
-                    self.name()
+                    self.name(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
             if self.symbol.type == self.scanner.SEMICOLON:
                 self.symbol = self.scanner.get_symbol()
             else:
-                self.error(self.MISSING_SEMICOLON)
+                self.error(self.MISSING_SEMICOLON, stopping_symbols)
         else:
-            self.error(self.INVALID_KEYWORD)
+            self.error(self.INVALID_KEYWORD, stopping_symbols)
 
-    def end(self):
+    def end(self, stopping_symbols):
         """Implements rule end = "END", ";";"""
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.END_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type == self.scanner.SEMICOLON:
                 self.symbol = self.scanner.get_symbol()
             else:
-                self.error(self.MISSING_SEMICOLON)
+                self.error(self.MISSING_SEMICOLON, stopping_symbols)
         else:
-            print(f"end Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
-            self.error(self.MISSING_END_STATEMENT)
+            self.error(self.MISSING_END_STATEMENT, stopping_symbols)
     
-    def digit(self):
+    def digit(self, stopping_symbols):
         """Implements rule digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";"""
-        # Because of how get_number is implemented, we check for a number rather than individual digits, but underlying logic is same
         if self.symbol.type == self.scanner.NUMBER:
             self.symbol = self.scanner.get_symbol()
         else:
-            self.error(self.EXPECTED_NUMBER)
+            self.error(self.EXPECTED_NUMBER, stopping_symbols)
 
-    def device(self):
+    def device(self, stopping_symbols):
         """Implements rule device = "CLOCK" | "SWITCH" | "DTYPE";"""
         if self.symbol.type == self.scanner.DEVICE:
             self.symbol = self.scanner.get_symbol()
         else:
-            self.error(self.INVALID_KEYWORD)
+            self.error(self.INVALID_KEYWORD, stopping_symbols)
 
-    def gate(self):
+    def gate(self, stopping_symbols):
         """Implement rule gate = "NAND" | "AND" | "OR" | "NOR" | "XOR";"""
         if self.symbol.type == self.scanner.GATE:
             self.symbol = self.scanner.get_symbol()
         else:
-            self.error(self.INVALID_KEYWORD)
+            self.error(self.INVALID_KEYWORD, stopping_symbols)
 
     # Note that letter is already accounted for in the scanner module, where it is checked with isalpha()
 
 
-if __name__ == "__main__": 
-
-    file_path = "definition_files/interim1_ex1.txt"
-    names = Names()
-    scanner = Scanner(file_path, names)
-
-    devices = Devices(names)
-    network = Network(names, devices)
-    monitors = Monitors(names, devices, network)
-    parser = Parser(names, devices, network, monitors, scanner) 
-
-    print(parser.parse_network())
