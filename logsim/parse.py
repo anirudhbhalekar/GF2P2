@@ -244,9 +244,10 @@ class Parser:
         if self.symbol.type == self.scanner.DOT:
             self.symbol = self.scanner.get_symbol()
             self.output_notation()
-        else:
-            #self.error(self.EXPECTED_PUNCTUATION)
+        elif self.symbol.type == self.scanner.SEMICOLON:
             pass
+        else:
+            self.error(self.EXPECTED_PUNCTUATION)
 
     def input_notation(self):
         """Implements rule input_notation = "I", digit, {digit} | "DATA" | "CLK" | "CLEAR" | "SET";"""
