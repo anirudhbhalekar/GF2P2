@@ -63,13 +63,14 @@ def test_get_number(scanner_example_null):
         scanner_example_null.advance()
     number = scanner_example_null.get_number()
     assert number == "2"
+
 def test_get_EOF(scanner_example_null):
     """Test the get_EOF method."""
     scanner_example_null.file.seek(0)
     length = len(scanner_example_null.file.read())
     for i in range(length):
         scanner_example_null.advance()
-    assert scanner_example_null.symbol.type == scanner_example_null.EOF
+    assert scanner_example_null.get_symbol().type == "EOF"
 
 
 @pytest.fixture
@@ -97,8 +98,6 @@ def test_def_symbol_sequence(scanner_test_ex0):
     for i, expected_type in enumerate(expected_types):
         symbol = scanner_test_ex0.get_symbol()        
         assert symbol.type == expected_type
-        
-        
 
 def test_con_symbol_sequence(scanner_test_ex0):
     symbol = scanner_test_ex0.get_symbol()
@@ -135,6 +134,29 @@ def test_con_symbol_sequence(scanner_test_ex0):
         print(i)
         assert symbol.type == expected_type
         symbol = scanner_test_ex0.get_symbol()
+
+@pytest.fixture
+def scanner_interim1_ex2_error():
+    """Return a new instance of the Scanner class."""
+    return Scanner("error_definition_files/interim1_ex2_error.txt", Names())
+
+def test_read_cycle_rep(scanner_interim1_ex2_error):
+    """Check that cycle_rep is read in correctly with the underscore in DEFINE 
+    CLK1 AS CLOCK WITH cycle_rep=1000, 
+    SW1 AS SWITCH WITH initial=1,  """
+
+    symbol = scanner_interim1_ex2_error.get_symbol()
+    while not symbol.id == scanner_interim1_ex2_error.DEFINE_ID:
+        symbol = scanner_interim1_ex2_error.get_symbol()
+    symbol = scanner_interim1_ex2_error.get_symbol()
+    while not symbol.id == scanner_interim1_ex2_error.DEVICE_ID:
+        symbol = scanner_interim1_ex2_error.get_symbol()
+    symbol = scanner_interim1_ex2_error.get_symbol()
+    while not symbol.id == scanner_interim1_ex2_error.PARAM_ID:
+        symbol = scanner_interim1_ex2_error.get_symbol()
+    assert symbol.type == "PARAM"
+    assert symbol.id == scanner_interim1_ex2_error.cycle_rep_ID
+    assert symbol.character == 47
         
 
 
