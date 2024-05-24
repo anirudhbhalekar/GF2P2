@@ -1,0 +1,26 @@
+DEFINE 
+    CLK1 AS CLOCK WITH cycle_rep=1000, 
+    SW1 AS SWITCH WITH initial=1,  
+
+    G1 AS AND WITH inputs=2, 
+    G2 AS XOR,
+    DTYPE1 AS DTYPE,
+    DTYPE2 AS D_TYPE, % Invalid Device here
+    DTYPE3 AS S_TYPE; % Invalid Device here
+
+CONNECT CLK1 = DTYPE1.CLK,
+    CLK1 = DTYPE3.CLK,
+    CLK1 = G1.I1,
+    DTYPE1.QBAR = DTYPE1.DATA,
+    DTYPE1.Q = DTYPE2.CLK,
+    DTYPE2.QBAR = DTYPE2.DATA,
+    DTYPE2.Q = DTYPE3.DATA,
+    DTYPE3.Q = G1.I2,
+    G1 = G2.I1,
+    SW1 = G2.I2;
+
+MONITOR DTYPE1.Q, 
+    DTYPE2.Q, 
+    G2;
+
+END;

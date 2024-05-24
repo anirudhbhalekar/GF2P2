@@ -1,0 +1,21 @@
+DEFINE
+    G1 AS NAND WITH inputs=2; % Unexpected name error 
+    G2 AS NAND WITH inputs=2,
+    SW1 AS SWITCH WITH initial=0,
+    SW2 AS SWITCH WITH initial=0;	
+
+CONNECT 
+    SW0 = G1, % Name not defined error
+    SW1 = G1.I1,   
+    SW2 = G2.I2,
+    G1 = G2.I1,
+    G2 = G1.I2;
+
+% For readability, we recommend indenting all further connect
+statements to the same level as the initial statement %
+
+MONITOR 
+    G1,
+    G2;
+
+END;
