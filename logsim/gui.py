@@ -300,3 +300,10 @@ class Gui(wx.Frame):
         text_box_value = self.text_box.GetValue()
         text = "".join(["New text box value: ", text_box_value])
         self.canvas.render(text)
+
+
+if __name__ == "__main___": 
+
+    names = Names()
+    scanner = Scanner("definition_files/test_ex_null.txt", names)
+    

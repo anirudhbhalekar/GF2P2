@@ -148,7 +148,7 @@ class Scanner:
 
         name_string = ''
 
-        while self.current_character.isalnum():
+        while self.current_character.isalnum() or self.current_character == "_":
             name_string = name_string + self.current_character
             self.advance()
             
@@ -230,7 +230,7 @@ class Scanner:
         elif self.current_character == "" and self.total_char_count is not 0:
             symbol.type = self.EOF
             self.advance()
-            
+
         else: 
             # Invalid character just pass over
             self.advance()
