@@ -58,6 +58,19 @@ def test_get_error_message(error_codes, file_path):
     for i in range(1, 12): 
         assert error_codes[i] == parser.get_error_message(i)
 
+@pytest.mark.parametrize("file_path", get_all_files('definition_files/'))
+def test_definition_line(file_path): 
+    names = Names() 
+    scanner = Scanner(file_path, names)
+
+    devices = Devices(names)
+    network = Network(names, devices)
+    monitors = Monitors(names, devices, network)
+    parser = Parser(names, devices, network, monitors, scanner) 
+    
+    parser.definition(scanner.EOF)
+    assert parser.error_count == 0
+
 # --------------------------------------------------- # 
 # Integrated tests here
 
