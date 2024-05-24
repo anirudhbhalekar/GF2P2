@@ -114,6 +114,10 @@ class Scanner:
             self.total_char_count += 1
             self.line_char_count  += 1
 
+            if next_char == "\n": 
+                    self.line_count += 1
+                    self.line_char_count = 0
+                    
             while not next_char == "%":
 
                 next_char = self.file.read(1)
@@ -228,7 +232,7 @@ class Scanner:
             self.advance()
 
         symbol.line_number = self.line_count
-        symbol.character = self.total_char_count
+        symbol.character = self.line_char_count
 
         return symbol 
     

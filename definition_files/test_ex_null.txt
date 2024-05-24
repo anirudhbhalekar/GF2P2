@@ -1,4 +1,4 @@
-DEFINE 
+DEFINE     
     abs AS NAND WITH inputs = 2, 
     tgf AS AND WITH inputs = 3;
 
