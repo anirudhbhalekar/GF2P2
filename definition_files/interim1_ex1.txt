@@ -20,7 +20,8 @@ CONNECT SW1 = G1.I1,
     G2 = G5.I1,
     G3 = G5.I2;
 
-MONITOR G4, 
+MONITOR 
+    G4, 
     G5;
 
 END;

@@ -54,5 +54,6 @@ def test_error_definition_files(error_file_path, num_errors):
     monitors = Monitors(names, devices, network)
     parser = Parser(names, devices, network, monitors, scanner) 
     
+    parser.parse_network()
     assert parser.error_count == num_errors
     

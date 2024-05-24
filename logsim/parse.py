@@ -111,21 +111,10 @@ class Parser:
     def spec_file(self):
         """Implements rule spec_file = definition, {definition}, connection, monitor, end;."""
         self.definition()
-        print("--------------")
-        print(self.error_count)
-        print("--------------")
         self.connection()
-        print("--------------")
-        print(self.error_count)
-        print("--------------")
         self.monitor()
-        print("--------------")
-        print(self.error_count)
-        print("--------------")
         self.end()
-        print("--------------")
-        print(self.error_count)
-        print("--------------")
+
 
     def definition(self):
         """Implements rule definition = "DEFINE", name, "AS", device_type, ["WITH", param_list], ";";"""
@@ -188,7 +177,6 @@ class Parser:
     def param_list(self):
         """Implements rule param_list = param, "=", value, {",", param, "=", value};"""
         self.param()
-        print(self.symbol.type)
         if self.symbol.type == self.scanner.EQUALS:
 
             self.symbol = self.scanner.get_symbol()
@@ -343,7 +331,7 @@ class Parser:
 
 if __name__ == "__main__": 
 
-    file_path = "definition_files/test_ex_null.txt"
+    file_path = "definition_files/interim1_ex1.txt"
     names = Names()
     scanner = Scanner(file_path, names)
 
