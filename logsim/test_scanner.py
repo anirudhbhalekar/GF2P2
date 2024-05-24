@@ -63,6 +63,13 @@ def test_get_number(scanner_example_null):
         scanner_example_null.advance()
     number = scanner_example_null.get_number()
     assert number == "2"
+def test_get_EOF(scanner_example_null):
+    """Test the get_EOF method."""
+    scanner_example_null.file.seek(0)
+    length = len(scanner_example_null.file.read())
+    for i in range(length):
+        scanner_example_null.advance()
+    assert scanner_example_null.symbol.type == scanner_example_null.EOF
 
 
 @pytest.fixture
@@ -129,6 +136,7 @@ def test_con_symbol_sequence(scanner_test_ex0):
         assert symbol.type == expected_type
         symbol = scanner_test_ex0.get_symbol()
         
+
 
 
 
