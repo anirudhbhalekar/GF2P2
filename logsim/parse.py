@@ -182,7 +182,6 @@ class Parser:
     def param(self, stopping_symbols):
         """Implements rule param = "inputs" | "initial" | "cycle_rep";"""
         if self.symbol.type == self.scanner.PARAM:
-            if self.symbol.id == self.scanner.
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
@@ -275,14 +274,14 @@ class Parser:
             self.error(self.EXPECTED_NAME, stopping_symbols)
 
     def monitor(self, stopping_symbols):
-        """Implements rule monitor = "MONITOR", [name, {",", name}], ";";"""
+        """Implements rule monitor = "MONITOR", [output_con, {",", output_con}], ";";"""
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.MONITOR_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
-                self.name(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
+                self.output_con(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
                 while self.symbol.type == self.scanner.COMMA:
                     self.symbol = self.scanner.get_symbol()
-                    self.name(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
+                    self.output_con(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
             if self.symbol.type == self.scanner.SEMICOLON:
                 self.symbol = self.scanner.get_symbol()
             else:
