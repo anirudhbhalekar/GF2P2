@@ -246,7 +246,7 @@ if __name__ == "__main__":
     names = Names()
     scanner = Scanner("definition_files/test_ex_null.txt", names)
 
-    for i in range(20): 
+    for i in range(50): 
         sym = scanner.get_symbol()
         print(sym.type)
         print(sym.id) 

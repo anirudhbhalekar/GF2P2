@@ -66,11 +66,12 @@ def test_get_number(scanner_example_null):
 
 def test_get_EOF(scanner_example_null):
     """Test the get_EOF method."""
-    scanner_example_null.file.seek(0)
     length = len(scanner_example_null.file.read())
-    for i in range(length):
-        scanner_example_null.advance()
-    assert scanner_example_null.get_symbol().type == "EOF"
+    scanner_example_null.file.seek(0)
+
+    for i in range(length + 1):
+        sym = scanner_example_null.get_symbol()
+    assert sym.type == "EOF"
 
 
 @pytest.fixture
@@ -149,10 +150,10 @@ def test_read_cycle_rep(scanner_interim1_ex2_error):
     while not symbol.id == scanner_interim1_ex2_error.DEFINE_ID:
         symbol = scanner_interim1_ex2_error.get_symbol()
     symbol = scanner_interim1_ex2_error.get_symbol()
-    while not symbol.id == scanner_interim1_ex2_error.DEVICE_ID:
+    while not symbol.id == scanner_interim1_ex2_error.DEVICE:
         symbol = scanner_interim1_ex2_error.get_symbol()
     symbol = scanner_interim1_ex2_error.get_symbol()
-    while not symbol.id == scanner_interim1_ex2_error.PARAM_ID:
+    while not symbol.id == scanner_interim1_ex2_error.PARAM:
         symbol = scanner_interim1_ex2_error.get_symbol()
     assert symbol.type == "PARAM"
     assert symbol.id == scanner_interim1_ex2_error.cycle_rep_ID
