@@ -54,7 +54,6 @@ def test_get_error_message(error_codes, file_path):
     network = Network(names, devices)
     monitors = Monitors(names, devices, network)
     parser = Parser(names, devices, network, monitors, scanner) 
-
     for i in range(1, 12): 
         assert error_codes[i] == parser.get_error_message(i)
 
@@ -67,7 +66,6 @@ def test_definition_line(file_path):
     network = Network(names, devices)
     monitors = Monitors(names, devices, network)
     parser = Parser(names, devices, network, monitors, scanner) 
-    
     parser.definition(scanner.EOF)
     assert parser.error_count == 0
 
@@ -85,7 +83,6 @@ def test_definition_files(file_path):
     network = Network(names, devices)
     monitors = Monitors(names, devices, network)
     parser = Parser(names, devices, network, monitors, scanner) 
-
     assert parser.parse_network()
 
 # Hardcoded number of errors for each error definition file
