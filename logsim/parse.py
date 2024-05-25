@@ -192,10 +192,7 @@ class Parser:
     def param(self, stopping_symbols):
         """Implements rule param = "inputs" | "initial" | "cycle_rep";"""
         if self.symbol.type == self.scanner.PARAM:
-<<<<<<< HEAD
             self.curr_ptype = self.names.get_name_string(self.symbol.id)
-=======
->>>>>>> 4bbd2fe431ee4e1abc46c35f3784fa7914cd7a7a
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
