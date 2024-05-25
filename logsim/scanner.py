@@ -193,7 +193,7 @@ class Scanner:
             elif name_string in devices.gate_strings: 
                 symbol.type = self.GATE
 
-            elif name_string in devices.dtype_input_ids: 
+            elif name_string in devices.dtype_inputs: 
                 symbol.type = self.DTYPE_INPUT
             
             elif name_string in devices.dtype_outputs: 
