@@ -101,6 +101,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         # Draw specified text at position (10, 10)
         self.render_text(text, 10, 10)
 
+        
         # Draw a sample signal trace
         GL.glColor3f(0.0, 0.0, 1.0)  # signal trace is blue
         GL.glBegin(GL.GL_LINE_STRIP)
@@ -112,14 +113,14 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             else:
                 y = 100
             GL.glVertex2f(x, y)
-            GL.glVertex2f(x_next, y)
+            GL.glVertex2f(x_next, y)    
         GL.glEnd()
 
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front
         GL.glFlush()
         self.SwapBuffers()
-
+        
     def on_paint(self, event):
         """Handle the paint event."""
         self.SetCurrent(self.context)
@@ -203,9 +204,37 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             else:
                 GLUT.glutBitmapCharacter(font, ord(character))
 
+# class for dealing with text box
+class PromptedTextCtrl(wx.TextCtrl):
+    """Configure the text box located to the side of the window.
+    
+    DOCSTRING TO BE COMPLETED LATER"""
+    def __init__(self, parent, id=wx.ID_ANY, *args, **kwargs):
+            """Initialise the text box."""
+            # Combine the necessary styles
+            style = wx.TE_PROCESS_ENTER | wx.TE_MULTILINE | wx.TE_RICH2 | wx.VSCROLL
+            # Remove 'style' from kwargs if it exists to avoid conflict
+            kwargs['style'] = style
+            # Initialize the wx.TextCtrl with the combined styles
+            super().__init__(parent, id, *args, **kwargs)
+            self.write_prompt()
+            self.Bind(wx.EVT_TEXT_ENTER, self.on_text_entered)
+
+    def write_prompt(self):
+        """Write the prompt symbol '>' and move the cursor to the end."""
+        self.AppendText("> ")
+        self.SetInsertionPointEnd()
+
+    def on_text_entered(self, event):
+        """Handle the event when the user enters text."""
+        #self.SetInsertionPointEnd()
+        # Add a new prompt symbol and move the cursor to the end
+        self.AppendText("\n> ")
+        self.SetInsertionPointEnd()
+
 
 class Gui(wx.Frame):
-    """Configure the main window and all the widgets.
+    """Configure the main window and all the widgets apart from the text box.
 
     This class provides a graphical user interface for the Logic Simulator and
     enables the user to change the circuit properties and run simulations.
@@ -232,11 +261,24 @@ class Gui(wx.Frame):
         super().__init__(parent=None, title=title, size=(800, 600))
 
         # Configure the file menu
-        fileMenu = wx.Menu()
         menuBar = wx.MenuBar()
+
+        # Define all the menu tabs
+        fileMenu = wx.Menu()
+        sourceMenu = wx.Menu()
+        commandMenu = wx.Menu()
+
+        # Add subtabs and titles to each tab
         fileMenu.Append(wx.ID_ABOUT, "&About")
         fileMenu.Append(wx.ID_EXIT, "&Exit")
+        sourceMenu.Append(wx.ID_EDIT, "&Edit")
+        commandMenu.Append(wx.ID_HELP_COMMANDS, "&Commands")
+        
+        # Populate the menu bar
         menuBar.Append(fileMenu, "&File")
+        menuBar.Append(sourceMenu, "&Source") # for source/definition file being parsed
+        menuBar.Append(commandMenu, "&Command") # list of user commands
+
         self.SetMenuBar(menuBar)
 
         # Canvas for drawing signals
@@ -244,35 +286,32 @@ class Gui(wx.Frame):
 
         # Configure the widgets
         self.text = wx.StaticText(self, wx.ID_ANY, "Cycles")
-        self.spin = wx.SpinCtrl(self, wx.ID_ANY, "10")
+        self.spin = wx.SpinCtrl(self, wx.ID_ANY, initial=2, min=1, max=10)   # Spin is the up/down number widget. I set this to have a range of 1 to 10, with a default of 2
         self.run_button = wx.Button(self, wx.ID_ANY, "Run")
-        self.text_box = wx.TextCtrl(self, wx.ID_ANY, "",
-                                    style=wx.TE_PROCESS_ENTER)
+        self.text_box = PromptedTextCtrl(self, wx.ID_ANY, style=wx.TE_PROCESS_ENTER)
+        self.clear_button = wx.Button(self, wx.ID_ANY, "Clear terminal") # button for clearing terminal output
+
 
         # Bind events to widgets
         self.Bind(wx.EVT_MENU, self.on_menu)
         self.spin.Bind(wx.EVT_SPINCTRL, self.on_spin)
         self.run_button.Bind(wx.EVT_BUTTON, self.on_run_button)
-        self.text_box.Bind(wx.EVT_TEXT_ENTER, self.on_text_box)
+        self.clear_button.Bind(wx.EVT_BUTTON, self.on_clear_button)
 
         # Configure sizers for layout
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)
         side_sizer = wx.BoxSizer(wx.VERTICAL)
 
         main_sizer.Add(self.canvas, 5, wx.EXPAND | wx.ALL, 5)
-        # canvas should expand to fill any extra space available and should have a border of 5 pixels around it  
-        
         main_sizer.Add(side_sizer, 1, wx.ALL, 5)
-        ''' The main sizer arranges the canvas and the side sizer horizontally side by side, with the canvas
-        taking up 5 times the horizontal width of the side sizer. The side sizer consists of the different widgets,
-        which are arranged vertically to the side of the canvas.'''
+
         side_sizer.Add(self.text, 1, wx.TOP, 10)
         side_sizer.Add(self.spin, 1, wx.ALL, 5)
         side_sizer.Add(self.run_button, 1, wx.ALL, 5)
-        # make the text input box bigger (vertically) than the other widgets
-        side_sizer.Add(self.text_box, 3, wx.ALL, 5)
+        side_sizer.Add(self.text_box, 15, wx.EXPAND | wx.ALL, 5) # expanding text box
+        side_sizer.Add(self.clear_button, 1, wx.EXPAND | wx.ALL, 5)
 
-        self.SetSizeHints(600, 600) # minimum size
+        self.SetSizeHints(600, 600)
         self.SetSizer(main_sizer)
 
     def on_menu(self, event):
@@ -283,6 +322,18 @@ class Gui(wx.Frame):
         if Id == wx.ID_ABOUT:
             wx.MessageBox("Logic Simulator\nCreated by Mojisola Agboola\n2017",
                           "About Logsim", wx.ICON_INFORMATION | wx.OK)
+        if Id == wx.ID_EDIT:
+            wx.MessageBox("Coming soon!",
+                          "Source Definition File", wx.CANCEL | wx.APPLY)
+        if Id == wx.ID_HELP_COMMANDS:
+            wx.MessageBox("List of user commands: "
+                        "\nr N - run the simulation for N cycles"
+                        "\nc N - continue simulation for N cycles"
+                        "\ns X N - set switch X to N (0 or 1)"
+                        "\nm X - set a monitor on signal X"
+                        "\nz X - zap the monitor on signal X"
+                        "\nq - quit the simulation")
+ 
 
     def on_spin(self, event):
         """Handle the event when the user changes the spin control value."""
@@ -295,15 +346,15 @@ class Gui(wx.Frame):
         text = "Run button pressed."
         self.canvas.render(text)
 
-    def on_text_box(self, event):
-        """Handle the event when the user enters text."""
-        text_box_value = self.text_box.GetValue()
-        text = "".join(["New text box value: ", text_box_value])
+    def on_clear_button(self, event):
+        """Handle the event when the user clicks the clear button."""
+        text = "Clear button pressed."
         self.canvas.render(text)
+        self.text_box.SetValue("> ")  # Clear the text box and add prompt
 
-
+'''
 if __name__ == "__main___": 
 
     names = Names()
     scanner = Scanner("definition_files/test_ex_null.txt", names)
-    
+'''
