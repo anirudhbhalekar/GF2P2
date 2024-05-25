@@ -22,80 +22,118 @@ from scanner import Scanner
 from parse import Parser
 
 class LogicGateDrawer:
-    """Handle all logic gate drawings.  """
-    @staticmethod
-    def draw_and_gate(x, y):
+    """Handle all logic gate drawings."""
+    
+    def __init__(self, name, x, y, n_iter=10, n_inputs=2):
+            """Initialize logic drawer with the number of inputs for 
+            certain gates and also the number of iterations used to
+            draw circles for certain gates."""
+            
+            # Initialize variables
+            self.name = name
+            self.x = x
+            self.y = y
+            self.n_iter = n_iter
+            self.n_inputs = n_inputs
+
+            # 2 input gate is 40 high, and every additional input gate adds 5 units of height
+            # n_inputs is between 1 and 16, but ONLY 2 for XOR gate. This is checked as a semantic error before.
+            self.height = 40 + (n_inputs - 2) * 5
+            # we can maybe add self.length later to make the length scale with gates
+            self.length = 35
+
+    def draw_and_gate(self):
+        """Render and draw an AND gate from the LogicGateDrawer on the canvas,
+        with the position, inputs and iterations inherited from the class."""
+        
         glColor3f(0.0, 0.0, 0.0)  # Black color
         glBegin(GL_LINE_STRIP)
-        glVertex2f(x, y)
-        glVertex2f(x, y + 40)
-        glVertex2f(x + 20, y + 40)
+        # Draw the straight body
+        glVertex2f(self.x, self.y)
+        glVertex2f(self.x, self.y + self.height)
+        glVertex2f(self.x + self.length, self.y + self.height)      
         
         # Draw the curve part
-        for i in range(21):
-            angle = (i / 20.0) * (pi / 2)
-            x1 = 20 * cos(angle) + x + 20
-            y1 = 20 * sin(angle) + y + 20
+        for i in range(self.n_iter + 1):
+            angle = (pi/2) - (i / float(self.n_iter)) * (pi)
+            R = (self.height / 2)
+            x1 = R * cos(angle) + self.x + self.length 
+            y1 = R * sin(angle) + self.y + (self.height / 2)
             glVertex2f(x1, y1)
         
-        glVertex2f(x + 20, y)
-        glVertex2f(x, y)
+        # Close the shape
+        glVertex2f(self.x + self.length, self.y)
+        glVertex2f(self.x, self.y)
+                         
+        glEnd()
+    
+    def draw_nand_gate(self):
+        """Render and draw an NAND gate from the LogicGateDrawer on the canvas,
+        with the position, inputs and iterations inherited from the class."""
+
+        # Start with the AND gate
+        LogicGateDrawer.draw_and_gate(self)
+
+        G_temp = LogicGateDrawer(self.x, self.y, self.n_iter, self.n_inputs)
+        G_temp.draw_and_gate()
+
+        # Draw the circle for the NOT part, radius 5
+        glBegin(GL_LINE_LOOP)
+        for i in range(self.n_iter):
+            angle = 2 * pi * i / float(self.n_iter)
+            # Must add radius to x length for x1 argument
+            r = 5
+            # Note self.height / 2 = R as defined in the AND gate
+            x1 = r * cos(angle) + self.x + self.length + (self.height / 2) + r
+            y1 = r * sin(angle) + self.y + (self.height / 2)
+            glVertex2f(x1, y1)
         glEnd()
 
-    @staticmethod
-    def draw_or_gate(x, y):
-        glColor3f(0.0, 0.0, 0.0)  # Black color
+    
+    def draw_or_gate(self):
+        
         glBegin(GL_LINE_STRIP)
-        glVertex2f(x, y)
-        glVertex2f(x + 10, y)
-        glVertex2f(x + 20, y + 20)
-        glVertex2f(x + 10, y + 40)
-        glVertex2f(x, y + 40)
+        glVertex2f(self.x, self.y)
+        glVertex2f(self.x + 10, self.y)
+        glVertex2f(self.x + 20, self.y + 20)
+        glVertex2f(self.x + 10, self.y + 40)
+        glVertex2f(self.x, self.y + 40)
         
         for i in range(21):
             angle = (i / 20.0) * (pi / 2)
-            x1 = 20 * cos(angle) + x + 20
-            y1 = 20 * sin(angle) + y + 20
+            x1 = 20 * cos(angle) + self.x + 20
+            y1 = 20 * sin(angle) + self.y + 20
             glVertex2f(x1, y1)
         
-        glVertex2f(x, y)
+        glVertex2f(self.x, self.y)
         glEnd()
 
-    @staticmethod
-    def draw_nor_gate(x, y):
-        LogicGateDrawer.draw_or_gate(x, y)
+    def draw_nor_gate(self):
+        LogicGateDrawer.draw_or_gate(self.x, self.y)
         # Draw the circle for the NOT part
         glBegin(GL_LINE_LOOP)
         for i in range(20):
             angle = 2 * pi * i / 20
-            x1 = 5 * cos(angle) + x + 25
-            y1 = 5 * sin(angle) + y + 20
+            r = 5
+            # Note self.height / 2 = R as defined in the AND gate
+            x1 = r * cos(angle) + self.x + self.length + (self.height / 2) + r
+            y1 = r * sin(angle) + self.y + (self.height / 2)
             glVertex2f(x1, y1)
         glEnd()
 
-    @staticmethod
-    def draw_xor_gate(x, y):
-        glColor3f(0.0, 0.0, 0.0)  # Black color
+    def draw_xor_gate(self):
+        
+        # n_inputs is ONLY 2 here -- don't modify n_inputs as its default is 2. 
+       
         glBegin(GL_LINE_STRIP)
-        glVertex2f(x - 5, y)
-        glVertex2f(x + 5, y)
-        glVertex2f(x + 15, y + 20)
-        glVertex2f(x + 5, y + 40)
-        glVertex2f(x - 5, y + 40)
+        glVertex2f(self.x - 5, self.y)
+        glVertex2f(self.x + 5, self.y)
+        glVertex2f(self.x + 15, self.y + 20)
+        glVertex2f(self.x + 5, self.y + 40)
+        glVertex2f(self.x - 5, self.y + 40)
         glEnd()
-        LogicGateDrawer.draw_or_gate(x + 10, y)
+        LogicGateDrawer.draw_or_gate(self.x + 10, self.y)
 
-    @staticmethod
-    def draw_nand_gate(x, y):
-        LogicGateDrawer.draw_and_gate(x, y)
-        # Draw the circle for the NOT part
-        glBegin(GL_LINE_LOOP)
-        for i in range(20):
-            angle = 2 * pi * i / 20
-            x1 = 5 * cos(angle) + x + 25
-            y1 = 5 * sin(angle) + y + 20
-            glVertex2f(x1, y1)
-        glEnd()
 
 class MyGLCanvas(wxcanvas.GLCanvas):
     """Handle all drawing operations.
@@ -179,20 +217,22 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         self.render_text(text, 10, 10)
 
         
-        # Draw a sample signal trace
-        GL.glColor3f(0.0, 0.0, 1.0)  # signal trace is blue
-        GL.glBegin(GL.GL_LINE_STRIP)
-        for i in range(10):
-            x = (i * 20) + 10
-            x_next = (i * 20) + 30
-            if i % 2 == 0:
-                y = 75
-            else:
-                y = 100
-            GL.glVertex2f(x, y)
-            GL.glVertex2f(x_next, y)    
-        GL.glEnd()
+        # Draw logic gates using the LogicGateDrawer class
+        
+        G1 = LogicGateDrawer("G1", x=50, y=200)
+        G1.draw_and_gate()
+        # Add the text label
+        self.render_text(str(G1.name), G1.x + (G1.length / 2), G1.y + (G1.height / 2))
 
+        G2 = LogicGateDrawer("G2", x=150, y=200)
+        G2.draw_nand_gate()
+        # Add the text label
+        self.render_text(str(G2.name), G2.x + (G2.length / 2), G2.y + (G2.height / 2))
+        #LogicGateDrawer.draw_nand_gate(150, 200)
+        #LogicGateDrawer.draw_or_gate(250, 200)
+        #LogicGateDrawer.draw_nor_gate(350, 200)
+        #LogicGateDrawer.draw_xor_gate(450, 200)
+              
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front
         GL.glFlush()
@@ -267,18 +307,6 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.render(text)
         else:
             self.Refresh()  # triggers the paint event
-
-    def on_hover(self, event): 
-        """Hovering over object will add a highlight/ghost object on top"""
-
-        size = self.GetClientSize()
-        ox = (event.GetX() - self.pan_x) / self.zoom
-        oy = (size.height - event.GetY() - self.pan_y) / self.zoom
-        old_zoom = self.zoom
-
-        """ ADD THIS WHEN PAINTED OBJECTS ARE SORTED"""
-
-
 
     def render_text(self, text, x_pos, y_pos):
         """Handle text drawing operations."""
@@ -440,3 +468,10 @@ class Gui(wx.Frame):
         text = "Clear button pressed."
         self.canvas.render(text)
         self.text_box.SetValue("> ")  # Clear the text box and add prompt
+
+'''
+if __name__ == "__main___": 
+
+    names = Names()
+    scanner = Scanner("definition_files/test_ex_null.txt", names)
+'''
