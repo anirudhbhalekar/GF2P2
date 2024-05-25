@@ -88,7 +88,6 @@ def test_definition_files(file_path):
 
 # Parameterize with (file_path)
 @pytest.mark.parametrize("error_file_path", get_all_files('error_definition_files/'))
-
 def test_error_definition_files(error_file_path): 
     ''' Tests the definition files with errors -- these should all return False as they don't contain errors.
     Furthermore the number of errors should be equal to the actual (hardcoded) number of errors in each file'''
@@ -120,7 +119,7 @@ expected_op_list = [ [('G1', 'GATE', 'NAND', 'inputs', '2'), ('G2', 'GATE', 'NAN
                       
                       [('abs', 'GATE', 'NAND', 'inputs', '2'), ('tgf', 'GATE', 'AND', 'inputs', '3')]]
 
-@pytest.mark.parametrize("op_lists", expected_op_list)
+@pytest.mark.parametrize("op_lists, file_path", zip(expected_op_list, get_all_files('definition_files/')))
 def test_operator_list(op_lists, file_path): 
 
     names = Names()

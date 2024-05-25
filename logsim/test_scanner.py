@@ -137,27 +137,22 @@ def test_con_symbol_sequence(scanner_test_ex0):
         symbol = scanner_test_ex0.get_symbol()
 
 @pytest.fixture
-def scanner_interim1_ex2_error():
+def scanner_interim1_ex2():
     """Return a new instance of the Scanner class."""
-    return Scanner("error_definition_files/interim1_ex2_error.txt", Names())
+    return Scanner("definition_files/interim1_ex2.txt", Names())
 
-def test_read_cycle_rep(scanner_interim1_ex2_error):
+def test_read_cycle_rep(scanner_interim1_ex2):
     """Check that cycle_rep is read in correctly with the underscore in DEFINE 
     CLK1 AS CLOCK WITH cycle_rep=1000, 
     SW1 AS SWITCH WITH initial=1,  """
 
-    symbol = scanner_interim1_ex2_error.get_symbol()
-    while not symbol.id == scanner_interim1_ex2_error.DEFINE_ID:
-        symbol = scanner_interim1_ex2_error.get_symbol()
-    symbol = scanner_interim1_ex2_error.get_symbol()
-    while not symbol.id == scanner_interim1_ex2_error.DEVICE:
-        symbol = scanner_interim1_ex2_error.get_symbol()
-    symbol = scanner_interim1_ex2_error.get_symbol()
-    while not symbol.id == scanner_interim1_ex2_error.PARAM:
-        symbol = scanner_interim1_ex2_error.get_symbol()
+    symbol = scanner_interim1_ex2.get_symbol()
+    while not symbol.type == scanner_interim1_ex2.PARAM:
+        symbol = scanner_interim1_ex2.get_symbol()
+
     assert symbol.type == "PARAM"
-    assert symbol.id == scanner_interim1_ex2_error.cycle_rep_ID
-    assert symbol.character == 47
+    assert symbol.id == scanner_interim1_ex2.cycle_rep_ID
+    assert symbol.character == 33
         
 
 
