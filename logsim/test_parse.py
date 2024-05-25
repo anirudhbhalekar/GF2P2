@@ -85,16 +85,11 @@ def test_definition_files(file_path):
     parser = Parser(names, devices, network, monitors, scanner) 
     assert parser.parse_network()
 
-# Hardcoded number of errors for each error definition file
-num_error_list = [3, 1, 12]
 
-# Create iterable tuple for parametrization
-test_tuple = zip(get_all_files('error_definition_files/'), num_error_list)
+# Parameterize with (file_path)
+@pytest.mark.parametrize("error_file_path", get_all_files('error_definition_files/'))
 
-# Parameterize with (file_path, num_errors)
-@pytest.mark.parametrize("error_file_path, num_errors", test_tuple)
-
-def test_error_definition_files(error_file_path, num_errors): 
+def test_error_definition_files(error_file_path): 
     ''' Tests the definition files with errors -- these should all return False as they don't contain errors.
     Furthermore the number of errors should be equal to the actual (hardcoded) number of errors in each file'''
 
@@ -110,5 +105,37 @@ def test_error_definition_files(error_file_path, num_errors):
     # Have to ensure the error codes are consistent as well
 
     assert not bool_parse
+
+
+expected_op_list = [ [('G1', 'GATE', 'NAND', 'inputs', '2'), ('G2', 'GATE', 'NAND', 'inputs', '2'), 
+                        ('SW1', 'DEVICE', 'SWITCH', 'initial', '0'), ('SW2', 'DEVICE', 'SWITCH', 'initial', '0')], 
+                        
+                    [('SW1', 'DEVICE', 'SWITCH', 'initial', '0'), ('SW2', 'DEVICE', 'SWITCH', 'initial', '0'), 
+                     ('SW3', 'DEVICE', 'SWITCH', 'initial', '0'), ('G1', 'GATE', 'NAND', 'inputs', '2'), ('G2', 'GATE', 'XOR', 'inputs', '2'), 
+                     ('G3', 'GATE', 'OR', 'inputs', '3'), ('G4', 'GATE', 'XOR', 'inputs', '3'), ('G5', 'GATE', 'AND', 'inputs', '2')],
+                     
+                     [('CLK1', 'DEVICE', 'CLOCK', 'cycle_rep', '1000'), ('SW1', 'DEVICE', 'SWITCH', 'initial', '1'), ('G1', 'GATE', 'AND', 'inputs', '2'), 
+                      ('G2', 'GATE', 'XOR', 'inputs', '2'), ('DTYPE1', 'DEVICE', 'DTYPE', 'inputs', '2'), ('DTYPE2', 'DEVICE', 'DTYPE', 'inputs', '2'), 
+                      ('DTYPE3', 'DEVICE', 'DTYPE', 'inputs', '2')], 
+                      
+                      [('abs', 'GATE', 'NAND', 'inputs', '2'), ('tgf', 'GATE', 'AND', 'inputs', '3')]]
+
+@pytest.mark.parametrize("op_lists", expected_op_list)
+def test_operator_list(op_lists, file_path): 
+
+    names = Names()
+    scanner = Scanner(file_path, names)
+
+    devices = Devices(names)
+    network = Network(names, devices)
+    monitors = Monitors(names, devices, network)
+    parser = Parser(names, devices, network, monitors, scanner) 
+
+    parser.parse_network()
+
+    assert parser.operators_list == op_lists
+
+
+
 
     

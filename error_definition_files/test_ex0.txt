@@ -18,4 +18,4 @@ CONNECT
 MONITOR; % extra semicolon where not expected should give error %  
     G1, G2;
 
-END % missing semicolon should give error %
+END;

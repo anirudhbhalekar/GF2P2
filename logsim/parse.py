@@ -342,6 +342,7 @@ class Parser:
 
 if __name__ == "__main__": 
 
+
     file_path = "definition_files/test_ex_null.txt"
     names = Names()
     scanner = Scanner(file_path, names)
@@ -353,5 +354,5 @@ if __name__ == "__main__":
 
     print(parser.operators_list)
     parser.parse_network()
-
     print(parser.operators_list)
+
