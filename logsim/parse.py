@@ -59,8 +59,14 @@ class Parser:
         self.error_count = 0
         self.symbol = Symbol()
 
-        self.device_list = [] # Stores list of (NAME, TYPE, ID, PARAM_TYPE, PARAM_VAL)
-        self.gate_list = []   # Stores list of (NAME, TYPE, ID, NO. OF INPUTS)
+        self.curr_name = None
+        self.curr_type = None 
+        self.curr_ptype = None
+        self.curr_pval = None
+        self.curr_ninputs = None
+
+        self.device_list = [] # Stores list of (NAME, TYPE, PARAM_TYPE, PARAM_VAL)
+        self.gate_list = []   # Stores list of (NAME, TYPE, NO. OF INPUTS)
     
     def error(self, error_code, stopping_symbol=None):
         """Print error message and increment error count."""
@@ -172,8 +178,9 @@ class Parser:
             self.error(self.EXPECTED_EQUALS, stopping_symbols)
 
     def param(self, stopping_symbols):
-        """Implements rule param = "input" | "initial" | "cycle_rep";"""
+        """Implements rule param = "inputs" | "initial" | "cycle_rep";"""
         if self.symbol.type == self.scanner.PARAM:
+            if self.symbol.id == self.scanner.
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
@@ -258,6 +265,7 @@ class Parser:
     def name(self, stopping_symbols):
         """Implements name = letter, {letter | digit};, but name is returned as a full symbol from scanner"""
         if self.symbol.type == self.scanner.NAME:
+            self.curr_name = self.symbol.id
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.EXPECTED_NAME, stopping_symbols)
@@ -299,6 +307,7 @@ class Parser:
     def device(self, stopping_symbols):
         """Implements rule device = "CLOCK" | "SWITCH" | "DTYPE";"""
         if self.symbol.type == self.scanner.DEVICE:
+            self.curr_type = self.scanner.DEVICE
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
@@ -306,6 +315,7 @@ class Parser:
     def gate(self, stopping_symbols):
         """Implement rule gate = "NAND" | "AND" | "OR" | "NOR" | "XOR";"""
         if self.symbol.type == self.scanner.GATE:
+            self.curr_type = self.scanner.GATE 
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
