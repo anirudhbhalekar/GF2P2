@@ -10,7 +10,9 @@ Gui - configures the main window and all the widgets.
 """
 import wx
 import wx.glcanvas as wxcanvas
+from math import cos, sin, pi
 from OpenGL import GL, GLUT
+from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, GL_LINE_STRIP, GL_TRIANGLE_FAN, GL_LINE_LOOP
 
 from names import Names
 from devices import Devices
@@ -19,6 +21,81 @@ from monitors import Monitors
 from scanner import Scanner
 from parse import Parser
 
+class LogicGateDrawer:
+    """Handle all logic gate drawings.  """
+    @staticmethod
+    def draw_and_gate(x, y):
+        glColor3f(0.0, 0.0, 0.0)  # Black color
+        glBegin(GL_LINE_STRIP)
+        glVertex2f(x, y)
+        glVertex2f(x, y + 40)
+        glVertex2f(x + 20, y + 40)
+        
+        # Draw the curve part
+        for i in range(21):
+            angle = (i / 20.0) * (pi / 2)
+            x1 = 20 * cos(angle) + x + 20
+            y1 = 20 * sin(angle) + y + 20
+            glVertex2f(x1, y1)
+        
+        glVertex2f(x + 20, y)
+        glVertex2f(x, y)
+        glEnd()
+
+    @staticmethod
+    def draw_or_gate(x, y):
+        glColor3f(0.0, 0.0, 0.0)  # Black color
+        glBegin(GL_LINE_STRIP)
+        glVertex2f(x, y)
+        glVertex2f(x + 10, y)
+        glVertex2f(x + 20, y + 20)
+        glVertex2f(x + 10, y + 40)
+        glVertex2f(x, y + 40)
+        
+        for i in range(21):
+            angle = (i / 20.0) * (pi / 2)
+            x1 = 20 * cos(angle) + x + 20
+            y1 = 20 * sin(angle) + y + 20
+            glVertex2f(x1, y1)
+        
+        glVertex2f(x, y)
+        glEnd()
+
+    @staticmethod
+    def draw_nor_gate(x, y):
+        LogicGateDrawer.draw_or_gate(x, y)
+        # Draw the circle for the NOT part
+        glBegin(GL_LINE_LOOP)
+        for i in range(20):
+            angle = 2 * pi * i / 20
+            x1 = 5 * cos(angle) + x + 25
+            y1 = 5 * sin(angle) + y + 20
+            glVertex2f(x1, y1)
+        glEnd()
+
+    @staticmethod
+    def draw_xor_gate(x, y):
+        glColor3f(0.0, 0.0, 0.0)  # Black color
+        glBegin(GL_LINE_STRIP)
+        glVertex2f(x - 5, y)
+        glVertex2f(x + 5, y)
+        glVertex2f(x + 15, y + 20)
+        glVertex2f(x + 5, y + 40)
+        glVertex2f(x - 5, y + 40)
+        glEnd()
+        LogicGateDrawer.draw_or_gate(x + 10, y)
+
+    @staticmethod
+    def draw_nand_gate(x, y):
+        LogicGateDrawer.draw_and_gate(x, y)
+        # Draw the circle for the NOT part
+        glBegin(GL_LINE_LOOP)
+        for i in range(20):
+            angle = 2 * pi * i / 20
+            x1 = 5 * cos(angle) + x + 25
+            y1 = 5 * sin(angle) + y + 20
+            glVertex2f(x1, y1)
+        glEnd()
 
 class MyGLCanvas(wxcanvas.GLCanvas):
     """Handle all drawing operations.
