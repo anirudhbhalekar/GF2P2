@@ -9,7 +9,10 @@ Classes
 Parser - parses the definition file and builds the logic network.
 """
 from scanner import Symbol, Scanner
-
+from names import Names
+from devices import Devices
+from monitors import Monitors
+from network import Network
 
 class Parser:
 
@@ -61,12 +64,11 @@ class Parser:
 
         self.curr_name = None
         self.curr_type = None 
+        self.curr_sub_type = None
         self.curr_ptype = None
         self.curr_pval = None
-        self.curr_ninputs = None
 
-        self.device_list = [] # Stores list of (NAME, TYPE, PARAM_TYPE, PARAM_VAL)
-        self.gate_list = []   # Stores list of (NAME, TYPE, NO. OF INPUTS)
+        self.operators_list = [] # Stores list of (NAME, DEVICE/GATE, DEVICE/GATE TYPE, PARAM_TYPE, PARAM_VAL)
     
     def error(self, error_code, stopping_symbol=None):
         """Print error message and increment error count."""
@@ -148,6 +150,10 @@ class Parser:
             if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                 self.symbol = self.scanner.get_symbol()
                 self.set_param(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
+            
+            self.operators_list.append((self.curr_name, self.curr_type, self.curr_sub_type,
+                                        self.curr_ptype, self.curr_pval)) # Add first operator
+            
             while self.symbol.type == self.scanner.COMMA:
                 print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
                 self.symbol = self.scanner.get_symbol()
@@ -165,6 +171,10 @@ class Parser:
                         self.set_param(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
                 else:
                     self.error(self.MISSING_SEMICOLON, stopping_symbols)
+                
+                self.operators_list.append((self.curr_name, self.curr_type, self.curr_sub_type,
+                                        self.curr_ptype, self.curr_pval)) # Add subsequent operators
+
         else:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
 
@@ -180,7 +190,7 @@ class Parser:
     def param(self, stopping_symbols):
         """Implements rule param = "inputs" | "initial" | "cycle_rep";"""
         if self.symbol.type == self.scanner.PARAM:
-            if self.symbol.id == self.scanner.
+            self.curr_ptype = self.names.get_name_string(self.symbol.id)
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
@@ -265,7 +275,7 @@ class Parser:
     def name(self, stopping_symbols):
         """Implements name = letter, {letter | digit};, but name is returned as a full symbol from scanner"""
         if self.symbol.type == self.scanner.NAME:
-            self.curr_name = self.symbol.id
+            self.curr_name = self.names.get_name_string(self.symbol.id)
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.EXPECTED_NAME, stopping_symbols)
@@ -300,6 +310,7 @@ class Parser:
     def digit(self, stopping_symbols):
         """Implements rule digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";"""
         if self.symbol.type == self.scanner.NUMBER:
+            self.curr_pval = self.symbol.id
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.EXPECTED_NUMBER, stopping_symbols)
@@ -308,6 +319,7 @@ class Parser:
         """Implements rule device = "CLOCK" | "SWITCH" | "DTYPE";"""
         if self.symbol.type == self.scanner.DEVICE:
             self.curr_type = self.scanner.DEVICE
+            self.curr_sub_type = self.names.get_name_string(self.symbol.id)
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
@@ -316,6 +328,7 @@ class Parser:
         """Implement rule gate = "NAND" | "AND" | "OR" | "NOR" | "XOR";"""
         if self.symbol.type == self.scanner.GATE:
             self.curr_type = self.scanner.GATE 
+            self.curr_sub_type = self.names.get_name_string(self.symbol.id)
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
@@ -323,3 +336,18 @@ class Parser:
     # Note that letter is already accounted for in the scanner module, where it is checked with isalpha()
 
 
+if __name__ == "__main__": 
+
+    file_path = "definition_files/test_ex_null.txt"
+    names = Names()
+    scanner = Scanner(file_path, names)
+
+    devices = Devices(names)
+    network = Network(names, devices)
+    monitors = Monitors(names, devices, network)
+    parser = Parser(names, devices, network, monitors, scanner) 
+
+    print(parser.operators_list)
+    parser.parse_network()
+
+    print(parser.operators_list)
