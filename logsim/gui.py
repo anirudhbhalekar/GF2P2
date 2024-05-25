@@ -268,6 +268,18 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         else:
             self.Refresh()  # triggers the paint event
 
+    def on_hover(self, event): 
+        """Hovering over object will add a highlight/ghost object on top"""
+
+        size = self.GetClientSize()
+        ox = (event.GetX() - self.pan_x) / self.zoom
+        oy = (size.height - event.GetY() - self.pan_y) / self.zoom
+        old_zoom = self.zoom
+
+        """ ADD THIS WHEN PAINTED OBJECTS ARE SORTED"""
+
+
+
     def render_text(self, text, x_pos, y_pos):
         """Handle text drawing operations."""
         GL.glColor3f(0.0, 0.0, 0.0)  # text is black
@@ -428,10 +440,3 @@ class Gui(wx.Frame):
         text = "Clear button pressed."
         self.canvas.render(text)
         self.text_box.SetValue("> ")  # Clear the text box and add prompt
-
-'''
-if __name__ == "__main___": 
-
-    names = Names()
-    scanner = Scanner("definition_files/test_ex_null.txt", names)
-'''

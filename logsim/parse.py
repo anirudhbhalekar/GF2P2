@@ -9,11 +9,6 @@ Classes
 Parser - parses the definition file and builds the logic network.
 """
 from scanner import Symbol, Scanner
-from names import Names
-from devices import Devices
-from monitors import Monitors
-from network import Network
-
 
 
 class Parser:
@@ -63,6 +58,9 @@ class Parser:
         self.scanner = scanner
         self.error_count = 0
         self.symbol = Symbol()
+
+        self.device_list = [] # Stores list of (NAME, TYPE, ID, PARAM_TYPE, PARAM_VAL)
+        self.gate_list = []   # Stores list of (NAME, TYPE, ID, NO. OF INPUTS)
     
     def error(self, error_code, stopping_symbol=None):
         """Print error message and increment error count."""

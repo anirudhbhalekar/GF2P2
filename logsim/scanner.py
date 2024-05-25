@@ -32,7 +32,6 @@ class Symbol:
         self.line_number = None
         self.character = None
 
-
     # Set symbol properties above
     # Define what types of symbols - names (keywords and names), numbers, punctuation, EOF
     # Initialise key word list (this includes paramter values)
