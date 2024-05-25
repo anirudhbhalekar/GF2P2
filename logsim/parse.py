@@ -80,6 +80,8 @@ class Parser:
         print(f"Error code {error_code} at line {line_number}, character {character}: {error_message}")
         while (self.symbol.type != stopping_symbol and self.symbol.type != self.scanner.EOF):
             self.symbol = self.scanner.get_symbol()
+        if self.symbol.type == self.scanner.EOF:
+            return False
 
     def get_error_message(self, error_code):
         """Return the error message corresponding to the error code."""
@@ -246,6 +248,8 @@ class Parser:
         if self.symbol.type == self.scanner.DOT:
             self.symbol = self.scanner.get_symbol()
             self.output_notation(stopping_symbols)
+        elif self.symbol.type == self.scanner.COMMA:
+            pass
         elif self.symbol.type == self.scanner.SEMICOLON:
             pass
         else:
@@ -281,14 +285,14 @@ class Parser:
             self.error(self.EXPECTED_NAME, stopping_symbols)
 
     def monitor(self, stopping_symbols):
-        """Implements rule monitor = "MONITOR", [name, {",", name}], ";";"""
+        """Implements rule monitor = "MONITOR", [output_con, {",", output_con}], ";";"""
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.MONITOR_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
-                self.name(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
+                self.output_con(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
                 while self.symbol.type == self.scanner.COMMA:
                     self.symbol = self.scanner.get_symbol()
-                    self.name(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
+                    self.output_con(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
             if self.symbol.type == self.scanner.SEMICOLON:
                 self.symbol = self.scanner.get_symbol()
             else:
