@@ -137,6 +137,19 @@ def test_con_symbol_sequence(scanner_test_ex0):
         symbol = scanner_test_ex0.get_symbol()
 
 @pytest.fixture
+def scanner_interim1_ex1():
+    """Return a new instance of the Scanner class."""
+    return Scanner("error_definition_files/interim1_ex1_error.txt", Names())
+
+def test_EOF(scanner_interim1_ex1):
+    """Test if EOF symbol is read in correctly"""
+    symbol = scanner_interim1_ex1.get_symbol()
+    while not symbol.type == scanner_interim1_ex1.EOF:
+        symbol = scanner_interim1_ex1.get_symbol()
+
+    assert symbol.type == "EOF"
+
+@pytest.fixture
 def scanner_interim1_ex2():
     """Return a new instance of the Scanner class."""
     return Scanner("definition_files/interim1_ex2.txt", Names())

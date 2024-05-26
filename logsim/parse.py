@@ -157,7 +157,7 @@ class Parser:
                                         self.curr_ptype, self.curr_pval)) # Add first operator
             
             while self.symbol.type == self.scanner.COMMA:
-                print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}")
+                print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}, Location: {self.symbol.line_number}, {self.symbol.character}" )
                 self.symbol = self.scanner.get_symbol()
                 self.name(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
                 if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS_ID:
