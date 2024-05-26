@@ -117,7 +117,7 @@ class Scanner:
                     self.line_count += 1
                     self.line_char_count = 0
                     
-            while not next_char == "%":
+            while not next_char == "%" and next_char != "":
 
                 next_char = self.file.read(1)
                 self.total_char_count += 1
