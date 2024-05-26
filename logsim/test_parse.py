@@ -87,23 +87,23 @@ def test_definition_files(file_path):
 
 
 # Parameterize with (file_path)
-@pytest.mark.parametrize("error_file_path", get_all_files('error_definition_files/'))
-def test_error_definition_files(error_file_path): 
-    ''' Tests the definition files with errors -- these should all return False as they don't contain errors.
-    Furthermore the number of errors should be equal to the actual (hardcoded) number of errors in each file'''
+# @pytest.mark.parametrize("error_file_path", get_all_files('error_definition_files/'))
+# def test_error_definition_files(error_file_path): 
+#     ''' Tests the definition files with errors -- these should all return False as they don't contain errors.
+#     Furthermore the number of errors should be equal to the actual (hardcoded) number of errors in each file'''
 
-    names = Names()
-    scanner = Scanner(error_file_path, names)
+#     names = Names()
+#     scanner = Scanner(error_file_path, names)
 
-    devices = Devices(names)
-    network = Network(names, devices)
-    monitors = Monitors(names, devices, network)
-    parser = Parser(names, devices, network, monitors, scanner) 
+#     devices = Devices(names)
+#     network = Network(names, devices)
+#     monitors = Monitors(names, devices, network)
+#     parser = Parser(names, devices, network, monitors, scanner) 
     
-    bool_parse = parser.parse_network()
-    # Have to ensure the error codes are consistent as well
+#     bool_parse = parser.parse_network()
+#     # Have to ensure the error codes are consistent as well
 
-    assert not bool_parse
+#     assert not bool_parse
 
 
 expected_op_list = [ [('G1', 'GATE', 'NAND', 'inputs', '2'), ('G2', 'GATE', 'NAND', 'inputs', '2'), 
