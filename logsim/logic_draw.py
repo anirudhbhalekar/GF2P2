@@ -1,6 +1,10 @@
 from math import cos, sin, pi
 from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, GL_LINE_STRIP, GL_LINE_LOOP
 
+
+""" DOC STRING TO BE COMPLETED """
+
+
 class LogicDrawer:
     """Handle all logic gate drawings."""
     

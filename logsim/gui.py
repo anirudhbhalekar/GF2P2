@@ -25,7 +25,7 @@ from network import Network
 from monitors import Monitors
 from scanner import Scanner
 from parse import Parser
-from logicdraw import LogicDrawer, DrawConnections
+from logic_draw import LogicDrawer, DrawConnections
 
 class MyGLCanvas(wxcanvas.GLCanvas):
     """Handle all drawing operations.
