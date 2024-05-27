@@ -55,7 +55,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                                            operations.
     """
 
-    def __init__(self, parent, devices, monitors):
+    def __init__(self, parent, devices, monitors, message_display):
         """Initialise canvas properties and useful variables."""
         super().__init__(parent, -1,
                          attribList=[wxcanvas.WX_GL_RGBA,
@@ -64,6 +64,9 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         GLUT.glutInit()
         self.init = False
         self.context = wxcanvas.GLContext(self)
+
+        # Initialise variable for message display widget
+        self.message_display = message_display
 
         # Initialise variables for panning
         self.pan_x = 0
@@ -106,7 +109,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         GL.glClear(GL.GL_COLOR_BUFFER_BIT)
 
         # Draw specified text at position (10, 10)
-        self.render_text(text, 10, 10)
+        #self.render_text(text, 10, 10)
 
         
         # Draw logic gates using the LogicDrawer class
@@ -151,6 +154,9 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         GL.glFlush()
         self.SwapBuffers()
         
+         # Update the message display widget
+        self.message_display.SetValue(text)
+
     def on_paint(self, event):
         """Handle the paint event."""
         self.SetCurrent(self.context)
@@ -320,10 +326,10 @@ class Gui(wx.Frame):
         self.SetMenuBar(menuBar)
 
         # Message display widget
-        self.message_display = wx.StaticText(self, wx.ID_ANY, "", style=wx.ALIGN_LEFT)
+        self.message_display = wx.TextCtrl(self, wx.ID_ANY, "", style=wx.TE_MULTILINE | wx.TE_READONLY)
 
         # Canvas for drawing
-        self.canvas = MyGLCanvas(self, devices, monitors)
+        self.canvas = MyGLCanvas(self, devices, monitors, self.message_display)
 
         # Configure the widgets
         self.text = wx.StaticText(self, wx.ID_ANY, "Cycles")
@@ -367,7 +373,7 @@ class Gui(wx.Frame):
         side_sizer.Add(button_sizer, 1, wx.EXPAND | wx.ALL, 5)
         side_sizer.Add(self.text_box, 15, wx.EXPAND | wx.ALL, 5) # expanding text box
         side_sizer.Add(self.clear_button, 1, wx.EXPAND | wx.ALL, 5)
-        side_sizer.Add(self.message_display, 0, wx.EXPAND | wx.ALL, 5)
+        side_sizer.Add(self.message_display, 1, wx.EXPAND | wx.ALL, 5)
 
         button_sizer.Add(self.reset_view_button, 1, wx.ALL, 5)
         button_sizer.Add(self.run_button, 1, wx.ALL, 5)
@@ -398,7 +404,6 @@ class Gui(wx.Frame):
                         "\nm X - set a monitor on signal X"
                         "\nz X - zap the monitor on signal X"
                         "\nq - quit the simulation")
- 
 
     def on_spin(self, event):
         """Handle the event when the user changes the spin control value."""
