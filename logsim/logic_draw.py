@@ -246,7 +246,22 @@ class LogicDrawer:
         with the position, inputs and iterations inherited from the class."""
 
         # Note that x,y is defined from the bottom left of the vertical line on the left, as with OR gate
-        LogicDrawer.draw_or_gate(self)
+        glColor3f(1.0, 0.0, 0.0)  # Red color
+        glBegin(GL_LINE_STRIP)
+        glVertex2f(self.x, self.y)
+        glVertex2f(self.x, self.y + self.height)
+        # top left corner 
+        glVertex2f(self.x - 10, self.y + self.height + 10)
+        # top straight line
+        glVertex2f(self.x - 10 + self.length, self.y + self.height + 10)
+
+        # point right mid 
+        glVertex2f((self.x + self.length + (self.height / 2)), (self.y + (self.height / 2)))
+        glVertex2f(self.x - 10 + self.length, self.y - 10)
+        glVertex2f(self.x - 10 , self.y - 10)
+        glVertex2f(self.x, self.y)
+        
+        glEnd()
         glColor3f(1.0, 0.0, 0.0)  # Red color
         # Draw the circle for the NOT part, radius 5
         glBegin(GL_LINE_LOOP)
@@ -317,8 +332,8 @@ class LogicDrawer:
             self.make_circle(x_coord, y_coord)
             self.input_list.append((x_coord, y_coord))
         
-        self.output_list.append((self.x + self.length + self.height/2 + 2*r, self.y + self.height/2 ))
-        self.make_circle(self.x + self.length + self.height/2 + 2*r, self.y + self.height/2)
+        self.output_list.append((self.x + self.length + self.height/2, self.y + self.height/2 ))
+        self.make_circle(self.x + self.length + self.height/2, self.y + self.height/2)
         self.domain_list = [(self.x - 10 - 10 + 1, self.y - 10 + 1), (self.x + self.length + (self.height / 2) - 1, self.y + self.height + 10 - 1)]
 
         """# List of tuples containing input locations
