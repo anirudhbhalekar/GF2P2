@@ -144,12 +144,13 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         CLK1 = LogicDrawer("CLK1", x=150, y=100)
         CLK1.draw_clock()
         # For clocks render text under the square
-        self.render_text(str(CLK1.name), CLK1.x, CLK1.y - 10)
+        self.render_text(str(CLK1.name), CLK1.x - 10, CLK1.y - 30)
 
         DTYPE1 = LogicDrawer("DTYPE1", x=250, y=50)
         DTYPE1.draw_dtype()
         # For dtypes render text under the object
         self.render_text(str(DTYPE1.name), DTYPE1.x + 10, DTYPE1.y - 10)
+        
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front
         GL.glFlush()
