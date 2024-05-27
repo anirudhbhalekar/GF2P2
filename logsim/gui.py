@@ -12,7 +12,7 @@ import wx
 import wx.glcanvas as wxcanvas
 from math import cos, sin, pi
 from OpenGL import GL, GLUT
-from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, GL_LINE_STRIP, GL_TRIANGLE_FAN, GL_LINE_LOOP
+from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, GL_LINE_STRIP, GL_TRIANGLE_FAN, GL_LINE_LOOP, GL_POLYGON
 
 from names import Names
 from devices import Devices
@@ -75,7 +75,8 @@ class LogicGateDrawer:
         LogicGateDrawer.draw_and_gate(self)
 
         # Draw the circle for the NOT part, radius 5
-        glBegin(GL_LINE_LOOP)
+        glBegin(GL_POLYGON)
+    
         for i in range(self.n_iter):
             angle = 2 * pi * i / float(self.n_iter)
             # Must add radius to x length for x1 argument
@@ -84,6 +85,7 @@ class LogicGateDrawer:
             x1 = r * cos(angle) + self.x + self.length + (self.height / 2) + r
             y1 = r * sin(angle) + self.y + (self.height / 2)
             glVertex2f(x1, y1)
+        
         glEnd()
 
     
@@ -155,6 +157,24 @@ class LogicGateDrawer:
         glVertex2f(self.x - 10, self.y + self.height)
         glVertex2f(self.x - 20, self.y + self.height + 10)
         glEnd()
+        LogicGateDrawer.draw_or_gate(self.x + 10, self.y)
+
+
+class ConnectionDrawer: 
+
+    def __init__(self, connect_list):
+        """ Takes connection list of objects"""
+        self.connect_list = connect_list
+
+    def make_connection(self): 
+        """ Connection List - name to name"""
+        
+        for tup in self.connect_list: 
+            input_obj = tup[0] # This is the drawer object
+            output_obj = tup[1] 
+
+            # Lets have a property of the drawer class to be self.input_list - which is a list of input x,y coords 
+
 
 class MyGLCanvas(wxcanvas.GLCanvas):
     """Handle all drawing operations.
@@ -466,7 +486,10 @@ class Gui(wx.Frame):
 
         self.SetSizeHints(600, 600)
         self.SetSizer(main_sizer)
-
+    
+        self.top_panel = wx.Panel(self)
+        #self.SetFont(wx.Font(14, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, 'Times New Roman'))
+        
     def on_menu(self, event):
         """Handle the event when the user selects a menu item."""
         Id = event.GetId()
