@@ -64,7 +64,13 @@ class Parser:
 
     def __init__(self, names, devices, network, monitors, scanner):
         """Initialise constants."""
+        
         self.names = names
+        [self.EXPECTED_NAME, self.INVALID_CHAR_IN_NAME, self.NULL_DEVICE_IN_CONNECT, 
+         self.INVALID_CONNECT_DELIMITER, self.DOUBLE_PUNCTUATION, self.MISSING_SEMICOLON, 
+         self.INVALID_KEYWORD, self.INVALID_COMMENT_SYMBOL, self.INVALID_BLOCK_ORDER, 
+         self.MISSING_END_STATEMENT, self.EXPECTED_NUMBER, self.EXPECTED_PUNCTUATION, 
+         self.INVALID_PIN_REF, self.EXPECTED_EQUALS] = self.names.unique_error_codes(14)
         self.devices = devices
         self.network = network
         self.monitors = monitors
@@ -78,11 +84,7 @@ class Parser:
         self.curr_ptype = None
         self.curr_pval = None
 
-        [self.EXPECTED_NAME, self.INVALID_CHAR_IN_NAME, self.NULL_DEVICE_IN_CONNECT, 
-         self.INVALID_CONNECT_DELIMITER, self.DOUBLE_PUNCTUATION, self.MISSING_SEMICOLON, 
-         self.INVALID_KEYWORD, self.INVALID_COMMENT_SYMBOL, self.INVALID_BLOCK_ORDER, 
-         self.MISSING_END_STATEMENT, self.EXPECTED_NUMBER, self.EXPECTED_PUNCTUATION, 
-         self.INVALID_PIN_REF, self.EXPECTED_EQUALS] = self.names.unique_error_codes(14)
+
 
         self.operators_list = [] # Stores list of (NAME, DEVICE/GATE, DEVICE/GATE TYPE, PARAM_TYPE, PARAM_VAL)
     
@@ -168,48 +170,46 @@ class Parser:
 
     def def_list(self, stopping_symbols):
         """Implements rule def_list = name, "AS", (device | gate), ["WITH", set_param], {",", name, "AS", (device | gate), ["WITH", set_param]};"""
-        self.name(stopping_symbols | {self.scanner.COMMA})
+        device_id = self.name(stopping_symbols | {self.scanner.COMMA})
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type == self.scanner.DEVICE:
-                self.device(stopping_symbols)
+                device_kind = self.device(stopping_symbols)
             elif self.symbol.type == self.scanner.GATE:
-                self.gate(stopping_symbols)
+                device_kind = self.gate(stopping_symbols)
             else:
                 self.error(self.INVALID_KEYWORD, stopping_symbols)
             if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                 self.symbol = self.scanner.get_symbol()
-                self.set_param(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
+                device_property = self.set_param(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
             
-            self.operators_list.append((self.curr_name, self.curr_type, self.curr_sub_type,
-                                        self.curr_ptype, self.curr_pval)) # Add first operator
+            # self.operators_list.append((self.curr_name, self.curr_type, self.curr_sub_type,
+            #                             self.curr_ptype, self.curr_pval)) # Add first operator
             # Make device 
             if self.error_count == 0:
-                device_id = self.names.query(self.curr_name)
-                error_type = self.devices.make_device(device_id, self.curr_sub_type, self.curr_pval)
+                error_type = self.devices.make_device(device_id, device_kind, device_property)
                 if error_type != self.devices.NO_ERROR:
                     self.error(error_type, stopping_symbols)
 
             while self.symbol.type == self.scanner.COMMA:
                 self.symbol = self.scanner.get_symbol()
-                self.name(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
+                device_id = self.name(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
                 if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS_ID:
                     self.symbol = self.scanner.get_symbol()
                     if self.symbol.type == self.scanner.DEVICE:
-                        self.device(stopping_symbols)
+                        device_kind = self.device(stopping_symbols)
                     elif self.symbol.type == self.scanner.GATE:
-                        self.gate(stopping_symbols)
+                        device_kind = self.gate(stopping_symbols)
                     else:
                         self.error(self.INVALID_KEYWORD, stopping_symbols)
                     if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                         self.symbol = self.scanner.get_symbol()
-                        self.set_param(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
+                        device_property = self.set_param(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
                 else:
                     self.error(self.MISSING_SEMICOLON, stopping_symbols)
                 # Make device
                 if self.error_count == 0:
-                    device_id = self.names.query(self.curr_name)
-                    error_type = self.devices.make_device(device_id, self.curr_sub_type, self.curr_pval)
+                    error_type = self.devices.make_device(device_id, device_kind, device_property)
                     if error_type != self.devices.NO_ERROR:
                         self.error(error_type, stopping_symbols)
                 
@@ -220,13 +220,15 @@ class Parser:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
 
     def set_param(self, stopping_symbols):
-        """Implements rule set_param = param, "=", value, {",", param, "=", value};"""
+        """Implements rule set_param = param, "=", value;"""
+        # Only one param for different devices, so just return the param value
         self.param(stopping_symbols)
         if self.symbol.type == self.scanner.EQUALS:
             self.symbol = self.scanner.get_symbol()
-            self.value(stopping_symbols)
+            device_property = self.value(stopping_symbols)
         else:
             self.error(self.EXPECTED_EQUALS, stopping_symbols)
+        return device_property
 
     def param(self, stopping_symbols):
         """Implements rule param = "inputs" | "initial" | "cycle_rep";"""
@@ -239,7 +241,8 @@ class Parser:
     def value(self, stopping_symbols):
         """Implements rule value = digit, [{digit}];"""
         # Because of scanner module implementation, we actually check for a format of number
-        self.digit(stopping_symbols)
+        device_property = self.digit(stopping_symbols)
+        return device_property
 
         
     def connection(self, stopping_symbols):
@@ -301,9 +304,10 @@ class Parser:
             self.symbol = self.scanner.get_symbol()
             out_port_id = self.output_notation(stopping_symbols)
         elif self.symbol.type == self.scanner.COMMA:
-            out_port_id = self.devices.dtype_output_ids[0]
+            # If no dot, the output id is actually none according to the definition in devices
+            out_port_id = None
         elif self.symbol.type == self.scanner.SEMICOLON:
-            pass
+            out_port_id = None
         else:
             self.error(self.EXPECTED_PUNCTUATION, stopping_symbols)
         return out_device_id, out_port_id
@@ -312,16 +316,18 @@ class Parser:
         """Implements rule input_notation = "I", digit, {digit} | "DATA" | "CLK" | "CLEAR" | "SET";"""
         # Check if proper dtype input, or if not the first letter must be "I", followed by digits (isnumeric)
         if self.symbol.type == self.scanner.DTYPE_INPUT:
+            in_port_id = self.symbol.id
             self.symbol = self.scanner.get_symbol()
         elif self.symbol.type == self.scanner.NAME:
             input_string = self.names.get_name_string(self.symbol.id)
             if input_string[0] == "I" and input_string[1:].isnumeric():
+                in_port_id = self.symbol.id
                 self.symbol = self.scanner.get_symbol()
             else:
                 self.error(self.INVALID_PIN_REF, stopping_symbols)
         else:
             self.error(self.INVALID_PIN_REF, stopping_symbols)
-        return self.symbol.id
+        return in_port_id
 
     def output_notation(self, stopping_symbols):
         """Implements rule output_notation =  "Q" | "QBAR" ;"""
@@ -333,11 +339,12 @@ class Parser:
     def name(self, stopping_symbols):
         """Implements name = letter, {letter | digit};, but name is returned as a full symbol from scanner"""
         if self.symbol.type == self.scanner.NAME:
+            name = self.symbol.id
             self.curr_name = self.names.get_name_string(self.symbol.id)
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.EXPECTED_NAME, stopping_symbols)
-        return self.symbol.id
+        return name
 
     def monitor(self, stopping_symbols):
         """Implements rule monitor = "MONITOR", [output_con, {",", output_con}], ";";"""
@@ -370,27 +377,34 @@ class Parser:
         """Implements rule digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";"""
         if self.symbol.type == self.scanner.NUMBER:
             self.curr_pval = self.symbol.id
+            value = self.symbol.id
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.EXPECTED_NUMBER, stopping_symbols)
+        # Convert str to int
+        return int(value)
 
     def device(self, stopping_symbols):
         """Implements rule device = "CLOCK" | "SWITCH" | "DTYPE";"""
         if self.symbol.type == self.scanner.DEVICE:
             self.curr_type = self.scanner.DEVICE
             self.curr_sub_type = self.names.get_name_string(self.symbol.id)
+            device_kind = self.symbol.id
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
+        return device_kind
 
     def gate(self, stopping_symbols):
         """Implement rule gate = "NAND" | "AND" | "OR" | "NOR" | "XOR";"""
         if self.symbol.type == self.scanner.GATE:
             self.curr_type = self.scanner.GATE 
             self.curr_sub_type = self.names.get_name_string(self.symbol.id)
+            device_kind = self.symbol.id
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
+        return device_kind
 
     # Note that letter is already accounted for in the scanner module, where it is checked with isalpha()
 
