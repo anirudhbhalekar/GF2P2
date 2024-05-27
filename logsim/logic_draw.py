@@ -8,7 +8,7 @@ from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, GL_LINE_STRIP, GL_L
 class LogicDrawer:
     """Handle all logic gate drawings."""
     
-    def __init__(self, name, x, y, n_iter=10, n_inputs=2, ):
+    def __init__(self, name, x, y, n_iter=10, n_inputs=2):
             """Initialize logic drawer with the number of inputs for 
             certain gates and also the number of iterations used to
             draw circles for certain gates."""
@@ -36,6 +36,7 @@ class LogicDrawer:
 
             self.input_list = []
             self.output_list = [] # These store input and output xy coords for drawing connections
+            self.domain = []
 
     def draw_with_string(self, op_string): 
 
@@ -58,16 +59,15 @@ class LogicDrawer:
         else: 
             pass
     
-    def make_circle(self, x, y): 
+    def make_circle(self, x, y, r=2): 
         posx, posy = x, y    
-        sides = 10    
-        radius = 2
+        sides = self.n_iter
         
         glBegin(GL_POLYGON)    
 
         for i in range(20):    
-            cosine= radius * cos(i*2*pi/sides) + posx    
-            sine  = radius * sin(i*2*pi/sides) + posy    
+            cosine= r * cos(i*2*pi/sides) + posx    
+            sine  = r * sin(i*2*pi/sides) + posy    
             glVertex2f(cosine,sine)
 
         glEnd()
@@ -107,7 +107,7 @@ class LogicDrawer:
         # Give padding 1 px
         domain_list = [(self.x + 1, self.y + 1), (self.x + self.length + R - 1, self.y + self.height - 1)]
 
-        return (input_list, output_list, domain_list)
+        
 
         inp_space = self.height - 2 * self.inc_height
         div_space = inp_space/(self.n_inputs + 1)
@@ -121,6 +121,8 @@ class LogicDrawer:
         
         self.output_list.append((self.x + self.length + self.height/2, self.y + self.height/2 ))
         self.make_circle(self.x + self.length + self.height/2, self.y + self.height/2)
+
+        return (input_list, output_list, domain_list)
     
     def draw_nand_gate(self):
         """Render and draw an NAND gate from the LogicDrawer on the canvas,
