@@ -1,6 +1,10 @@
 from math import cos, sin, pi
 from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, GL_LINE_STRIP, GL_LINE_LOOP
 
+
+""" DOC STRING TO BE COMPLETED """
+
+
 class LogicDrawer:
     """Handle all logic gate drawings."""
     
@@ -18,9 +22,15 @@ class LogicDrawer:
 
             # 2 input gate is 40 high, and every additional input gate adds 5 units of height
             # n_inputs is between 1 and 16, but ONLY 2 for XOR gate. This is checked as a semantic error before.
-            self.height = 40 + (n_inputs - 2) * 5
+
+            self.operator_height = 40 
+            self.operator_length = 35
+            self.inc_height = 5
+
+
+            self.height = self.operator_height + (n_inputs - 2) * self.inc_height
             # we can maybe add self.length later to make the length scale with gates
-            self.length = 35
+            self.length = self.operator_length
 
     def draw_and_gate(self):
         """Render and draw an AND gate from the LogicDrawer on the canvas,

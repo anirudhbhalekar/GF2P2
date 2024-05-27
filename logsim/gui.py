@@ -25,7 +25,7 @@ from network import Network
 from monitors import Monitors
 from scanner import Scanner
 from parse import Parser
-from logicdraw import LogicDrawer, DrawConnections
+from logic_draw import LogicDrawer, DrawConnections
 
 class MyGLCanvas(wxcanvas.GLCanvas):
     """Handle all drawing operations.
@@ -203,7 +203,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.init = False
             text = "".join(["Mouse dragged to: ", str(event.GetX()),
                             ", ", str(event.GetY()), ". Pan is now: ",
-                            str(self.pan_x), ", ", str(self.pan_y)])
+                            str(round(self.pan_x, 2)), ", ", str(round(self.pan_y, 2))])
         if event.GetWheelRotation() < 0:
             self.zoom *= (1.0 + (
                 event.GetWheelRotation() / (20 * event.GetWheelDelta())))
@@ -212,7 +212,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.pan_y -= (self.zoom - old_zoom) * oy
             self.init = False
             text = "".join(["Negative mouse wheel rotation. Zoom is now: ",
-                            str(self.zoom)])
+                            str(round(self.zoom, 2))])
         if event.GetWheelRotation() > 0:
             self.zoom /= (1.0 - (
                 event.GetWheelRotation() / (20 * event.GetWheelDelta())))
@@ -221,7 +221,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.pan_y -= (self.zoom - old_zoom) * oy
             self.init = False
             text = "".join(["Positive mouse wheel rotation. Zoom is now: ",
-                            str(self.zoom)])
+                            str(round(self.zoom,2))])
         if text:
             self.render(text)
         else:
