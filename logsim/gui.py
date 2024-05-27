@@ -25,7 +25,8 @@ from network import Network
 from monitors import Monitors
 from scanner import Scanner
 from parse import Parser
-from logicdraw import LogicDrawer, DrawConnections
+from logic_draw import LogicDrawer
+from connect_draw import ConnectDrawer
 
 class MyGLCanvas(wxcanvas.GLCanvas):
     """Handle all drawing operations.
@@ -55,7 +56,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                                            operations.
     """
 
-    def __init__(self, parent, devices, monitors):
+    def __init__(self, parent, devices, monitors, message_display):
         """Initialise canvas properties and useful variables."""
         super().__init__(parent, -1,
                          attribList=[wxcanvas.WX_GL_RGBA,
@@ -64,6 +65,9 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         GLUT.glutInit()
         self.init = False
         self.context = wxcanvas.GLContext(self)
+
+        # Initialise variable for message display widget
+        self.message_display = message_display
 
         # Initialise variables for panning
         self.pan_x = 0
@@ -106,12 +110,12 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         GL.glClear(GL.GL_COLOR_BUFFER_BIT)
 
         # Draw specified text at position (10, 10)
-        self.render_text(text, 10, 10)
+        #self.render_text(text, 10, 10)
 
         
         # Draw logic gates using the LogicDrawer class
         
-        G1 = LogicDrawer("G1", x=50, y=200)
+        G1 = LogicDrawer("G1", x=50, y=200, n_inputs=6)
         G1.draw_and_gate()
         # Add the text label
         self.render_text(str(G1.name), G1.x + (G1.length / 2), G1.y + (G1.height / 2))
@@ -140,17 +144,21 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         CLK1 = LogicDrawer("CLK1", x=150, y=100)
         CLK1.draw_clock()
         # For clocks render text under the square
-        self.render_text(str(CLK1.name), CLK1.x, CLK1.y - 10)
+        self.render_text(str(CLK1.name), CLK1.x - 10, CLK1.y - 30)
 
         DTYPE1 = LogicDrawer("DTYPE1", x=250, y=50)
         DTYPE1.draw_dtype()
         # For dtypes render text under the object
         self.render_text(str(DTYPE1.name), DTYPE1.x + 10, DTYPE1.y - 10)
+        
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front
         GL.glFlush()
         self.SwapBuffers()
         
+         # Update the message display widget
+        self.message_display.SetValue(text)
+
     def on_paint(self, event):
         """Handle the paint event."""
         self.SetCurrent(self.context)
@@ -197,7 +205,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.init = False
             text = "".join(["Mouse dragged to: ", str(event.GetX()),
                             ", ", str(event.GetY()), ". Pan is now: ",
-                            str(self.pan_x), ", ", str(self.pan_y)])
+                            str(round(self.pan_x, 2)), ", ", str(round(self.pan_y, 2))])
         if event.GetWheelRotation() < 0:
             self.zoom *= (1.0 + (
                 event.GetWheelRotation() / (20 * event.GetWheelDelta())))
@@ -206,7 +214,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.pan_y -= (self.zoom - old_zoom) * oy
             self.init = False
             text = "".join(["Negative mouse wheel rotation. Zoom is now: ",
-                            str(self.zoom)])
+                            str(round(self.zoom, 2))])
         if event.GetWheelRotation() > 0:
             self.zoom /= (1.0 - (
                 event.GetWheelRotation() / (20 * event.GetWheelDelta())))
@@ -215,7 +223,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.pan_y -= (self.zoom - old_zoom) * oy
             self.init = False
             text = "".join(["Positive mouse wheel rotation. Zoom is now: ",
-                            str(self.zoom)])
+                            str(round(self.zoom,2))])
         if text:
             self.render(text)
         else:
@@ -319,8 +327,11 @@ class Gui(wx.Frame):
 
         self.SetMenuBar(menuBar)
 
-        # Canvas for drawing signals
-        self.canvas = MyGLCanvas(self, devices, monitors)
+        # Message display widget
+        self.message_display = wx.TextCtrl(self, wx.ID_ANY, "", style=wx.TE_MULTILINE | wx.TE_READONLY)
+
+        # Canvas for drawing
+        self.canvas = MyGLCanvas(self, devices, monitors, self.message_display)
 
         # Configure the widgets
         self.text = wx.StaticText(self, wx.ID_ANY, "Cycles")
@@ -343,15 +354,19 @@ class Gui(wx.Frame):
 
         # Configure sizers for layout
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        side_sizer = wx.BoxSizer(wx.VERTICAL)
         canvas_plot_sizer = wx.BoxSizer(wx.VERTICAL)
+        side_sizer = wx.BoxSizer(wx.VERTICAL)
+        button_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         # Initialise some empty matplotlib figure
         self.figure = Figure(figsize=(5,2))
         self.axes = self.figure.add_subplot(111)
-
+        self.axes.set_title("Monitor Plots")
+        self.axes.tick_params(axis = 'both', left = False, right = False, labelright = False, labelleft = False, labelbottom = False)
         self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
-        canvas_plot_sizer.Add(self.canvas, 1, wx.EXPAND | wx.ALL, 1)
+
+        # Arrange sizers, all stemming from main sizer
+        canvas_plot_sizer.Add(self.canvas, 2, wx.EXPAND | wx.ALL, 1)
         canvas_plot_sizer.Add(self.matplotlib_canvas, 1, wx.EXPAND | wx.ALL, 1)
 
         main_sizer.Add(canvas_plot_sizer, 5, wx.EXPAND | wx.ALL, 5)
@@ -359,11 +374,15 @@ class Gui(wx.Frame):
 
         side_sizer.Add(self.text, 1, wx.TOP, 10)
         side_sizer.Add(self.spin, 1, wx.ALL, 5)
-        side_sizer.Add(self.run_button, 1, wx.ALL, 5)
-        side_sizer.Add(self.reset_view_button, 1, wx.ALL, 5)
+        side_sizer.Add(button_sizer, 1, wx.EXPAND | wx.ALL, 5)
         side_sizer.Add(self.text_box, 15, wx.EXPAND | wx.ALL, 5) # expanding text box
         side_sizer.Add(self.clear_button, 1, wx.EXPAND | wx.ALL, 5)
+        side_sizer.Add(self.message_display, 1, wx.EXPAND | wx.ALL, 5)
 
+        button_sizer.Add(self.reset_view_button, 1, wx.ALL, 5)
+        button_sizer.Add(self.run_button, 1, wx.ALL, 5)
+        
+        # Initialise window size and make main_sizer parent sizer
         self.SetSizeHints(600, 600)
         self.SetSizer(main_sizer)
 
@@ -389,26 +408,25 @@ class Gui(wx.Frame):
                         "\nm X - set a monitor on signal X"
                         "\nz X - zap the monitor on signal X"
                         "\nq - quit the simulation")
- 
 
-    def on_spin(self):
+    def on_spin(self, event):
         """Handle the event when the user changes the spin control value."""
         spin_value = self.spin.GetValue()
         text = "".join(["New spin control value: ", str(spin_value)])
         self.canvas.render(text)
 
-    def on_run_button(self):
+    def on_run_button(self, event):
         """Handle the event when the user clicks the run button."""
         text = "Run button pressed."
         self.canvas.render(text)
 
-    def on_clear_button(self):
+    def on_clear_button(self, event):
         """Handle the event when the user clicks the clear button."""
         text = "Clear button pressed."
         self.canvas.render(text)
         self.text_box.SetValue("> ")  # Clear the text box and add prompt
 
-    def on_reset_view_button(self):
+    def on_reset_view_button(self, event):
         """Handle the event when the user clicks the reset view button."""
         text = "Reset view button pressed"
         self.canvas.render(text)
