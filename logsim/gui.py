@@ -115,7 +115,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         
         # Draw logic gates using the LogicDrawer class
         
-        G1 = LogicDrawer("G1", x=50, y=200, n_inputs=6)
+        G1 = LogicDrawer("G1", x=50, y=200, n_inputs=16)
         G1.draw_and_gate()
         # Add the text label
         self.render_text(str(G1.name), G1.x + (G1.length / 2), G1.y + (G1.height / 2))
@@ -136,12 +136,12 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         G5.draw_xor_gate()
         self.render_text(str(G5.name), G5.x + (G5.length / 2), G5.y + (G5.height / 2))
         
-        SW1 = LogicDrawer("SW1", x=50, y=100)
+        SW1 = LogicDrawer("SWITCH1", x=50, y=100)
         SW1.draw_switch()
         # For switches render text under the circle
         self.render_text(str(SW1.name), SW1.x - 10, SW1.y - 30)
 
-        CLK1 = LogicDrawer("CLK1", x=150, y=100)
+        CLK1 = LogicDrawer("CLOCK1", x=150, y=100)
         CLK1.draw_clock()
         # For clocks render text under the square
         self.render_text(str(CLK1.name), CLK1.x - 10, CLK1.y - 30)
