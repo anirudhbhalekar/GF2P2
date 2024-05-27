@@ -134,7 +134,26 @@ class LogicDrawer:
         with the position, inputs and iterations inherited from the class."""
 
         # Start with the AND gate
-        LogicDrawer.draw_and_gate(self)
+        glColor3f(1.0, 0.0, 0.0)  # Red color
+        glBegin(GL_LINE_STRIP)
+        # Draw the straight body, x,y defined from bottom left corner
+        glVertex2f(self.x, self.y)
+        glVertex2f(self.x, self.y + self.height)
+        glVertex2f(self.x + self.length, self.y + self.height)      
+        
+        # Draw the curve part
+        R = (self.height / 2)
+        for i in range(self.n_iter + 1):
+            angle = (pi/2) - (i / float(self.n_iter)) * (pi)
+            x1 = R * cos(angle) + self.x + self.length 
+            y1 = R * sin(angle) + self.y + (self.height / 2)
+            glVertex2f(x1, y1)
+        
+        # Close the shape
+        glVertex2f(self.x + self.length, self.y)
+        glVertex2f(self.x, self.y)
+                         
+        glEnd()
 
         # Draw the circle for the NOT part, radius 5
         glColor3f(1.0, 0.0, 0.0)  # Red color
@@ -180,8 +199,8 @@ class LogicDrawer:
             self.make_circle(x_coord, y_coord)
             self.input_list.append((x_coord, y_coord))
 
-        self.output_list.append((self.x + self.length + self.height/2 + r, self.y + self.height/2 ))
-        self.make_circle(self.x + self.length + self.height/2 + r, self.y + self.height/2)
+        self.output_list.append((self.x + self.length + self.height/2 + 2*r, self.y + self.height/2 ))
+        self.make_circle(self.x + self.length + self.height/2 + 2*r, self.y + self.height/2)
         self.domain_list = [(self.x + 1, self.y + 1), (self.x + self.length + R + 2*r - 1, self.y + self.height - 1)]
 
     
@@ -207,19 +226,20 @@ class LogicDrawer:
         
         glEnd()
 
-        # List of tuples containing input locations
-        self.input_list = [(self.x, self.y + 5 + self.inc_height*i) for i in range(self.n_inputs)]
-        # List of tuple containing output location
-        self.output_list = [((self.x + self.length + (self.height / 2)), self.y + (self.height / 2))]
-        # List of tuples containing domain (bottom left, top right)
-        # Give padding 1 px
-        self.domain_list = [(self.x - 10 + 1, self.y - 10 + 1), (self.x + self.length + (self.height / 2) - 1, self.y + self.height + 10 - 1)]
+        inp_space = self.height - 2 * self.inc_height
+        div_space = inp_space/(self.n_inputs + 1)
 
-        # draw dots for input and output spaces
-        templist = (self.input_list + self.output_list)
-        for i in templist: 
-            x1, y1 = i[0], i[1]
-            self.make_circle(x1, y1)
+        for i in range(self.n_inputs): 
+            y_coord = self.y + self.inc_height + (i+1)*div_space
+            x_coord = self.x
+
+            self.make_circle(x_coord, y_coord)
+            self.input_list.append((x_coord, y_coord))
+
+        self.output_list.append((self.x + self.length + self.height/2, self.y + self.height/2 ))
+        self.make_circle(self.x + self.length + self.height/2, self.y + self.height/2)
+        self.domain_list = [(self.x - 10 + 1, self.y - 10 + 1), (self.x + self.length + (self.height / 2) - 1, self.y + self.height + 10 - 1)]
+    
 
     def draw_nor_gate(self):
         """Render and draw an OR gate from the LogicDrawer on the canvas,
@@ -240,7 +260,21 @@ class LogicDrawer:
             glVertex2f(x1, y1)
         glEnd()
 
-        # List of tuples containing input locations
+        inp_space = self.height - 2 * self.inc_height
+        div_space = inp_space/(self.n_inputs + 1)
+
+        for i in range(self.n_inputs): 
+            y_coord = self.y + self.inc_height + (i+1)*div_space
+            x_coord = self.x
+
+            self.make_circle(x_coord, y_coord)
+            self.input_list.append((x_coord, y_coord))
+        
+        self.output_list.append((self.x + self.length + self.height/2 + 2*r, self.y + self.height/2 ))
+        self.make_circle(self.x + self.length + self.height/2 + 2*r, self.y + self.height/2)
+        self.domain_list = [(self.x - 10 + 1, self.y - 10 + 1), (self.x + self.length + R + 2*r - 1, self.y + self.height + 10 - 1)]
+
+        """# List of tuples containing input locations
         self.input_list = [(self.x, self.y + 5 + self.inc_height*i) for i in range(self.n_inputs)]
         # List of tuple containing output location
         self.output_list = [((self.x + self.length + R + 2*r), (self.y + R))]
@@ -252,7 +286,7 @@ class LogicDrawer:
         templist = (self.input_list + self.output_list)
         for i in templist: 
             x1, y1 = i[0], i[1]
-            self.make_circle(x1, y1)
+            self.make_circle(x1, y1)"""
 
     def draw_xor_gate(self):
         """Render and draw an OR gate from the LogicDrawer on the canvas,
@@ -273,7 +307,21 @@ class LogicDrawer:
         glVertex2f(self.x - 20, self.y + self.height + 10)
         glEnd()
 
-        # List of tuples containing input locations
+        inp_space = self.height - 2 * self.inc_height
+        div_space = inp_space/(self.n_inputs + 1)
+
+        for i in range(self.n_inputs): 
+            y_coord = self.y + self.inc_height + (i+1)*div_space
+            x_coord = self.x
+
+            self.make_circle(x_coord, y_coord)
+            self.input_list.append((x_coord, y_coord))
+        
+        self.output_list.append((self.x + self.length + self.height/2 + 2*r, self.y + self.height/2 ))
+        self.make_circle(self.x + self.length + self.height/2 + 2*r, self.y + self.height/2)
+        self.domain_list = [(self.x - 10 - 10 + 1, self.y - 10 + 1), (self.x + self.length + (self.height / 2) - 1, self.y + self.height + 10 - 1)]
+
+        """# List of tuples containing input locations
         self.input_list = [(self.x - 10, self.y + 5 + self.inc_height*i) for i in range(self.n_inputs)]
         # List of tuple containing output location
         self.output_list = [((self.x + self.length + (self.height / 2)), (self.y + (self.height / 2)))]
@@ -285,7 +333,7 @@ class LogicDrawer:
         templist = (self.input_list + self.output_list)
         for i in templist: 
             x1, y1 = i[0], i[1]
-            self.make_circle(x1, y1)
+            self.make_circle(x1, y1)"""
 
     def draw_switch(self):
         """Render and draw a switch from the LogicDrawer on the canvas,
