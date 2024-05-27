@@ -25,7 +25,7 @@ from network import Network
 from monitors import Monitors
 from scanner import Scanner
 from parse import Parser
-from logicdraw import LogicDrawer
+from logicdraw import LogicDrawer, DrawConnections
 
 class MyGLCanvas(wxcanvas.GLCanvas):
     """Handle all drawing operations.
@@ -233,6 +233,14 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 GL.glRasterPos2f(x_pos, y_pos)
             else:
                 GLUT.glutBitmapCharacter(font, ord(character))
+    
+    def reset_view(self):
+        """Resets the view to the default state."""
+        self.pan_x = 0
+        self.pan_y = 0
+        self.zoom = 1
+        self.init = False
+        self.Refresh()  # triggers the paint event
 
 # class for dealing with text box
 class PromptedTextCtrl(wx.TextCtrl):
@@ -262,9 +270,6 @@ class PromptedTextCtrl(wx.TextCtrl):
         self.AppendText("\n> ")
         self.SetInsertionPointEnd()
 
-
-class TopPanel: 
-    pass
 
 class Gui(wx.Frame):
     """Configure the main window and all the widgets apart from the text box.
@@ -319,30 +324,33 @@ class Gui(wx.Frame):
 
         # Configure the widgets
         self.text = wx.StaticText(self, wx.ID_ANY, "Cycles")
-        self.spin = wx.SpinCtrl(self, wx.ID_ANY, initial=2, min=1, max=10)   # Spin is the up/down number widget. I set this to have a range of 1 to 10, with a default of 2
+        ''' Spin is the up/down number widget. 
+        For now, I set this to have a range of 1 to 10, with a default of 2
+        This will have to be changed as the user can specify clock cycle
+        (output changes every n cycles)'''
+        self.spin = wx.SpinCtrl(self, wx.ID_ANY, initial=2, min=1, max=10)
         self.run_button = wx.Button(self, wx.ID_ANY, "Run")
+        self.reset_view_button = wx.Button(self, wx.ID_ANY, "Reset View")
         self.text_box = PromptedTextCtrl(self, wx.ID_ANY, style=wx.TE_PROCESS_ENTER)
         self.clear_button = wx.Button(self, wx.ID_ANY, "Clear terminal") # button for clearing terminal output
-
-
-        # Initialise some empty matplotlib figure
-
-        self.figure = Figure(figsize=(5,2))
-        self.axes = self.figure.add_subplot(111)
-
-        self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
 
         # Bind events to widgets
         self.Bind(wx.EVT_MENU, self.on_menu)
         self.spin.Bind(wx.EVT_SPINCTRL, self.on_spin)
         self.run_button.Bind(wx.EVT_BUTTON, self.on_run_button)
         self.clear_button.Bind(wx.EVT_BUTTON, self.on_clear_button)
+        self.reset_view_button.Bind(wx.EVT_BUTTON, self.on_reset_view_button)
 
         # Configure sizers for layout
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)
         side_sizer = wx.BoxSizer(wx.VERTICAL)
         canvas_plot_sizer = wx.BoxSizer(wx.VERTICAL)
 
+        # Initialise some empty matplotlib figure
+        self.figure = Figure(figsize=(5,2))
+        self.axes = self.figure.add_subplot(111)
+
+        self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
         canvas_plot_sizer.Add(self.canvas, 1, wx.EXPAND | wx.ALL, 1)
         canvas_plot_sizer.Add(self.matplotlib_canvas, 1, wx.EXPAND | wx.ALL, 1)
 
@@ -352,6 +360,7 @@ class Gui(wx.Frame):
         side_sizer.Add(self.text, 1, wx.TOP, 10)
         side_sizer.Add(self.spin, 1, wx.ALL, 5)
         side_sizer.Add(self.run_button, 1, wx.ALL, 5)
+        side_sizer.Add(self.reset_view_button, 1, wx.ALL, 5)
         side_sizer.Add(self.text_box, 15, wx.EXPAND | wx.ALL, 5) # expanding text box
         side_sizer.Add(self.clear_button, 1, wx.EXPAND | wx.ALL, 5)
 
@@ -382,23 +391,28 @@ class Gui(wx.Frame):
                         "\nq - quit the simulation")
  
 
-    def on_spin(self, event):
+    def on_spin(self):
         """Handle the event when the user changes the spin control value."""
         spin_value = self.spin.GetValue()
         text = "".join(["New spin control value: ", str(spin_value)])
         self.canvas.render(text)
 
-    def on_run_button(self, event):
+    def on_run_button(self):
         """Handle the event when the user clicks the run button."""
         text = "Run button pressed."
         self.canvas.render(text)
 
-    def on_clear_button(self, event):
+    def on_clear_button(self):
         """Handle the event when the user clicks the clear button."""
         text = "Clear button pressed."
         self.canvas.render(text)
         self.text_box.SetValue("> ")  # Clear the text box and add prompt
 
+    def on_reset_view_button(self):
+        """Handle the event when the user clicks the reset view button."""
+        text = "Reset view button pressed"
+        self.canvas.render(text)
+        self.canvas.reset_view()
 
 class RunApp(wx.App): 
     """Combines Canvas onto App with Matplotlib"""
