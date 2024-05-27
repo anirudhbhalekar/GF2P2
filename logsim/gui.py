@@ -319,7 +319,10 @@ class Gui(wx.Frame):
 
         self.SetMenuBar(menuBar)
 
-        # Canvas for drawing signals
+        # Message display widget
+        self.message_display = wx.StaticText(self, wx.ID_ANY, "", style=wx.ALIGN_LEFT)
+
+        # Canvas for drawing
         self.canvas = MyGLCanvas(self, devices, monitors)
 
         # Configure the widgets
@@ -364,6 +367,7 @@ class Gui(wx.Frame):
         side_sizer.Add(button_sizer, 1, wx.EXPAND | wx.ALL, 5)
         side_sizer.Add(self.text_box, 15, wx.EXPAND | wx.ALL, 5) # expanding text box
         side_sizer.Add(self.clear_button, 1, wx.EXPAND | wx.ALL, 5)
+        side_sizer.Add(self.message_display, 0, wx.EXPAND | wx.ALL, 5)
 
         button_sizer.Add(self.reset_view_button, 1, wx.ALL, 5)
         button_sizer.Add(self.run_button, 1, wx.ALL, 5)
@@ -396,18 +400,18 @@ class Gui(wx.Frame):
                         "\nq - quit the simulation")
  
 
-    def on_spin(self):
+    def on_spin(self, event):
         """Handle the event when the user changes the spin control value."""
         spin_value = self.spin.GetValue()
         text = "".join(["New spin control value: ", str(spin_value)])
         self.canvas.render(text)
 
-    def on_run_button(self):
+    def on_run_button(self, event):
         """Handle the event when the user clicks the run button."""
         text = "Run button pressed."
         self.canvas.render(text)
 
-    def on_clear_button(self):
+    def on_clear_button(self, event):
         """Handle the event when the user clicks the clear button."""
         text = "Clear button pressed."
         self.canvas.render(text)
