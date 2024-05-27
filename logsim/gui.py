@@ -149,7 +149,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         DTYPE1 = LogicDrawer("DTYPE1", x=250, y=50)
         DTYPE1.draw_dtype()
         # For dtypes render text under the object
-        self.render_text(str(DTYPE1.name), DTYPE1.x + 10, DTYPE1.y - 10)
+        self.render_text(str(DTYPE1.name), DTYPE1.x, DTYPE1.y)
         
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front

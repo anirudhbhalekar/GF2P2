@@ -333,11 +333,12 @@ class LogicDrawer:
         glVertex2f(self.x - (self.width / 2), self.y - (self.height / 2))
         glEnd()
 
+        # triangle shape for clock dtype input
         glBegin(GL_LINE_STRIP)
-        glVertex2f(self.x - (self.width / 2), self.y - 2/16 * self.height)
-        glVertex2f(self.x - (self.width / 2), self.y - 6/16 * self.height)
-        glVertex2f(self.x - (self.width / 2) + (self.height/8), self.y - 4/16 * self.height)
-        glVertex2f(self.x - (self.width / 2), self.y - 2/16 * self.height)
+        glVertex2f(self.x - (self.width / 2), self.y - 7)
+        glVertex2f(self.x - (self.width / 2) + (self.height/8), self.y - 20)
+        glVertex2f(self.x - (self.width / 2), self.y - 33)
+        glVertex2f(self.x - (self.width / 2), self.y - 10)
         glEnd()
 
         '''
