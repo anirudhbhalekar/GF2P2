@@ -119,6 +119,22 @@ def test_error_definition_files(error_file_path):
 
     assert not bool_parse
 
+    # Error codes are hardcoded in the error files
+    # interim1_ex0_error.txt has 1 error
+    # interim1_ex1_error.txt has 2 errors
+    # interim1_ex2_error.txt has 3 errors
+
+    if 'interim1_ex0_error.txt' in error_file_path:
+        assert parser.error_count == 1
+    
+    elif 'interim1_ex1_error.txt' in error_file_path:
+        assert parser.error_count == 2
+    
+    elif 'interim1_ex2_error.txt' in error_file_path:
+        assert parser.error_count == 3
+
+
+
 # Need to check these unit test implementations
 # expected_op_list = [ [('G1', 'GATE', 'NAND', 'inputs', '2'), ('G2', 'GATE', 'NAND', 'inputs', '2'), 
 #                         ('SW1', 'DEVICE', 'SWITCH', 'initial', '0'), ('SW2', 'DEVICE', 'SWITCH', 'initial', '0')], 
