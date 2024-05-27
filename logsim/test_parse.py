@@ -128,7 +128,7 @@ def test_error_definition_files(error_file_path):
         assert parser.error_count == 1
     
     elif 'interim1_ex1_error.txt' in error_file_path:
-        assert parser.error_count == 2
+        assert parser.error_count == 1
     
     elif 'interim1_ex2_error.txt' in error_file_path:
         assert parser.error_count == 3

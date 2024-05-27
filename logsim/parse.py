@@ -84,7 +84,7 @@ class Parser:
         line_number = self.symbol.line_number
         character = self.symbol.character
         error_message = self.get_error_message(error_code)
-        print(f"Error Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}, String: {self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME else ''}")
+        print(f"Error Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}, String: {self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME or self.symbol.type == self.scanner.KEYWORD else ''}")
         print(f"Error code {error_code} at line {line_number}, character {character}: {error_message}")
         while (self.symbol.type not in stopping_symbols and self.symbol.type != self.scanner.EOF):
             self.symbol = self.scanner.get_symbol()
@@ -144,7 +144,7 @@ class Parser:
 
     def spec_file(self):
         """Implements rule spec_file = definition, connection, monitor, end;."""
-        self.definition({self.scanner.KEYWORD})
+        self.definition({self.scanner.SEMICOLON})
         self.connection({self.scanner.KEYWORD})
         self.monitor({self.scanner.KEYWORD})
         self.end({self.scanner.SEMICOLON})
@@ -157,6 +157,9 @@ class Parser:
                 self.def_list(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
             if self.symbol.type == self.scanner.SEMICOLON:
                 self.symbol = self.scanner.get_symbol()
+                # While the symbol is not CONNECT, keep search for next symbol - this ignores any extra definitions after the first SEMICOLON
+                while self.symbol.type != self.scanner.EOF and self.symbol.id != self.scanner.CONNECT_ID:
+                    self.symbol = self.scanner.get_symbol()
             else:
                 self.error(self.MISSING_SEMICOLON, stopping_symbols)
 
@@ -242,6 +245,8 @@ class Parser:
         
     def connection(self, stopping_symbols):
         """Implements rule connection = "CONNECT", [con_list], ";";"""
+        if self.symbol.type == self.scanner.EOF:
+            return
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.CONNECT_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
@@ -252,63 +257,75 @@ class Parser:
                 self.error(self.MISSING_SEMICOLON, stopping_symbols)
         else:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
+            # Keep searching until EOF or CONNECT
+            while self.symbol.type != self.scanner.EOF and self.symbol.type != self.scanner.KEYWORD:
+                self.symbol = self.scanner.get_symbol()
+
 
     def con_list(self, stopping_symbols):
         """Implement rule con_list = input_con, "=", output_con, {",", input_con, "=", output_con} ;"""
         in_device_id, in_port_id = self.input_con(stopping_symbols)
-        if self.symbol.type == self.scanner.EQUALS:
-            self.symbol = self.scanner.get_symbol()
-            out_device_id, out_port_id = self.output_con(stopping_symbols)
-            # Build network
+        if in_device_id is not None and in_port_id is not None:
+            print(f"input device id: {in_device_id}, input port id: {in_port_id}")
+            if self.symbol.type == self.scanner.EQUALS:
+                self.symbol = self.scanner.get_symbol()
+                out_device_id, out_port_id = self.output_con(stopping_symbols)
+            else:
+                self.error(self.INVALID_CONNECT_DELIMITER, stopping_symbols)
+                # Build network
             if self.error_count == 0:
                 error_type = self.network.make_connection(in_device_id, in_port_id, out_device_id, out_port_id)
                 if error_type != self.network.NO_ERROR:
                     # Find the corresponding error code 
                     self.error(error_type, stopping_symbols)
             
-            # Continue with more connections
-            while self.symbol.type == self.scanner.COMMA:
-                self.symbol = self.scanner.get_symbol()
-                in_device_id, in_port_id = self.input_con(stopping_symbols)
+        # Continue with more connections
+        while self.symbol.type == self.scanner.COMMA:
+            self.symbol = self.scanner.get_symbol()
+            in_device_id, in_port_id = self.input_con(stopping_symbols)
+            if in_device_id is not None and in_port_id is not None:
                 if self.symbol.type == self.scanner.EQUALS:
                     self.symbol = self.scanner.get_symbol()
                     out_device_id, out_port_id = self.output_con(stopping_symbols)
                 else:
+                    print(f"2 symbol type: {self.symbol.type}, symbol id: {self.symbol.id}")
                     self.error(self.INVALID_CONNECT_DELIMITER, stopping_symbols)
                 if self.error_count == 0:
                     error_type = self.network.make_connection(in_device_id, in_port_id, out_device_id, out_port_id)
                     if error_type != self.network.NO_ERROR:
                         self.error(error_type, stopping_symbols)
-        else:
-            self.error(self.INVALID_CONNECT_DELIMITER, stopping_symbols)
+
 
     def input_con(self, stopping_symbols):
         """Implements rule input_con = name, ".", input_notation;"""
         in_device_id = self.name(stopping_symbols)
-        if self.symbol.type == self.scanner.DOT:
-            self.symbol = self.scanner.get_symbol()
-            in_port_id = self.input_notation(stopping_symbols)
-            return in_device_id, in_port_id
-        else:
-            self.error(self.EXPECTED_PUNCTUATION, stopping_symbols)
-            return None, None
+        if in_device_id is not None:
+            if self.symbol.type == self.scanner.DOT:
+                self.symbol = self.scanner.get_symbol()
+                in_port_id = self.input_notation(stopping_symbols)
+                return in_device_id, in_port_id
+            else:
+                self.error(self.EXPECTED_PUNCTUATION, stopping_symbols)
+                return None, None
         
     
     def output_con(self, stopping_symbols):
         """Implements rule output_con = name, [".", output_notation];"""
         out_device_id = self.name(stopping_symbols)
-        if self.symbol.type == self.scanner.DOT:
-            self.symbol = self.scanner.get_symbol()
-            out_port_id = self.output_notation(stopping_symbols)
-        elif self.symbol.type == self.scanner.COMMA:
-            # If no dot, the output id is actually none according to the definition in devices
-            out_port_id = None
-        elif self.symbol.type == self.scanner.SEMICOLON:
-            out_port_id = None
-        else:
-            self.error(self.EXPECTED_PUNCTUATION, stopping_symbols)
-            return None, None
-        return out_device_id, out_port_id
+        if out_device_id is not None:
+            if self.symbol.type == self.scanner.DOT:
+                self.symbol = self.scanner.get_symbol()
+                out_port_id = self.output_notation(stopping_symbols)
+            elif self.symbol.type == self.scanner.COMMA:
+                # If no dot, the output id is actually none according to the definition in devices
+                out_port_id = None
+            elif self.symbol.type == self.scanner.SEMICOLON:
+                out_port_id = None
+            else:
+                self.error(self.EXPECTED_PUNCTUATION, stopping_symbols)
+                return None, None
+            return out_device_id, out_port_id
+        return None, None
 
     def input_notation(self, stopping_symbols):
         """Implements rule input_notation = "I", digit, {digit} | "DATA" | "CLK" | "CLEAR" | "SET";"""
@@ -351,6 +368,8 @@ class Parser:
 
     def monitor(self, stopping_symbols):
         """Implements rule monitor = "MONITOR", [output_con, {",", output_con}], ";";"""
+        if self.symbol.type == self.scanner.EOF:
+            return
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.MONITOR_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
@@ -367,6 +386,8 @@ class Parser:
 
     def end(self, stopping_symbols):
         """Implements rule end = "END", ";";"""
+        if self.symbol.type == self.scanner.EOF:
+            return
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.END_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type == self.scanner.SEMICOLON:
@@ -406,21 +427,4 @@ class Parser:
         return device_kind
 
     # Note that letter is already accounted for in the scanner module, where it is checked with isalpha()
-
-
-if __name__ == "__main__": 
-
-
-    file_path = "definition_files/test_ex_null.txt"
-    names = Names()
-    scanner = Scanner(file_path, names)
-
-    devices = Devices(names)
-    network = Network(names, devices)
-    monitors = Monitors(names, devices, network)
-    parser = Parser(names, devices, network, monitors, scanner) 
-
-    print(parser.operators_list)
-    parser.parse_network()
-    print(parser.operators_list)
 
