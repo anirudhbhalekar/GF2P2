@@ -115,7 +115,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         
         # Draw logic gates using the LogicDrawer class
         
-        G1 = LogicDrawer("G1", x=50, y=200)
+        G1 = LogicDrawer("G1", x=50, y=200, n_inputs=6)
         G1.draw_and_gate()
         # Add the text label
         self.render_text(str(G1.name), G1.x + (G1.length / 2), G1.y + (G1.height / 2))
@@ -361,7 +361,7 @@ class Gui(wx.Frame):
         self.figure = Figure(figsize=(5,2))
         self.axes = self.figure.add_subplot(111)
         self.axes.set_title("Monitor Plots")
-        self.axes.tick_params(axis = 'y', left = False, right = False, labelright = False, labelleft = False)
+        self.axes.tick_params(axis = 'both', left = False, right = False, labelright = False, labelleft = False, labelbottom = False)
         self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
 
         # Arrange sizers, all stemming from main sizer

@@ -1,5 +1,5 @@
 from math import cos, sin, pi
-from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, GL_LINE_STRIP, GL_LINE_LOOP
+from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, GL_LINE_STRIP, GL_LINE_LOOP, GL_POLYGON
 
 
 """ DOC STRING TO BE COMPLETED """
@@ -56,11 +56,27 @@ class LogicDrawer:
             self.draw_switch()
         else: 
             pass
+    
+    def make_circle(self, x, y): 
+        posx, posy = x, y    
+        sides = 10    
+        radius = 2
+        
+        glBegin(GL_POLYGON)    
+
+        for i in range(20):    
+            cosine= radius * cos(i*2*pi/sides) + posx    
+            sine  = radius * sin(i*2*pi/sides) + posy    
+            glVertex2f(cosine,sine)
+
+        glEnd()
 
     def draw_and_gate(self):
         """Render and draw an AND gate from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
         
+        
+
         glColor3f(1.0, 0.0, 0.0)  # Red color
         glBegin(GL_LINE_STRIP)
         # Draw the straight body
@@ -82,16 +98,18 @@ class LogicDrawer:
                          
         glEnd()
 
-        inp_space = self.operator_height - 2 * self.inc_height
+        inp_space = self.height - 2 * self.inc_height
         div_space = inp_space/(self.n_inputs + 1)
 
         for i in range(self.n_inputs): 
             y_coord = self.y + self.inc_height + (i+1)*div_space
             x_coord = self.x
 
+            self.make_circle(x_coord, y_coord)
             self.input_list.append((x_coord, y_coord))
         
         self.output_list.append((self.x + self.length + self.height/2, self.y + self.height/2 ))
+        self.make_circle(self.x + self.length + self.height/2, self.y + self.height/2)
     
     def draw_nand_gate(self):
         """Render and draw an NAND gate from the LogicDrawer on the canvas,
@@ -113,17 +131,18 @@ class LogicDrawer:
             glVertex2f(x1, y1)
         glEnd()
 
-        inp_space = self.operator_height - 2 * self.inc_height
+        inp_space = self.height - 2 * self.inc_height
         div_space = inp_space/(self.n_inputs + 1)
 
         for i in range(self.n_inputs): 
             y_coord = self.y + self.inc_height + (i+1)*div_space
             x_coord = self.x
 
+            self.make_circle(x_coord, y_coord)
             self.input_list.append((x_coord, y_coord))
         
         self.output_list.append((self.x + self.length + self.height/2, self.y + self.height/2 ))
-
+        self.make_circle(self.x + self.length + self.height/2, self.y + self.height/2)
     
     def draw_or_gate(self):
         """Render and draw an OR gate from the LogicDrawer on the canvas,
@@ -156,6 +175,19 @@ class LogicDrawer:
         
         glEnd()
 
+        inp_space = self.height - 2 * self.inc_height
+        div_space = inp_space/(self.n_inputs + 1)
+
+        for i in range(self.n_inputs): 
+            y_coord = self.y + self.inc_height + (i+1)*div_space
+            x_coord = self.x
+
+            self.make_circle(x_coord, y_coord)
+            self.input_list.append((x_coord, y_coord))
+        
+        self.output_list.append((self.x + self.length + self.height/2, self.y + self.height/2 ))
+        self.make_circle(self.x + self.length + self.height/2, self.y + self.height/2)
+
     def draw_nor_gate(self):
         """Render and draw an OR gate from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
@@ -175,6 +207,19 @@ class LogicDrawer:
             glVertex2f(x1, y1)
         glEnd()
 
+        inp_space = self.height - 2 * self.inc_height
+        div_space = inp_space/(self.n_inputs + 1)
+
+        for i in range(self.n_inputs): 
+            y_coord = self.y + self.inc_height + (i+1)*div_space
+            x_coord = self.x
+
+            self.make_circle(x_coord, y_coord)
+            self.input_list.append((x_coord, y_coord))
+        
+        self.output_list.append((self.x + self.length + self.height/2, self.y + self.height/2 ))
+        self.make_circle(self.x + self.length + self.height/2, self.y + self.height/2)
+
     def draw_xor_gate(self):
         """Render and draw an OR gate from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
@@ -193,6 +238,19 @@ class LogicDrawer:
         glVertex2f(self.x - 10, self.y + self.height)
         glVertex2f(self.x - 20, self.y + self.height + 10)
         glEnd()
+
+        inp_space = self.height - 2 * self.inc_height
+        div_space = inp_space/(self.n_inputs + 1)
+
+        for i in range(self.n_inputs): 
+            y_coord = self.y + self.inc_height + (i+1)*div_space
+            x_coord = self.x
+
+            self.make_circle(x_coord, y_coord)
+            self.input_list.append((x_coord, y_coord))
+        
+        self.output_list.append((self.x + self.length + self.height/2, self.y + self.height/2 ))
+        self.make_circle(self.x + self.length + self.height/2, self.y + self.height/2)
 
     def draw_switch(self):
         """Render and draw a switch from the LogicDrawer on the canvas,
@@ -214,6 +272,9 @@ class LogicDrawer:
             glVertex2f(x1, y1)
         glEnd()
 
+        self.output_list.append((self.x + r, self.y))
+        self.make_circle(self.x + r, self.y)
+
     def draw_clock(self):
         """Render and draw a clock from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
@@ -230,7 +291,10 @@ class LogicDrawer:
         glVertex2f(self.x + (self.width / 2), self.y - (self.height / 2))
         glVertex2f(self.x - (self.width / 2), self.y - (self.height / 2))
         glEnd()
-    
+
+        self.output_list.append((self.x + self.width/2, self.y))
+        self.make_circle(self.x + self.width/2, self.y)
+
     def draw_dtype(self):
         """Render and draw a DTYPE from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
@@ -243,10 +307,42 @@ class LogicDrawer:
         glColor3f(0.0, 0.0, 1.0)  # Blue color
         glBegin(GL_LINE_STRIP)
         glVertex2f(self.x - (self.width / 2), self.y - (self.height / 2))
-        glVertex2f(self.x - (self.height / 2), self.y + (self.height / 2))
+        glVertex2f(self.x - (self.width / 2), self.y + (self.height / 2))
         glVertex2f(self.x + (self.width / 2), self.y + (self.height / 2))
         glVertex2f(self.x + (self.width / 2), self.y - (self.height / 2))
         glVertex2f(self.x - (self.width / 2), self.y - (self.height / 2))
         glEnd()
 
+        glBegin(GL_LINE_STRIP)
+        glVertex2f(self.x - (self.width / 2), self.y - 2/16 * self.height)
+        glVertex2f(self.x - (self.width / 2), self.y - 6/16 * self.height)
+        glVertex2f(self.x - (self.width / 2) + (self.height/8), self.y - 4/16 * self.height)
+        glVertex2f(self.x - (self.width / 2), self.y - 2/16 * self.height)
+        glEnd()
 
+
+        s_coord = (self.x, self.y + self.height/2)
+        r_coord = (self.x, self.y - self.height/2)
+
+        d_coord = (self.x - self.width/2, self.y + 2/8 * self.height)
+        ck_coord = (self.x - self.width/2, self.y - 2/8 * self.height)
+
+        q_coord = (self.x + self.width/2, self.y + 2/8 * self.height)
+        qb_coord = (self.x + self.width/2, self.y - 2/8 * self.height)
+
+        self.make_circle(s_coord[0], s_coord[1])
+        self.make_circle(r_coord[0], r_coord[1])
+        self.make_circle(d_coord[0], d_coord[1])
+        self.make_circle(ck_coord[0], ck_coord[1])
+        self.make_circle(q_coord[0], q_coord[1])
+        self.make_circle(qb_coord[0], qb_coord[1])
+
+        self.input_list.append(s_coord)
+        self.input_list.append(r_coord)
+        self.input_list.append(d_coord)
+        self.input_list.append(ck_coord)
+
+        self.output_list.append(q_coord)
+        self.output_list.append(qb_coord)
+
+        
