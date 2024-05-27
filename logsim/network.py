@@ -114,9 +114,9 @@ class Network:
 
         Return self.NO_ERROR if successful, or the corresponding error if not.
         """
-        print(f"Input Device ID: {first_device_id}, Input Port ID: {first_port_id}, Output Device ID: {second_device_id}, Output Port ID: {second_port_id}")
-        print(f"Type of first_device_id: {type(first_device_id)}, Type of first_port_id: {type(first_port_id)}, Type of second_device_id: {type(second_device_id)}, Type of second_port_id: {type(second_port_id)}")
-        # print(f"Input Device Name: {self.names.get_name_string(first_device_id)}, Input Port Name: {self.names.get_name_string(first_port_id)}, Output Device Name: {self.names.get_name_string(second_device_id)}, Output Port Name: {self.names.get_name_string(second_port_id)}")
+        # print(f"Input Device ID: {first_device_id}, Input Port ID: {first_port_id}, Output Device ID: {second_device_id}, Output Port ID: {second_port_id}")
+        # print(f"Type of first_device_id: {type(first_device_id)}, Type of first_port_id: {type(first_port_id)}, Type of second_device_id: {type(second_device_id)}, Type of second_port_id: {type(second_port_id)}")
+        
         first_device = self.devices.get_device(first_device_id)
         second_device = self.devices.get_device(second_device_id)
 
@@ -124,7 +124,6 @@ class Network:
             error_type = self.DEVICE_ABSENT
 
         elif first_port_id in first_device.inputs:
-            print(second_device.outputs)
             if first_device.inputs[first_port_id] is not None:
                 # Input is already in a connection
                 error_type = self.INPUT_CONNECTED
@@ -137,8 +136,6 @@ class Network:
                                                       second_port_id)
                 error_type = self.NO_ERROR
             else:  # second_port_id is not a valid input or output port
-                print(f"Second Port ID: {second_port_id}")
-                print(f"Name of Second Port ID: {self.names.get_name_string(second_port_id)}")
                 error_type = self.PORT_ABSENT
 
         elif first_port_id in first_device.outputs:

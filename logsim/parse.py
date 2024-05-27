@@ -182,6 +182,8 @@ class Parser:
             if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                 self.symbol = self.scanner.get_symbol()
                 device_property = self.set_param(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
+            else:
+                device_property = None
             
             # self.operators_list.append((self.curr_name, self.curr_type, self.curr_sub_type,
             #                             self.curr_ptype, self.curr_pval)) # Add first operator
@@ -205,6 +207,8 @@ class Parser:
                     if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                         self.symbol = self.scanner.get_symbol()
                         device_property = self.set_param(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
+                    else:
+                        device_property = None
                 else:
                     self.error(self.MISSING_SEMICOLON, stopping_symbols)
                 # Make device
@@ -226,9 +230,11 @@ class Parser:
         if self.symbol.type == self.scanner.EQUALS:
             self.symbol = self.scanner.get_symbol()
             device_property = self.value(stopping_symbols)
+            return device_property
         else:
             self.error(self.EXPECTED_EQUALS, stopping_symbols)
-        return device_property
+            return None
+
 
     def param(self, stopping_symbols):
         """Implements rule param = "inputs" | "initial" | "cycle_rep";"""
@@ -264,7 +270,7 @@ class Parser:
         if self.symbol.type == self.scanner.EQUALS:
             self.symbol = self.scanner.get_symbol()
             out_device_id, out_port_id = self.output_con(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
-            # Built network
+            # Build network
             if self.error_count == 0:
                 error_type = self.network.make_connection(in_device_id, in_port_id, out_device_id, out_port_id)
                 if error_type != self.network.NO_ERROR:
@@ -274,10 +280,10 @@ class Parser:
             # Continue with more connections
             while self.symbol.type == self.scanner.COMMA:
                 self.symbol = self.scanner.get_symbol()
-                self.input_con(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
+                in_device_id, in_port_id = self.input_con(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
                 if self.symbol.type == self.scanner.EQUALS:
                     self.symbol = self.scanner.get_symbol()
-                    self.output_con(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
+                    out_device_id, out_port_id = self.output_con(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
                 else:
                     self.error(self.INVALID_CONNECT_DELIMITER, stopping_symbols)
                 if self.error_count == 0:
@@ -293,9 +299,11 @@ class Parser:
         if self.symbol.type == self.scanner.DOT:
             self.symbol = self.scanner.get_symbol()
             in_port_id = self.input_notation(stopping_symbols)
+            return in_device_id, in_port_id
         else:
             self.error(self.EXPECTED_PUNCTUATION, stopping_symbols)
-        return in_device_id, in_port_id
+            return None, None
+        
     
     def output_con(self, stopping_symbols):
         """Implements rule output_con = name, [".", output_notation];"""
@@ -310,6 +318,7 @@ class Parser:
             out_port_id = None
         else:
             self.error(self.EXPECTED_PUNCTUATION, stopping_symbols)
+            return None, None
         return out_device_id, out_port_id
 
     def input_notation(self, stopping_symbols):
@@ -325,16 +334,21 @@ class Parser:
                 self.symbol = self.scanner.get_symbol()
             else:
                 self.error(self.INVALID_PIN_REF, stopping_symbols)
+                return None
         else:
             self.error(self.INVALID_PIN_REF, stopping_symbols)
+            return None
         return in_port_id
 
     def output_notation(self, stopping_symbols):
         """Implements rule output_notation =  "Q" | "QBAR" ;"""
         if self.symbol.type == self.scanner.DTYPE_OUTPUT:
+            out_port_id = self.symbol.id
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.INVALID_PIN_REF, stopping_symbols)
+            return None
+        return out_port_id
 
     def name(self, stopping_symbols):
         """Implements name = letter, {letter | digit};, but name is returned as a full symbol from scanner"""
@@ -344,6 +358,7 @@ class Parser:
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.EXPECTED_NAME, stopping_symbols)
+            return None
         return name
 
     def monitor(self, stopping_symbols):
@@ -381,6 +396,7 @@ class Parser:
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.EXPECTED_NUMBER, stopping_symbols)
+            return None
         # Convert str to int
         return int(value)
 

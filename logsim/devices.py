@@ -283,9 +283,9 @@ class Devices:
 
         Return self.NO_ERROR if successful. Return corresponding error if not.
         """
-        print(f"Device ID: {device_id}, Device Kind: {device_kind}, Device Property: {device_property}")
-        print(type(device_id), type(device_kind), type(device_property))
-        print(f"Device name: {self.names.get_name_string(int(device_id))}, Device kind: {self.names.get_name_string(int(device_kind))}")
+        # print(f"Device ID: {device_id}, Device Kind: {device_kind}, Device Property: {device_property}")
+        # print(type(device_id), type(device_kind), type(device_property))
+        # print(f"Device name: {self.names.get_name_string(int(device_id))}, Device kind: {self.names.get_name_string(int(device_kind))}")
         # Device has already been added to the devices_list
         if self.get_device(device_id) is not None:
             error_type = self.DEVICE_PRESENT

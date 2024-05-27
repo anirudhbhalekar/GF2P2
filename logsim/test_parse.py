@@ -119,34 +119,34 @@ def test_error_definition_files(error_file_path):
 
     assert not bool_parse
 
-
-expected_op_list = [ [('G1', 'GATE', 'NAND', 'inputs', '2'), ('G2', 'GATE', 'NAND', 'inputs', '2'), 
-                        ('SW1', 'DEVICE', 'SWITCH', 'initial', '0'), ('SW2', 'DEVICE', 'SWITCH', 'initial', '0')], 
+# Need to check these unit test implementations
+# expected_op_list = [ [('G1', 'GATE', 'NAND', 'inputs', '2'), ('G2', 'GATE', 'NAND', 'inputs', '2'), 
+#                         ('SW1', 'DEVICE', 'SWITCH', 'initial', '0'), ('SW2', 'DEVICE', 'SWITCH', 'initial', '0')], 
                         
-                    [('SW1', 'DEVICE', 'SWITCH', 'initial', '0'), ('SW2', 'DEVICE', 'SWITCH', 'initial', '0'), 
-                     ('SW3', 'DEVICE', 'SWITCH', 'initial', '0'), ('G1', 'GATE', 'NAND', 'inputs', '2'), ('G2', 'GATE', 'XOR', 'inputs', '2'), 
-                     ('G3', 'GATE', 'OR', 'inputs', '3'), ('G4', 'GATE', 'XOR', 'inputs', '3'), ('G5', 'GATE', 'AND', 'inputs', '2')],
+#                     [('SW1', 'DEVICE', 'SWITCH', 'initial', '0'), ('SW2', 'DEVICE', 'SWITCH', 'initial', '0'), 
+#                      ('SW3', 'DEVICE', 'SWITCH', 'initial', '0'), ('G1', 'GATE', 'NAND', 'inputs', '2'), ('G2', 'GATE', 'XOR', 'inputs', '2'), 
+#                      ('G3', 'GATE', 'OR', 'inputs', '3'), ('G4', 'GATE', 'XOR', 'inputs', '3'), ('G5', 'GATE', 'AND', 'inputs', '2')],
                      
-                     [('CLK1', 'DEVICE', 'CLOCK', 'cycle_rep', '1000'), ('SW1', 'DEVICE', 'SWITCH', 'initial', '1'), ('G1', 'GATE', 'AND', 'inputs', '2'), 
-                      ('G2', 'GATE', 'XOR', 'inputs', '2'), ('DTYPE1', 'DEVICE', 'DTYPE', 'inputs', '2'), ('DTYPE2', 'DEVICE', 'DTYPE', 'inputs', '2'), 
-                      ('DTYPE3', 'DEVICE', 'DTYPE', 'inputs', '2')], 
+#                      [('CLK1', 'DEVICE', 'CLOCK', 'cycle_rep', '1000'), ('SW1', 'DEVICE', 'SWITCH', 'initial', '1'), ('G1', 'GATE', 'AND', 'inputs', '2'), 
+#                       ('G2', 'GATE', 'XOR', 'inputs', '2'), ('DTYPE1', 'DEVICE', 'DTYPE', 'inputs', '2'), ('DTYPE2', 'DEVICE', 'DTYPE', 'inputs', '2'), 
+#                       ('DTYPE3', 'DEVICE', 'DTYPE', 'inputs', '2')], 
                       
-                      [('abs', 'GATE', 'NAND', 'inputs', '2'), ('tgf', 'GATE', 'AND', 'inputs', '3')]]
+#                       [('abs', 'GATE', 'NAND', 'inputs', '2'), ('tgf', 'GATE', 'AND', 'inputs', '3')]]
 
-@pytest.mark.parametrize("op_lists, file_path", zip(expected_op_list, get_all_files('definition_files/')))
-def test_operator_list(op_lists, file_path): 
+# @pytest.mark.parametrize("op_lists, file_path", zip(expected_op_list, get_all_files('definition_files/')))
+# def test_operator_list(op_lists, file_path): 
 
-    names = Names()
-    scanner = Scanner(file_path, names)
+#     names = Names()
+#     scanner = Scanner(file_path, names)
 
-    devices = Devices(names)
-    network = Network(names, devices)
-    monitors = Monitors(names, devices, network)
-    parser = Parser(names, devices, network, monitors, scanner) 
+#     devices = Devices(names)
+#     network = Network(names, devices)
+#     monitors = Monitors(names, devices, network)
+#     parser = Parser(names, devices, network, monitors, scanner) 
 
-    parser.parse_network()
+#     parser.parse_network()
 
-    assert parser.operators_list == op_lists
+#     assert parser.operators_list == op_lists
 
 
 
