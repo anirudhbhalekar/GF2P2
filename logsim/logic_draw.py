@@ -330,6 +330,7 @@ class LogicDrawer:
         q_coord = (self.x + self.width/2, self.y + 2/8 * self.height)
         qb_coord = (self.x + self.width/2, self.y - 2/8 * self.height)
 
+        
         self.make_circle(s_coord[0], s_coord[1])
         self.make_circle(r_coord[0], r_coord[1])
         self.make_circle(d_coord[0], d_coord[1])
