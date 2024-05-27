@@ -26,7 +26,7 @@ from monitors import Monitors
 from scanner import Scanner
 from parse import Parser
 
-class LogicGateDrawer:
+class LogicDrawer:
     """Handle all logic gate drawings."""
     
     def __init__(self, name, x, y, n_iter=10, n_inputs=2):
@@ -48,10 +48,10 @@ class LogicGateDrawer:
             self.length = 35
 
     def draw_and_gate(self):
-        """Render and draw an AND gate from the LogicGateDrawer on the canvas,
+        """Render and draw an AND gate from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
         
-        glColor3f(0.0, 0.0, 0.0)  # Black color
+        glColor3f(1.0, 0.0, 0.0)  # Red color
         glBegin(GL_LINE_STRIP)
         # Draw the straight body
         glVertex2f(self.x, self.y)
@@ -73,15 +73,16 @@ class LogicGateDrawer:
         glEnd()
     
     def draw_nand_gate(self):
-        """Render and draw an NAND gate from the LogicGateDrawer on the canvas,
+        """Render and draw an NAND gate from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
 
         # Start with the AND gate
-        LogicGateDrawer.draw_and_gate(self)
+        LogicDrawer.draw_and_gate(self)
 
         # Draw the circle for the NOT part, radius 5
+        glColor3f(1.0, 0.0, 0.0)  # Red color
         glBegin(GL_LINE_LOOP)
-        for i in range(self.n_iter):
+        for i in range(self.n_iter + 1):
             angle = 2 * pi * i / float(self.n_iter)
             # Must add radius to x length for x1 argument
             r = 5
@@ -93,11 +94,11 @@ class LogicGateDrawer:
 
     
     def draw_or_gate(self):
-        """Render and draw an OR gate from the LogicGateDrawer on the canvas,
+        """Render and draw an OR gate from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
 
         # Note that x,y is defined from the bottom left of the vertical line on the left
-
+        glColor3f(1.0, 0.0, 0.0)  # Red color
         glBegin(GL_LINE_STRIP)
         glVertex2f(self.x, self.y)
         glVertex2f(self.x, self.y + self.height)
@@ -124,15 +125,15 @@ class LogicGateDrawer:
         glEnd()
 
     def draw_nor_gate(self):
-        """Render and draw an OR gate from the LogicGateDrawer on the canvas,
+        """Render and draw an OR gate from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
 
         # Note that x,y is defined from the bottom left of the vertical line on the left, as with OR gate
-        LogicGateDrawer.draw_or_gate(self)
-        
+        LogicDrawer.draw_or_gate(self)
+        glColor3f(1.0, 0.0, 0.0)  # Red color
         # Draw the circle for the NOT part, radius 5
         glBegin(GL_LINE_LOOP)
-        for i in range(self.n_iter):
+        for i in range(self.n_iter + 1):
             angle = 2 * pi * i / float(self.n_iter)
             # Must add radius to x length for x1 argument
             r = 5
@@ -143,7 +144,7 @@ class LogicGateDrawer:
         glEnd()
 
     def draw_xor_gate(self):
-        """Render and draw an OR gate from the LogicGateDrawer on the canvas,
+        """Render and draw an OR gate from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
 
         # n_inputs is ONLY 2 here -- don't modify n_inputs as its default is 2. 
@@ -151,14 +152,68 @@ class LogicGateDrawer:
         assert self.height == 40
 
         # Note that x,y is defined from the bottom left of the vertical line on the left, as with OR gate
-        LogicGateDrawer.draw_or_gate(self)
-        
+        LogicDrawer.draw_or_gate(self)
+        glColor3f(1.0, 0.0, 0.0)  # Red color
         glBegin(GL_LINE_STRIP)
         # x distance 10 to the left of the OR gate
         glVertex2f(self.x - 20, self.y - 10)
         glVertex2f(self.x - 10, self.y)
         glVertex2f(self.x - 10, self.y + self.height)
         glVertex2f(self.x - 20, self.y + self.height + 10)
+        glEnd()
+
+    def draw_switch(self):
+        """Render and draw a switch from the LogicDrawer on the canvas,
+        with the position, inputs and iterations inherited from the class."""
+
+        # Radius 20
+        self.height = 40
+        self.width = self.height
+
+        # NB x, y defined from centre of circle
+        glColor3f(0.0, 1.0, 0.0)  # Green color
+        glBegin(GL_LINE_LOOP)
+        for i in range(self.n_iter + 1):
+            angle = 2 * pi * i / float(self.n_iter)
+            r = self.height / 2
+            x1 = r * cos(angle) + self.x 
+            y1 = r * sin(angle) + self.y 
+            glVertex2f(x1, y1)
+        glEnd()
+
+    def draw_clock(self):
+        """Render and draw a clock from the LogicDrawer on the canvas,
+        with the position, inputs and iterations inherited from the class."""
+
+        self.height = 40
+        self.width = self.height
+
+        # x, y defined from bottom left corner of square
+        glColor3f(0.0, 1.0, 0.0)  # Green color
+        glBegin(GL_LINE_STRIP)
+        glVertex2f(self.x, self.y)
+        glVertex2f(self.x, self.y + self.height)
+        glVertex2f(self.x + self.width, self.y + self.height)
+        glVertex2f(self.x + self.width, self.y)
+        glVertex2f(self.x, self.y)
+        glEnd()
+    
+    def draw_dtype(self):
+        """Render and draw a DTYPE from the LogicDrawer on the canvas,
+        with the position, inputs and iterations inherited from the class."""
+
+        # x, y defined from bottom left corner of rectangle
+        # DTYPE has height 100, width 60
+        self.height = 100
+        self.width = 60
+
+        glColor3f(0.0, 0.0, 1.0)  # Blue color
+        glBegin(GL_LINE_STRIP)
+        glVertex2f(self.x, self.y)
+        glVertex2f(self.x, self.y + self.height)
+        glVertex2f(self.x + self.width, self.y + self.height)
+        glVertex2f(self.x + self.width, self.y)
+        glVertex2f(self.x, self.y)
         glEnd()
 
 
@@ -248,37 +303,43 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         self.render_text(text, 10, 10)
 
         
-        # Draw logic gates using the LogicGateDrawer class
+        # Draw logic gates using the LogicDrawer class
         
-        G1 = LogicGateDrawer("G1", x=50, y=200)
+        G1 = LogicDrawer("G1", x=50, y=200)
         G1.draw_and_gate()
         # Add the text label
         self.render_text(str(G1.name), G1.x + (G1.length / 2), G1.y + (G1.height / 2))
 
-        G2 = LogicGateDrawer("G2", x=150, y=200)
+        G2 = LogicDrawer("G2", x=150, y=200)
         G2.draw_nand_gate()
-        # Add the text label
         self.render_text(str(G2.name), G2.x + (G2.length / 2), G2.y + (G2.height / 2))
 
-        G3 = LogicGateDrawer("G3", x=250, y = 200)
+        G3 = LogicDrawer("G3", x=250, y = 200)
         G3.draw_or_gate()
-        # Add the text label
         self.render_text(str(G3.name), G3.x + (G3.length / 2), G3.y + (G3.height / 2))
 
-        G4 = LogicGateDrawer("G4", x=350, y = 200)
+        G4 = LogicDrawer("G4", x=350, y = 200)
         G4.draw_nor_gate()
-        # Add the text label
         self.render_text(str(G4.name), G4.x + (G4.length / 2), G4.y + (G4.height / 2))
 
-        G5 = LogicGateDrawer("G5", x=450, y = 200)
+        G5 = LogicDrawer("G5", x=450, y = 200)
         G5.draw_xor_gate()
-        # Add the text label
         self.render_text(str(G5.name), G5.x + (G5.length / 2), G5.y + (G5.height / 2))
-        #LogicGateDrawer.draw_nand_gate(150, 200)
-        #LogicGateDrawer.draw_or_gate(250, 200)
-        #LogicGateDrawer.draw_nor_gate(350, 200)
-        #LogicGateDrawer.draw_xor_gate(450, 200)
-              
+        
+        SW1 = LogicDrawer("SW1", x=50, y=100)
+        SW1.draw_switch()
+        # For switches render text under the circle
+        self.render_text(str(SW1.name), SW1.x - 10, SW1.y - 30)
+
+        CLK1 = LogicDrawer("CLK1", x=150, y=100)
+        CLK1.draw_clock()
+        # For clocks render text under the square
+        self.render_text(str(CLK1.name), CLK1.x, CLK1.y - 10)
+
+        DTYPE1 = LogicDrawer("DTYPE1", x=250, y=50)
+        DTYPE1.draw_dtype()
+        # For dtypes render text under the object
+        self.render_text(str(DTYPE1.name), DTYPE1.x + 10, DTYPE1.y - 10)
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front
         GL.glFlush()
