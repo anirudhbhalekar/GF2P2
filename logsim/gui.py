@@ -460,7 +460,7 @@ class Gui(wx.Frame):
 
         # Initialise some empty matplotlib figure
 
-        self.figure = Figure(figsize=(10,3))
+        self.figure = Figure(figsize=(5,2))
         self.axes = self.figure.add_subplot(111)
 
         self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
