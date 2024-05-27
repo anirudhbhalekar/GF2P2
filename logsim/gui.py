@@ -359,10 +359,12 @@ class Gui(wx.Frame):
         # Initialise some empty matplotlib figure
         self.figure = Figure(figsize=(5,2))
         self.axes = self.figure.add_subplot(111)
+        self.axes.set_title("Monitor Plots")
+        self.axes.tick_params(axis = 'y', left = False, right = False, labelright = False, labelleft = False)
         self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
 
         # Arrange sizers, all stemming from main sizer
-        canvas_plot_sizer.Add(self.canvas, 1, wx.EXPAND | wx.ALL, 1)
+        canvas_plot_sizer.Add(self.canvas, 2, wx.EXPAND | wx.ALL, 1)
         canvas_plot_sizer.Add(self.matplotlib_canvas, 1, wx.EXPAND | wx.ALL, 1)
 
         main_sizer.Add(canvas_plot_sizer, 5, wx.EXPAND | wx.ALL, 5)
