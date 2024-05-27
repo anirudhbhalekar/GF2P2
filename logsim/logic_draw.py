@@ -8,7 +8,7 @@ from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, GL_LINE_STRIP, GL_L
 class LogicDrawer:
     """Handle all logic gate drawings."""
     
-    def __init__(self, name, x, y, n_iter=10, n_inputs=2):
+    def __init__(self, name, x, y, n_iter=10, n_inputs=2, ):
             """Initialize logic drawer with the number of inputs for 
             certain gates and also the number of iterations used to
             draw circles for certain gates."""
@@ -155,7 +155,8 @@ class LogicDrawer:
         self.height = 40
         self.width = self.height
 
-        # NB x, y defined from centre of circle
+        # x, y defined from CENTRE of circle
+
         glColor3f(0.0, 1.0, 0.0)  # Green color
         glBegin(GL_LINE_LOOP)
         for i in range(self.n_iter + 1):
@@ -173,34 +174,32 @@ class LogicDrawer:
         self.height = 40
         self.width = self.height
 
-        # x, y defined from bottom left corner of square
+        # x, y defined from CENTRE of square
         glColor3f(0.0, 1.0, 0.0)  # Green color
         glBegin(GL_LINE_STRIP)
-        glVertex2f(self.x, self.y)
-        glVertex2f(self.x, self.y + self.height)
-        glVertex2f(self.x + self.width, self.y + self.height)
-        glVertex2f(self.x + self.width, self.y)
-        glVertex2f(self.x, self.y)
+        glVertex2f(self.x - (self.width / 2), self.y - (self.height / 2))
+        glVertex2f(self.x - (self.height / 2), self.y + (self.height / 2))
+        glVertex2f(self.x + (self.width / 2), self.y + (self.height / 2))
+        glVertex2f(self.x + (self.width / 2), self.y - (self.height / 2))
+        glVertex2f(self.x - (self.width / 2), self.y - (self.height / 2))
         glEnd()
     
     def draw_dtype(self):
         """Render and draw a DTYPE from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
 
-        # x, y defined from bottom left corner of rectangle
+        # x, y defined from CENTRE of rectangle
         # DTYPE has height 100, width 60
         self.height = 100
         self.width = 60
 
         glColor3f(0.0, 0.0, 1.0)  # Blue color
         glBegin(GL_LINE_STRIP)
-        glVertex2f(self.x, self.y)
-        glVertex2f(self.x, self.y + self.height)
-        glVertex2f(self.x + self.width, self.y + self.height)
-        glVertex2f(self.x + self.width, self.y)
-        glVertex2f(self.x, self.y)
+        glVertex2f(self.x - (self.width / 2), self.y - (self.height / 2))
+        glVertex2f(self.x - (self.height / 2), self.y + (self.height / 2))
+        glVertex2f(self.x + (self.width / 2), self.y + (self.height / 2))
+        glVertex2f(self.x + (self.width / 2), self.y - (self.height / 2))
+        glVertex2f(self.x - (self.width / 2), self.y - (self.height / 2))
         glEnd()
 
 
-class DrawConnections: 
-    pass
