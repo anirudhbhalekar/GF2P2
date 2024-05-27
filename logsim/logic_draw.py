@@ -32,6 +32,31 @@ class LogicDrawer:
             # we can maybe add self.length later to make the length scale with gates
             self.length = self.operator_length
 
+
+            self.input_list = []
+            self.output_list = [] # These store input and output xy coords for drawing connections
+
+    def draw_with_string(self, op_string): 
+
+        if op_string == "AND": 
+            self.draw_and_gate()
+        elif op_string == "NAND": 
+            self.draw_nand_gate()
+        elif op_string == "OR": 
+            self.draw_or_gate()
+        elif op_string == "NOR": 
+            self.draw_nor_gate()
+        elif op_string == "XOR": 
+            self.draw_xor_gate()
+        elif op_string == "CLOCK": 
+            self.draw_clock()
+        elif op_string == "DTYPE": 
+            self.draw_dtype()
+        elif op_string == "SWITCH": 
+            self.draw_switch()
+        else: 
+            pass
+
     def draw_and_gate(self):
         """Render and draw an AND gate from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
@@ -56,6 +81,17 @@ class LogicDrawer:
         glVertex2f(self.x, self.y)
                          
         glEnd()
+
+        inp_space = self.operator_height - 2 * self.inc_height
+        div_space = inp_space/(self.n_inputs + 1)
+
+        for i in range(self.n_inputs): 
+            y_coord = self.y + self.inc_height + (i+1)*div_space
+            x_coord = self.x
+
+            self.input_list.append((x_coord, y_coord))
+        
+        self.output_list.append((self.x + self.length + self.height/2, self.y + self.height/2 ))
     
     def draw_nand_gate(self):
         """Render and draw an NAND gate from the LogicDrawer on the canvas,
@@ -76,6 +112,17 @@ class LogicDrawer:
             y1 = r * sin(angle) + self.y + (self.height / 2)
             glVertex2f(x1, y1)
         glEnd()
+
+        inp_space = self.operator_height - 2 * self.inc_height
+        div_space = inp_space/(self.n_inputs + 1)
+
+        for i in range(self.n_inputs): 
+            y_coord = self.y + self.inc_height + (i+1)*div_space
+            x_coord = self.x
+
+            self.input_list.append((x_coord, y_coord))
+        
+        self.output_list.append((self.x + self.length + self.height/2, self.y + self.height/2 ))
 
     
     def draw_or_gate(self):
