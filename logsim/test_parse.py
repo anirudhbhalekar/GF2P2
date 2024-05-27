@@ -26,36 +26,50 @@ def get_all_files(folder):
 # Error Codes 
 
 @pytest.fixture
-def error_codes(): 
-    '''Returns a list of all error codes and their expected strings'''
-    error_map = {
-        1: "Expected a name",
-        2: "Invalid character in name",
-        3: "CONNECT list cannot have null devices",
-        4: "CONNECT list must have individual connections delimited by ','",
-        5: "Double punctuation marks are invalid",
-        6: "Semi-colons are required at the end of each line",
-        7: "Missing or misspelled keywords",
-        8: "Comments starting or terminating with the wrong symbol",
-        9: "Invalid order of DEFINE, CONNECT, and MONITOR blocks",
-        10: "No END statement after MONITOR clause",
-        11: "Expected a number",
-        12: "Expected a punctuation mark",
-        13: "Invalid pin reference"
-    }
-    return error_map
+# Removed as we aren't indexing errors with error codes, the idea is instead that we could have different error codes as long as they are unique
+# Check parse implementation, will discuss
+# def error_codes(): 
+#     '''Returns a list of all error codes and their expected strings'''
+#     error_map = {
+#         1: "Expected a name",
+#         2: "Invalid character in name",
+#         3: "CONNECT list cannot have null devices",
+#         4: "CONNECT list must have individual connections delimited by ','",
+#         5: "Double punctuation marks are invalid",
+#         6: "Semi-colons are required at the end of each line",
+#         7: "Missing or misspelled keywords",
+#         8: "Comments starting or terminating with the wrong symbol",
+#         9: "Invalid order of DEFINE, CONNECT, and MONITOR blocks",
+#         10: "No END statement after MONITOR clause",
+#         11: "Expected a number",
+#         12: "Expected a punctuation mark",
+#         13: "Invalid pin reference",
+#         14: "Expected an equals sign",
+#         15: "Device absent",
+#         16: "Input is already connected",
+#         17: "Cannot connect an input to another input",
+#         18: "Port absent",
+#         19: "Cannot connect an output to another output",
+#         20: "Device already present",
+#         21: "Qualifier is missing",
+#         22: "Invalid qualifier",
+#         23: "Qualifier should not be present",
+#         24: "Invalid device type"
+#     }
 
-@pytest.mark.parametrize("file_path", get_all_files('definition_files/'))
-def test_get_error_message(error_codes, file_path): 
-    names = Names()
-    scanner = Scanner(file_path, names)
+#     return error_map
 
-    devices = Devices(names)
-    network = Network(names, devices)
-    monitors = Monitors(names, devices, network)
-    parser = Parser(names, devices, network, monitors, scanner) 
-    for i in range(1, 12): 
-        assert error_codes[i] == parser.get_error_message(i)
+# @pytest.mark.parametrize("file_path", get_all_files('definition_files/'))
+# def test_get_error_message(error_codes, file_path): 
+#     names = Names()
+#     scanner = Scanner(file_path, names)
+
+#     devices = Devices(names)
+#     network = Network(names, devices)
+#     monitors = Monitors(names, devices, network)
+#     parser = Parser(names, devices, network, monitors, scanner) 
+#     for i in range(1, 25): 
+#         assert error_codes[i] == parser.get_error_message(i)
 
 @pytest.mark.parametrize("file_path", get_all_files('definition_files/'))
 def test_definition_line(file_path): 
@@ -87,23 +101,23 @@ def test_definition_files(file_path):
 
 
 # Parameterize with (file_path)
-# @pytest.mark.parametrize("error_file_path", get_all_files('error_definition_files/'))
-# def test_error_definition_files(error_file_path): 
-#     ''' Tests the definition files with errors -- these should all return False as they don't contain errors.
-#     Furthermore the number of errors should be equal to the actual (hardcoded) number of errors in each file'''
+@pytest.mark.parametrize("error_file_path", get_all_files('error_definition_files/'))
+def test_error_definition_files(error_file_path): 
+    ''' Tests the definition files with errors -- these should all return False as they don't contain errors.
+    Furthermore the number of errors should be equal to the actual (hardcoded) number of errors in each file'''
 
-#     names = Names()
-#     scanner = Scanner(error_file_path, names)
+    names = Names()
+    scanner = Scanner(error_file_path, names)
 
-#     devices = Devices(names)
-#     network = Network(names, devices)
-#     monitors = Monitors(names, devices, network)
-#     parser = Parser(names, devices, network, monitors, scanner) 
+    devices = Devices(names)
+    network = Network(names, devices)
+    monitors = Monitors(names, devices, network)
+    parser = Parser(names, devices, network, monitors, scanner) 
     
-#     bool_parse = parser.parse_network()
-#     # Have to ensure the error codes are consistent as well
+    bool_parse = parser.parse_network()
+    # Have to ensure the error codes are consistent as well
 
-#     assert not bool_parse
+    assert not bool_parse
 
 
 expected_op_list = [ [('G1', 'GATE', 'NAND', 'inputs', '2'), ('G2', 'GATE', 'NAND', 'inputs', '2'), 
