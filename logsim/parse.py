@@ -77,16 +77,6 @@ class Parser:
         self.scanner = scanner
         self.error_count = 0
         self.symbol = Symbol()
-
-        self.curr_name = None
-        self.curr_type = None 
-        self.curr_sub_type = None
-        self.curr_ptype = None
-        self.curr_pval = None
-
-
-
-        self.operators_list = [] # Stores list of (NAME, DEVICE/GATE, DEVICE/GATE TYPE, PARAM_TYPE, PARAM_VAL)
     
     def error(self, error_code, stopping_symbol=None):
         """Print error message and increment error count."""
@@ -184,9 +174,6 @@ class Parser:
                 device_property = self.set_param(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
             else:
                 device_property = None
-            
-            # self.operators_list.append((self.curr_name, self.curr_type, self.curr_sub_type,
-            #                             self.curr_ptype, self.curr_pval)) # Add first operator
             # Make device 
             if self.error_count == 0:
                 error_type = self.devices.make_device(device_id, device_kind, device_property)
@@ -216,9 +203,6 @@ class Parser:
                     error_type = self.devices.make_device(device_id, device_kind, device_property)
                     if error_type != self.devices.NO_ERROR:
                         self.error(error_type, stopping_symbols)
-                
-                self.operators_list.append((self.curr_name, self.curr_type, self.curr_sub_type,
-                                        self.curr_ptype, self.curr_pval)) # Add subsequent operators
 
         else:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
@@ -239,7 +223,6 @@ class Parser:
     def param(self, stopping_symbols):
         """Implements rule param = "inputs" | "initial" | "cycle_rep";"""
         if self.symbol.type == self.scanner.PARAM:
-            self.curr_ptype = self.names.get_name_string(self.symbol.id)
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
@@ -354,7 +337,6 @@ class Parser:
         """Implements name = letter, {letter | digit};, but name is returned as a full symbol from scanner"""
         if self.symbol.type == self.scanner.NAME:
             name = self.symbol.id
-            self.curr_name = self.names.get_name_string(self.symbol.id)
             self.symbol = self.scanner.get_symbol()
         else:
             self.error(self.EXPECTED_NAME, stopping_symbols)
@@ -391,7 +373,6 @@ class Parser:
     def digit(self, stopping_symbols):
         """Implements rule digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";"""
         if self.symbol.type == self.scanner.NUMBER:
-            self.curr_pval = self.symbol.id
             value = self.symbol.id
             self.symbol = self.scanner.get_symbol()
         else:
@@ -403,8 +384,6 @@ class Parser:
     def device(self, stopping_symbols):
         """Implements rule device = "CLOCK" | "SWITCH" | "DTYPE";"""
         if self.symbol.type == self.scanner.DEVICE:
-            self.curr_type = self.scanner.DEVICE
-            self.curr_sub_type = self.names.get_name_string(self.symbol.id)
             device_kind = self.symbol.id
             self.symbol = self.scanner.get_symbol()
         else:
@@ -414,8 +393,6 @@ class Parser:
     def gate(self, stopping_symbols):
         """Implement rule gate = "NAND" | "AND" | "OR" | "NOR" | "XOR";"""
         if self.symbol.type == self.scanner.GATE:
-            self.curr_type = self.scanner.GATE 
-            self.curr_sub_type = self.names.get_name_string(self.symbol.id)
             device_kind = self.symbol.id
             self.symbol = self.scanner.get_symbol()
         else:
