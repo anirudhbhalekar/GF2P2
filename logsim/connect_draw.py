@@ -30,6 +30,8 @@ class ConnectDrawer:
             (start_x, start_y) = inp_obj.input_list[inp_id]
             (end_x, end_y) = out_obj.output_list[out_id]
 
+            d
+
             
 
 
