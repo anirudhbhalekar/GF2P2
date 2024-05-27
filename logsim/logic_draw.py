@@ -370,11 +370,12 @@ class LogicDrawer:
         glVertex2f(self.x - (self.width / 2), self.y - (self.height / 2))
         glEnd()
 
+        # triangle shape for clock dtype input
         glBegin(GL_LINE_STRIP)
-        glVertex2f(self.x - (self.width / 2), self.y - 2/16 * self.height)
-        glVertex2f(self.x - (self.width / 2), self.y - 6/16 * self.height)
-        glVertex2f(self.x - (self.width / 2) + (self.height/8), self.y - 4/16 * self.height)
-        glVertex2f(self.x - (self.width / 2), self.y - 2/16 * self.height)
+        glVertex2f(self.x - (self.width / 2), self.y - 7)
+        glVertex2f(self.x - (self.width / 2) + (self.height/8), self.y - 20)
+        glVertex2f(self.x - (self.width / 2), self.y - 33)
+        glVertex2f(self.x - (self.width / 2), self.y - 10)
         glEnd()
 
         '''
@@ -417,3 +418,28 @@ class LogicDrawer:
         for i in templist:
             x1, y1 = i[0], i[1]
             self.make_circle(x1, y1)
+    
+    def draw_monitor(self):
+        """Render and draw a DTYPE from the LogicDrawer on the canvas,
+        with the position, inputs and iterations inherited from the class."""
+
+        # x, y defined from bottom of vertical line below tringle
+        glColor3f(0.0, 0.0, 0.0)  # Black color
+        glBegin(GL_LINE_STRIP)
+        glVertex2f(self.x, self.y)
+        glVertex2f(self.x, self.y + 20)
+        glVertex2f(self.x - 10, self.y + 40)
+        glVertex2f(self.x + 10, self.y + 40)
+        glVertex2f(self.x, self.y + 20)
+        glEnd()
+
+        # Monitor has one input - where it monitors from
+        self.input_list = [(self.x, self.y)]        
+        # monitor has no output points
+        # List of tuples containing domain (bottom left, top right)
+        # Give padding 1 px
+        self.domain_list = [(self.x - 10 + 1, self.y + 1), (self.x + 10 - 1, self.y + 40 - 1)]
+
+        # draw dots for input and output spaces
+        x1, y1 = self.input_list[0][0], self.input_list[0][1]
+        self.make_circle(x1, y1)
