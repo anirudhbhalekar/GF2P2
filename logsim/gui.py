@@ -13,6 +13,11 @@ import wx.glcanvas as wxcanvas
 from math import cos, sin, pi
 from OpenGL import GL, GLUT
 from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, GL_LINE_STRIP, GL_TRIANGLE_FAN, GL_LINE_LOOP
+import matplotlib
+matplotlib.use('WXAgg')
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
+from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg as NavigationToolbar2Wx
 
 from names import Names
 from devices import Devices
@@ -155,6 +160,11 @@ class LogicGateDrawer:
         glVertex2f(self.x - 10, self.y + self.height)
         glVertex2f(self.x - 20, self.y + self.height + 10)
         glEnd()
+
+
+class DrawConnections: 
+    pass
+
 
 class MyGLCanvas(wxcanvas.GLCanvas):
     """Handle all drawing operations.
@@ -386,6 +396,9 @@ class PromptedTextCtrl(wx.TextCtrl):
         self.SetInsertionPointEnd()
 
 
+class TopPanel: 
+    pass
+
 class Gui(wx.Frame):
     """Configure the main window and all the widgets apart from the text box.
 
@@ -445,6 +458,13 @@ class Gui(wx.Frame):
         self.clear_button = wx.Button(self, wx.ID_ANY, "Clear terminal") # button for clearing terminal output
 
 
+        # Initialise some empty matplotlib figure
+
+        self.figure = Figure(figsize=(10,3))
+        self.axes = self.figure.add_subplot(111)
+
+        self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
+
         # Bind events to widgets
         self.Bind(wx.EVT_MENU, self.on_menu)
         self.spin.Bind(wx.EVT_SPINCTRL, self.on_spin)
@@ -454,8 +474,12 @@ class Gui(wx.Frame):
         # Configure sizers for layout
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)
         side_sizer = wx.BoxSizer(wx.VERTICAL)
+        canvas_plot_sizer = wx.BoxSizer(wx.VERTICAL)
 
-        main_sizer.Add(self.canvas, 5, wx.EXPAND | wx.ALL, 5)
+        canvas_plot_sizer.Add(self.canvas, 1, wx.EXPAND | wx.ALL, 1)
+        canvas_plot_sizer.Add(self.matplotlib_canvas, 1, wx.EXPAND | wx.ALL, 1)
+
+        main_sizer.Add(canvas_plot_sizer, 5, wx.EXPAND | wx.ALL, 5)
         main_sizer.Add(side_sizer, 1, wx.ALL, 5)
 
         side_sizer.Add(self.text, 1, wx.TOP, 10)
@@ -467,6 +491,9 @@ class Gui(wx.Frame):
         self.SetSizeHints(600, 600)
         self.SetSizer(main_sizer)
 
+    def plot_monitors(self): 
+        """Given some monitor outputs, draw the resulting plot on the matplotlib axes"""
+        pass
     def on_menu(self, event):
         """Handle the event when the user selects a menu item."""
         Id = event.GetId()
@@ -505,6 +532,13 @@ class Gui(wx.Frame):
         self.canvas.render(text)
         self.text_box.SetValue("> ")  # Clear the text box and add prompt
 
+
+class RunApp(wx.App): 
+    """Combines Canvas onto App with Matplotlib"""
+    def __init__(self):
+        wx.App.__init__(self, redirect=False)
+
+    
 '''
 if __name__ == "__main___": 
 
