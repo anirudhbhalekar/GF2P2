@@ -149,6 +149,7 @@ class ConnectionDrawer:
             input_obj = tup[0] # This is the drawer object
             output_obj = tup[1] 
 
+           
             # Lets have a property of the drawer class to be self.input_list - which is a list of input x,y coords 
 
 
@@ -392,7 +393,8 @@ class Gui(wx.Frame):
 
     def __init__(self, title, path, names, devices, network, monitors):
         """Initialise widgets and layout."""
-        super().__init__(parent=None, title=title, size=(800, 600))
+        self.w, self.h = 800, 600
+        super().__init__(parent=None, title=title, size=(self.w, self.h))
 
         # Configure the file menu
         menuBar = wx.MenuBar()
@@ -447,10 +449,32 @@ class Gui(wx.Frame):
 
         self.SetSizeHints(600, 600)
         self.SetSizer(main_sizer)
+
     
-        self.top_panel = wx.Panel(self)
-        #self.SetFont(wx.Font(14, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, 'Times New Roman'))
-        
+    def GetRoundBitmap(self, w, h, r ):
+        """Gets the round """
+        maskColor = wx.Color(0,0,0)
+        shownColor = wx.Color(5,5,5)
+        b = wx.EmptyBitmap(w,h)
+        dc = wx.MemoryDC(b)
+        dc.SetBrush(wx.Brush(maskColor))
+        dc.DrawRectangle(0,0,w,h)
+        dc.SetBrush(wx.Brush(shownColor))
+        dc.SetPen(wx.Pen(shownColor))
+        dc.DrawRoundedRectangle(0,0,w,h,r)
+        dc.SelectObject(wx.NullBitmap)
+        b.SetMaskColour(maskColor)
+        return b
+
+    def GetRoundShape(self,w, h, r ):
+        return wx.RegionFromBitmap(self.GetRoundBitmap(w,h,r) )
+    
+    def SetRoundShape(self, event=None):
+        w, h = self.GetSizeTuple()
+        self.SetShape(self.GetRoundShape( w,h, 10 ) )
+    
+    
+    
     def on_menu(self, event):
         """Handle the event when the user selects a menu item."""
         Id = event.GetId()
