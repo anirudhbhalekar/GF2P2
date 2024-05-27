@@ -343,14 +343,16 @@ class Gui(wx.Frame):
 
         # Configure sizers for layout
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        side_sizer = wx.BoxSizer(wx.VERTICAL)
         canvas_plot_sizer = wx.BoxSizer(wx.VERTICAL)
+        side_sizer = wx.BoxSizer(wx.VERTICAL)
+        button_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         # Initialise some empty matplotlib figure
         self.figure = Figure(figsize=(5,2))
         self.axes = self.figure.add_subplot(111)
-
         self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
+
+        # Arrange sizers, all stemming from main sizer
         canvas_plot_sizer.Add(self.canvas, 1, wx.EXPAND | wx.ALL, 1)
         canvas_plot_sizer.Add(self.matplotlib_canvas, 1, wx.EXPAND | wx.ALL, 1)
 
@@ -359,11 +361,14 @@ class Gui(wx.Frame):
 
         side_sizer.Add(self.text, 1, wx.TOP, 10)
         side_sizer.Add(self.spin, 1, wx.ALL, 5)
-        side_sizer.Add(self.run_button, 1, wx.ALL, 5)
-        side_sizer.Add(self.reset_view_button, 1, wx.ALL, 5)
+        side_sizer.Add(button_sizer, 1, wx.EXPAND | wx.ALL, 5)
         side_sizer.Add(self.text_box, 15, wx.EXPAND | wx.ALL, 5) # expanding text box
         side_sizer.Add(self.clear_button, 1, wx.EXPAND | wx.ALL, 5)
 
+        button_sizer.Add(self.reset_view_button, 1, wx.ALL, 5)
+        button_sizer.Add(self.run_button, 1, wx.ALL, 5)
+        
+        # Initialise window size and make main_sizer parent sizer
         self.SetSizeHints(600, 600)
         self.SetSizer(main_sizer)
 
@@ -408,7 +413,7 @@ class Gui(wx.Frame):
         self.canvas.render(text)
         self.text_box.SetValue("> ")  # Clear the text box and add prompt
 
-    def on_reset_view_button(self):
+    def on_reset_view_button(self, event):
         """Handle the event when the user clicks the reset view button."""
         text = "Reset view button pressed"
         self.canvas.render(text)
