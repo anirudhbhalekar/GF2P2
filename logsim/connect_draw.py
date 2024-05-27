@@ -38,10 +38,8 @@ class ConnectDrawer:
         out_id = connection_def[3]
 
         inp_domain = self.domain_dict[inp_obj]
-        out_domain = self.domain_dict[out_obj]
 
         num_inputs = len(inp_obj.input_list)
-        num_outputs = len(out_obj.output_list) 
 
         (start_x, start_y) = inp_obj.input_list[inp_id]
         (end_x, end_y) = out_obj.output_list[out_id]
