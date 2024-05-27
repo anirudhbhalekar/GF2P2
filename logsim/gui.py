@@ -151,6 +151,11 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         # For dtypes render text under the object
         self.render_text(str(DTYPE1.name), DTYPE1.x, DTYPE1.y)
         
+        MONITOR1 = LogicDrawer("MONITOR1", x=350, y=100)
+        MONITOR1.draw_monitor()
+        # For monitors render text below triangle
+        self.render_text(str(MONITOR1.name), MONITOR1.x - 10, MONITOR1.y + 10)
+
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front
         GL.glFlush()
