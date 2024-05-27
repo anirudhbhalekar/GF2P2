@@ -11,6 +11,7 @@ Symbol - encapsulates a symbol and stores its properties.
 
 from devices import Devices
 from names import Names
+import fileinput
 
 class Symbol:
 
@@ -93,7 +94,8 @@ class Scanner:
         [self.input_ID, self.initial_ID, self.cycle_rep_ID] = self.names.lookup(self.param_list)
 
         self.file.seek(0)
-        self.current_character = " "
+        self.current_character = ""
+        self.advance()
 
     def advance(self): 
         """Advances self.current_character"""
@@ -104,7 +106,7 @@ class Scanner:
         self.total_char_count += 1
         self.line_char_count  += 1
 
-        if next_char == "\n": 
+        if self.current_character == "\n" and next_char == "\n": 
             self.line_count += 1
             self.line_char_count = 0
 
@@ -113,9 +115,9 @@ class Scanner:
             self.total_char_count += 1
             self.line_char_count  += 1
 
-            if next_char == "\n": 
-                    self.line_count += 1
-                    self.line_char_count = 0
+            if self.current_character == "\n" and next_char == "\n": 
+                self.line_count += 1
+                self.line_char_count = 0
                     
             while not next_char == "%" and next_char != "":
 
@@ -246,7 +248,7 @@ if __name__ == "__main__":
     names = Names()
     scanner = Scanner("definition_files/test_ex_null.txt", names)
 
-    for i in range(50): 
+    for i in range(10): 
         sym = scanner.get_symbol()
         print(sym.type)
         print(sym.id) 
