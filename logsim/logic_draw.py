@@ -25,7 +25,7 @@ class LogicDrawer:
 
             self.operator_height = 30 
             self.operator_length = 25
-            self.inc_height = 10 
+            self.inc_height = 5 
             # 15 pixels height increase for each additional input
             # top and bottom padding 5 px each
             # self.height is only the vertical straight bit
@@ -59,16 +59,18 @@ class LogicDrawer:
         else: 
             pass
     
-    def make_circle(self, x, y):        
-        """Draw the dots for input and output points on gates"""
+    def make_circle(self, x, y): 
+        posx, posy = x, y    
+        sides = 10    
+        radius = 2
 
-        r = 2
-        glBegin(GL_POLYGON)
-        for i in range(self.n_iter + 1):
-            angle = 2 * pi * i / float(self.n_iter)
-            x1 = r * cos(angle) + x
-            y1 = r * sin(angle) + y
-            glVertex2f(x1, y1)
+        glBegin(GL_POLYGON)    
+
+        for i in range(20):    
+            cosine= radius * cos(i*2*pi/sides) + posx    
+            sine  = radius * sin(i*2*pi/sides) + posy    
+            glVertex2f(cosine,sine)
+
         glEnd()
 
     def draw_and_gate(self):
@@ -96,6 +98,7 @@ class LogicDrawer:
                          
         glEnd()
         
+        '''
         impspace = (self.height - 10)/(self.n_inputs + 1)
         # List of tuples containing input locations
         self.input_list = [(self.x, self.y + impspace*(i+1.5)) for i in range(self.n_inputs)]
@@ -110,7 +113,21 @@ class LogicDrawer:
         for i in templist:
             x1, y1 = i[0], i[1]
             self.make_circle(x1, y1)
-        
+        '''
+
+        inp_space = self.height - 2 * self.inc_height
+        div_space = inp_space/(self.n_inputs + 1)
+
+        for i in range(self.n_inputs): 
+            y_coord = self.y + self.inc_height + (i+1)*div_space
+            x_coord = self.x
+
+            self.make_circle(x_coord, y_coord)
+            self.input_list.append((x_coord, y_coord))
+
+        self.output_list.append((self.x + self.length + self.height/2, self.y + self.height/2 ))
+        self.make_circle(self.x + self.length + self.height/2, self.y + self.height/2)
+        self.domain_list = [(self.x + 1, self.y + 1), (self.x + self.length + R - 1, self.y + self.height - 1)]
 
     def draw_nand_gate(self):
         """Render and draw an NAND gate from the LogicDrawer on the canvas,
@@ -125,15 +142,18 @@ class LogicDrawer:
 
         R = (self.height / 2)
         r = 5
+
         for i in range(self.n_iter + 1):
             angle = 2 * pi * i / float(self.n_iter)
             # Must add radius to x length for x1 argument
             x1 = r * cos(angle) + self.x + self.length + R + r
             y1 = r * sin(angle) + self.y + R
             glVertex2f(x1, y1)
+        
         glEnd()
 
-        impspace = (self.height - 10)/(self.n_inputs + 1)
+        """ 
+       impspace = (self.height - 10)/(self.n_inputs + 1)
         # List of tuples containing input locations
         self.input_list = [(self.x, self.y + impspace*(i+1.5)) for i in range(self.n_inputs)]
         # List of tuple containing output location
@@ -147,6 +167,23 @@ class LogicDrawer:
         for i in templist: 
             x1, y1 = i[0], i[1]
             self.make_circle(x1, y1)
+    
+        """
+    
+        inp_space = self.height - 2 * self.inc_height
+        div_space = inp_space/(self.n_inputs + 1)
+
+        for i in range(self.n_inputs): 
+            y_coord = self.y + self.inc_height + (i+1)*div_space
+            x_coord = self.x
+
+            self.make_circle(x_coord, y_coord)
+            self.input_list.append((x_coord, y_coord))
+
+        self.output_list.append((self.x + self.length + self.height/2 + r, self.y + self.height/2 ))
+        self.make_circle(self.x + self.length + self.height/2 + r, self.y + self.height/2)
+        self.domain_list = [(self.x + 1, self.y + 1), (self.x + self.length + R + 2*r - 1, self.y + self.height - 1)]
+
     
     def draw_or_gate(self):
         """Render and draw an OR gate from the LogicDrawer on the canvas,
