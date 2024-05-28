@@ -78,6 +78,11 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         # Initialise variables for zooming
         self.zoom = 1
 
+        # get devices and monitors 
+        self.devices = devices
+        self.monitors = monitors
+        self.names = parent.names
+
         # Bind events to the canvas
         self.Bind(wx.EVT_PAINT, self.on_paint)
         self.Bind(wx.EVT_SIZE, self.on_size)
@@ -98,6 +103,72 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         GL.glTranslated(self.pan_x, self.pan_y, 0.0)
         GL.glScaled(self.zoom, self.zoom, self.zoom)
 
+    def assemble_devices(self): 
+        """Renders all devices on screen (no connections)"""
+        devices_list = self.devices.devices_list
+        num_devices = len(devices_list)
+        
+        y_start = 300
+
+        xs, ys = 0,y_start
+        count = 0
+        dist = 100
+
+        max_vertical = 4
+        # First we find the CLOCK type - we typically want this to be rendered 
+        # in the left most part of the canvas
+
+        clk_device = None
+        for device in devices_list: 
+            if device.device_kind == self.devices.CLOCK: 
+                clk_device = device
+                # Render the CLOCK device at (0,0)
+                ys = ys - count*dist
+                count += 1
+
+                clk_render = LogicDrawer(str(self.names.get_name_string(clk_device.device_id)), 
+                                        xs, ys)
+                clk_render.draw_clock()
+                self.render_text(str(self.names.get_name_string(clk_device.device_id)), 
+                                    clk_render.x - (clk_render.length / 2), 
+                                    clk_render.y - (clk_render.height / 2))
+
+        pos_x, pos_y = 150, y_start
+        min_y = 0
+
+     
+        # Removes all clock objects (we reserve first col for clocks only)
+        render_device_list = [d for d in devices_list if d.device_kind != self.devices.CLOCK]
+
+        for i, acc_device in enumerate(render_device_list): 
+            
+            num_inputs = len(acc_device.inputs.keys())
+            d_kind = self.names.get_name_string(acc_device.device_kind)
+            d_name = self.names.get_name_string(acc_device.device_id)
+
+            if d_kind in ["AND", "NAND", "NOR", "OR", "XOR"]: 
+                dist_y = 75 
+                if num_inputs > 2: 
+                    dist_y += (num_inputs - 2) * 5 
+            elif d_kind == "SWITCH": 
+                dist_y = 75 
+            else: 
+                dist_y = 150
+
+            if pos_y < min_y: 
+                pos_y = y_start 
+                pos_x += 175
+
+            device_render = LogicDrawer(str(self.names.get_name_string(acc_device.device_id)), 
+                                        pos_x, pos_y)
+            
+            device_render.draw_with_string(d_kind)
+            self.render_text(str(d_name), 
+                             device_render.x - (device_render.length / 2), 
+                             device_render.y - (device_render.height / 1.5))
+            pos_y -= dist_y
+
+
     def render(self, text):
         """Handle all drawing operations."""
         self.SetCurrent(self.context)
@@ -112,9 +183,9 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         # Draw specified text at position (10, 10)
         #self.render_text(text, 10, 10)
 
-        
+        self.assemble_devices()
         # Draw logic gates using the LogicDrawer class
-        
+        """
         G1 = LogicDrawer("G1", x=50, y=200, n_inputs=16)
         G1.draw_and_gate()
         # Add the text label
@@ -155,6 +226,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         MONITOR1.draw_monitor()
         # For monitors render text below triangle
         self.render_text(str(MONITOR1.name), MONITOR1.x - 10, MONITOR1.y + 10)
+        """
 
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front
@@ -332,6 +404,10 @@ class Gui(wx.Frame):
 
         self.SetMenuBar(menuBar)
 
+        self.path = path 
+        self.names = names
+        self.network = network
+
         # Message display widget
         self.message_display = wx.TextCtrl(self, wx.ID_ANY, "", style=wx.TE_MULTILINE | wx.TE_READONLY)
 
@@ -443,9 +519,4 @@ class RunApp(wx.App):
         wx.App.__init__(self, redirect=False)
 
     
-'''
-if __name__ == "__main___": 
 
-    names = Names()
-    scanner = Scanner("definition_files/test_ex_null.txt", names)
-'''

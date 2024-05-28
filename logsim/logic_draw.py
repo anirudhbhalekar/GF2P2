@@ -1,5 +1,6 @@
 from math import cos, sin, pi
 from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, GL_LINE_STRIP, GL_LINE_LOOP, GL_POLYGON
+from OpenGL import GL, GLUT
 
 
 """ DOC STRING TO BE COMPLETED """
@@ -29,7 +30,9 @@ class LogicDrawer:
             # 15 pixels height increase for each additional input
             # top and bottom padding 5 px each
             # self.height is only the vertical straight bit
-            self.height = self.operator_height + (n_inputs - 2) * self.inc_height
+            self.height = self.operator_height 
+            if self.n_inputs > 2: 
+                self.height += (n_inputs - 2) * self.inc_height
             # we can maybe add self.length later to make the length scale with gates
             self.length = self.operator_length
 
@@ -39,7 +42,7 @@ class LogicDrawer:
             self.domain = []
 
     def draw_with_string(self, op_string): 
-
+        """Calls appropriate draw function"""
         if op_string == "AND": 
             self.draw_and_gate()
         elif op_string == "NAND": 
@@ -58,7 +61,9 @@ class LogicDrawer:
             self.draw_switch()
         else: 
             pass
-    
+
+
+
     def make_circle(self, x, y): 
         posx, posy = x, y    
         sides = 10    
@@ -77,6 +82,10 @@ class LogicDrawer:
         """Render and draw an AND gate from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
         
+        # Coordinate change to center gates
+        self.x = self.x - self.length / 2
+        self.y = self.y - self.height / 2
+
         glColor3f(1.0, 0.0, 0.0)  # Red color
         glBegin(GL_LINE_STRIP)
         # Draw the straight body, x,y defined from bottom left corner
@@ -132,6 +141,11 @@ class LogicDrawer:
     def draw_nand_gate(self):
         """Render and draw an NAND gate from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
+
+        # Coordinate change to center gates
+        self.x = self.x - self.length / 2
+        self.y = self.y - self.height / 2
+
 
         # Start with the AND gate
         glColor3f(1.0, 0.0, 0.0)  # Red color
@@ -207,6 +221,9 @@ class LogicDrawer:
     def draw_or_gate(self):
         """Render and draw an OR gate from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
+        # Coordinate change to center gates
+        self.x = self.x - self.length / 2
+        self.y = self.y - self.height / 2 
 
         # Note that x,y is defined from the bottom of the vertical line on the left
         glColor3f(1.0, 0.0, 0.0)  # Red color
@@ -245,6 +262,10 @@ class LogicDrawer:
         """Render and draw an OR gate from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
 
+        # Coordinate change to center gates
+        self.x = self.x - self.length / 2
+        self.y = self.y - self.height / 2 
+        
         # Note that x,y is defined from the bottom left of the vertical line on the left, as with OR gate
         glColor3f(1.0, 0.0, 0.0)  # Red color
         glBegin(GL_LINE_STRIP)
@@ -311,8 +332,29 @@ class LogicDrawer:
         assert self.n_inputs == 2
         assert self.height == 30
 
+
+        self.x = self.x - self.length / 2
+        self.y = self.y - self.height / 2 
+
         # Note that x,y is defined from the bottom left of the vertical line on the left, as with OR gate
-        LogicDrawer.draw_or_gate(self)
+        glColor3f(1.0, 0.0, 0.0)  # Red color
+        glBegin(GL_LINE_STRIP)
+        glVertex2f(self.x, self.y)
+        glVertex2f(self.x, self.y + self.height)
+        # top left corner 
+        glVertex2f(self.x - 10, self.y + self.height + 10)
+        # top straight line
+        glVertex2f(self.x - 10 + self.length, self.y + self.height + 10)
+
+        # point right mid 
+        glVertex2f((self.x + self.length + (self.height / 2)), (self.y + (self.height / 2)))
+        glVertex2f(self.x - 10 + self.length, self.y - 10)
+        glVertex2f(self.x - 10 , self.y - 10)
+        glVertex2f(self.x, self.y)
+        
+        glEnd()
+
+
         glColor3f(1.0, 0.0, 0.0)  # Red color
         glBegin(GL_LINE_STRIP)
         # x distance 10 to the left of the OR gate
@@ -354,6 +396,7 @@ class LogicDrawer:
         """Render and draw a switch from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
 
+        
         # Radius 20
         self.height = 40
         self.width = self.height
@@ -424,6 +467,11 @@ class LogicDrawer:
         self.height = 100
         self.width = 60
 
+        #Introducing top heavy bias
+
+        self.x = self.x 
+        self.y = self.y - self.height/3
+
         glColor3f(0.0, 0.0, 1.0)  # Blue color
         glBegin(GL_LINE_STRIP)
         glVertex2f(self.x - (self.width / 2), self.y - (self.height / 2))
@@ -441,6 +489,7 @@ class LogicDrawer:
         glVertex2f(self.x - (self.width / 2), self.y - 10)
         glEnd()
 
+
         '''
         s_coord = (self.x, self.y + self.height/2)
         r_coord = (self.x, self.y - self.height/2)
@@ -450,7 +499,6 @@ class LogicDrawer:
 
         q_coord = (self.x + self.width/2, self.y + 2/8 * self.height)
         qb_coord = (self.x + self.width/2, self.y - 2/8 * self.height)
-
         
         self.make_circle(s_coord[0], s_coord[1])
         self.make_circle(r_coord[0], r_coord[1])
@@ -467,21 +515,43 @@ class LogicDrawer:
         self.output_list.append(q_coord)
         self.output_list.append(qb_coord)
         '''
+
         # inputs in order: data (left top), clock (left bottom), set (top), reset (bottom)
         self.input_list = [(self.x - (self.width / 2), self.y + 20), (self.x - (self.width / 2), self.y - 20), (self.x, self.y + (self.height / 2)), (self.x, self.y - (self.height / 2))]
+        inp_labels = ["DATA", "CLK", "SET", "RSET"]
+
         # ouputs in order: Q, Q_bar
         # NB self.output list is a list of 2 tuples
         self.output_list = [(self.x + (self.width / 2), self.y + 20), (self.x + (self.width / 2), self.y - 20)]
+        out_labels = ["Q", "QBAR"]
+
         # List of tuples containing domain (bottom left, top right)
         # Give padding 1 px
         self.domain_list = [(self.x - (self.width / 2) + 1, self.y - (self.height / 2) + 1), (self.x + (self.width / 2) - 1, self.y + (self.height / 2) - 1)]
+        label_list = inp_labels + out_labels
 
         # draw dots for input and output spaces
         templist = (self.input_list + self.output_list)
-        for i in templist:
+        for i,label in zip(templist, label_list):
             x1, y1 = i[0], i[1]
             self.make_circle(x1, y1)
+            self.render_text(label, x1 - 15, y1 + 5)
+
+        
     
+    def render_text(self, text, x_pos, y_pos):
+        """Handle text drawing operations."""
+        GL.glColor3f(0.0, 0.0, 1.0)  # text is blue
+        GL.glRasterPos2f(x_pos, y_pos)
+        font = GLUT.GLUT_BITMAP_HELVETICA_12
+
+        for character in text:
+            if character == '\n':
+                y_pos = y_pos - 20
+                GL.glRasterPos2f(x_pos, y_pos)
+            else:
+                GLUT.glutBitmapCharacter(font, ord(character))
+
     def draw_monitor(self):
         """Render and draw a DTYPE from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""

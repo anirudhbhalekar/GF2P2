@@ -1,5 +1,5 @@
 from math import cos, sin, pi
-from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, GL_LINE_STRIP, GL_LINE_LOOP
+from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, GL_LINE_STRIP
 from logic_draw import LogicDrawer
 
 
