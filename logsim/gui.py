@@ -160,6 +160,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         pos_x, pos_y = 150, y_start
         min_y = 0
 
+        
         # Remove all clock objects (we reserve first col for clocks only)
         for i, acc_device in enumerate(devices_list): 
             
@@ -172,13 +173,13 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             d_name = self.names.get_name_string(acc_device.device_id)
 
             if d_kind in ["AND", "NAND", "NOR", "OR", "XOR"]: 
-                dist_y = 75 
+                dist_y = 100 
                 if num_inputs > 2: 
                     dist_y += (num_inputs - 2) * 20 
             elif d_kind == "SWITCH": 
-                dist_y = 75 
+                dist_y = 100 
             else: 
-                dist_y = 150
+                dist_y = 175
 
             if pos_y < min_y: 
                 pos_y = y_start 
@@ -188,10 +189,12 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             device_render.draw_with_string(d_kind, pos_x, pos_y)
             self.domain_dict[device_render] = device_render.domain
             pos_y -= dist_y
-
+   
+       
         # We will add connections here to reduce time complexity
         for device in devices_list: 
             self.assemble_connection(device)
+        
 
     def assemble_connection(self, input_device): 
         """Render all wires (connections) on screen."""
@@ -206,7 +209,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
                 output_obj = self.draw_obj_dict[output_dev_id]
                 con_draw = ConnectDrawer((input_obj, input_port_id, output_obj, output_port_id), 
-                                            self.domain_dict, 10)
+                                            self.domain_dict, 5)
                 # Don't put padding too high - will break code 
                 con_draw.draw_connection()
 
@@ -250,7 +253,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         #self.render_text(text, 10, 10)
 
         self.render_circuit()
-        self.assemble_monitors()
+        #self.assemble_monitors()
 
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front

@@ -1,4 +1,4 @@
-% 2 intentional errors %
+% 14 intentional errors %
 DEFINE 
     SW1 AS SWITCH WITH initial=0,
     SW2 AS SWITCH WITH initial=0,
@@ -9,7 +9,7 @@ DEFINE
     G4 AS XOR WITH inputs=2, % XOR should always have 2 inputs by definition, so this should give error %
     G5 AS AND WITH inputs=2;
 
-CONNECT SW1 = G1.I1,
+CONNECT SW1 = G1.I1, % all of these should be wrong %
     SW1 = G1.I2,
     SW1 = G2.I1,
     SW1 = G3.I1, 
@@ -22,7 +22,7 @@ CONNECT SW1 = G1.I1,
     G3 = G5.I2;
 
 MONITOR 
-    G1.I3, % G1 only has 2 inputs, so this should give an error % 
+    G1.I3, % G1 only has 2 inputs, so this should give an error, also we can only monitor outputs % 
     G4, 
     G5;
 
