@@ -9,13 +9,13 @@ from OpenGL import GL, GLUT
 class LogicDrawer:
     """Handle all logic gate drawings."""
     
-    def __init__(self, name, x, y, n_iter=10, n_inputs=2):
+    def __init__(self, id, x, y, n_iter=10, n_inputs=2):
             """Initialize logic drawer with the number of inputs for 
             certain gates and also the number of iterations used to
             draw circles for certain gates."""
             
             # Initialize variables
-            self.name = name
+            self.id = id
             self.x = x
             self.y = y
             self.n_iter = n_iter
@@ -136,7 +136,7 @@ class LogicDrawer:
 
         self.output_list.append((self.x + self.length + self.height/2, self.y + self.height/2 ))
         self.make_circle(self.x + self.length + self.height/2, self.y + self.height/2)
-        self.domain_list = [(self.x + 1, self.y + 1), (self.x + self.length + R - 1, self.y + self.height - 1)]
+        self.domain = [(self.x + 1, self.y + 1), (self.x + self.length + R - 1, self.y + self.height - 1)]
 
     def draw_nand_gate(self):
         """Render and draw an NAND gate from the LogicDrawer on the canvas,
@@ -215,7 +215,7 @@ class LogicDrawer:
 
         self.output_list.append((self.x + self.length + self.height/2 + 2*r, self.y + self.height/2 ))
         self.make_circle(self.x + self.length + self.height/2 + 2*r, self.y + self.height/2)
-        self.domain_list = [(self.x + 1, self.y + 1), (self.x + self.length + R + 2*r - 1, self.y + self.height - 1)]
+        self.domain = [(self.x + 1, self.y + 1), (self.x + self.length + R + 2*r - 1, self.y + self.height - 1)]
 
     
     def draw_or_gate(self):
@@ -255,7 +255,7 @@ class LogicDrawer:
 
         self.output_list.append((self.x + self.length + self.height/2, self.y + self.height/2 ))
         self.make_circle(self.x + self.length + self.height/2, self.y + self.height/2)
-        self.domain_list = [(self.x - 10 + 1, self.y - 10 + 1), (self.x + self.length + (self.height / 2) - 1, self.y + self.height + 10 - 1)]
+        self.domain = [(self.x - 10 + 1, self.y - 10 + 1), (self.x + self.length + (self.height / 2) - 1, self.y + self.height + 10 - 1)]
     
 
     def draw_nor_gate(self):
@@ -308,7 +308,7 @@ class LogicDrawer:
         
         self.output_list.append((self.x + self.length + self.height/2 + 2*r, self.y + self.height/2 ))
         self.make_circle(self.x + self.length + self.height/2 + 2*r, self.y + self.height/2)
-        self.domain_list = [(self.x - 10 + 1, self.y - 10 + 1), (self.x + self.length + R + 2*r - 1, self.y + self.height + 10 - 1)]
+        self.domain = [(self.x - 10 + 1, self.y - 10 + 1), (self.x + self.length + R + 2*r - 1, self.y + self.height + 10 - 1)]
 
         """# List of tuples containing input locations
         self.input_list = [(self.x, self.y + 5 + self.inc_height*i) for i in range(self.n_inputs)]
@@ -376,7 +376,7 @@ class LogicDrawer:
         
         self.output_list.append((self.x + self.length + self.height/2, self.y + self.height/2 ))
         self.make_circle(self.x + self.length + self.height/2, self.y + self.height/2)
-        self.domain_list = [(self.x - 10 - 10 + 1, self.y - 10 + 1), (self.x + self.length + (self.height / 2) - 1, self.y + self.height + 10 - 1)]
+        self.domain = [(self.x - 10 - 10 + 1, self.y - 10 + 1), (self.x + self.length + (self.height / 2) - 1, self.y + self.height + 10 - 1)]
 
         """# List of tuples containing input locations
         self.input_list = [(self.x - 10, self.y + 5 + self.inc_height*i) for i in range(self.n_inputs)]
@@ -418,7 +418,7 @@ class LogicDrawer:
         self.output_list = [(self.x + R, self.y)]
         # List of tuples containing domain (bottom left, top right)
         # Give padding 1 px
-        self.domain_list = [(self.x - R + 1, self.y - R + 1), (self.x + R - 1, self.y + R - 1)]
+        self.domain = [(self.x - R + 1, self.y - R + 1), (self.x + R - 1, self.y + R - 1)]
 
         # draw dots for input and output spaces
         templist = (self.input_list + self.output_list)
@@ -450,7 +450,7 @@ class LogicDrawer:
         # List of tuples containing domain (bottom left, top right)
         # Give padding 1 px
         R = self.height / 2
-        self.domain_list = [(self.x - R + 1, self.y - R + 1), (self.x + R - 1, self.y + R - 1)]
+        self.domain = [(self.x - R + 1, self.y - R + 1), (self.x + R - 1, self.y + R - 1)]
 
         # draw dots for input and output spaces
         templist = (self.input_list + self.output_list)
@@ -527,7 +527,7 @@ class LogicDrawer:
 
         # List of tuples containing domain (bottom left, top right)
         # Give padding 1 px
-        self.domain_list = [(self.x - (self.width / 2) + 1, self.y - (self.height / 2) + 1), (self.x + (self.width / 2) - 1, self.y + (self.height / 2) - 1)]
+        self.domain = [(self.x - (self.width / 2) + 1, self.y - (self.height / 2) + 1), (self.x + (self.width / 2) - 1, self.y + (self.height / 2) - 1)]
         label_list = inp_labels + out_labels
 
         # draw dots for input and output spaces
@@ -571,7 +571,7 @@ class LogicDrawer:
         # monitor has no output points
         # List of tuples containing domain (bottom left, top right)
         # Give padding 1 px
-        self.domain_list = [(self.x - 10 + 1, self.y + 1), (self.x + 10 - 1, self.y + 40 - 1)]
+        self.domain = [(self.x - 10 + 1, self.y + 1), (self.x + 10 - 1, self.y + 40 - 1)]
 
         # draw dots for input and output spaces
         x1, y1 = self.input_list[0][0], self.input_list[0][1]

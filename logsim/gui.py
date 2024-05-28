@@ -83,6 +83,10 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         self.monitors = monitors
         self.names = parent.names
 
+
+        self.draw_obj_dict = {}
+        self.domain_dict = {}
+
         # Bind events to the canvas
         self.Bind(wx.EVT_PAINT, self.on_paint)
         self.Bind(wx.EVT_SIZE, self.on_size)
@@ -128,10 +132,14 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
                 clk_render = LogicDrawer(str(self.names.get_name_string(clk_device.device_id)), 
                                         xs, ys)
+                
+                # Dictionary handling
+                self.draw_obj_dict[clk_device.device_id] = clk_render
                 clk_render.draw_clock()
+                self.domain_dict[clk_render] = clk_render.domain
                 self.render_text(str(self.names.get_name_string(clk_device.device_id)), 
-                                    clk_render.x - (clk_render.length / 2), 
-                                    clk_render.y - (clk_render.height / 2))
+                                    clk_render.x - (clk_render.length / 3), 
+                                    clk_render.y - (clk_render.height / 3))
 
         pos_x, pos_y = 150, y_start
         min_y = 0
@@ -159,16 +167,45 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 pos_y = y_start 
                 pos_x += 175
 
-            device_render = LogicDrawer(str(self.names.get_name_string(acc_device.device_id)), 
-                                        pos_x, pos_y)
-            
+            device_render = LogicDrawer(acc_device.device_id, pos_x, pos_y)
+            # Dictionary handling
+            self.draw_obj_dict[acc_device.device_id] = device_render
             device_render.draw_with_string(d_kind)
+            self.domain_dict[device_render] = device_render.domain
             self.render_text(str(d_name), 
                              device_render.x - (device_render.length / 2), 
                              device_render.y - (device_render.height / 1.5))
             pos_y -= dist_y
 
+    def assemble_connections(self): 
+        """Renders connection poly lines"""
+        devices_list = self.devices.devices_list
 
+        for input_device in devices_list: 
+
+            num_inputs = len(input_device.inputs.keys())
+            input_obj = self.draw_obj_dict[input_device.device_id]
+
+            for inp_index, input_id in enumerate(input_device.inputs.keys()): 
+                
+                con_tup = input_device.inputs[input_id]
+
+                if con_tup is not None: 
+                    output_dev_id = con_tup[0]
+                    output_port_id = con_tup[1]
+
+                    out_index = 0 
+                    if output_port_id == self.devices.QBAR_ID: 
+                        out_index = 1
+                    
+                    output_obj = self.draw_obj_dict[output_dev_id]
+                    con_draw = ConnectDrawer((input_obj, inp_index, output_obj, out_index), self.domain_dict, 15)
+                    con_draw.draw_connection()
+
+    def clear_all(self): 
+        GL.glClearBufferData()
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
+    
     def render(self, text):
         """Handle all drawing operations."""
         self.SetCurrent(self.context)
@@ -184,7 +221,8 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         #self.render_text(text, 10, 10)
 
         self.assemble_devices()
-        # Draw logic gates using the LogicDrawer class
+        self.assemble_connections()
+        # Draw logic gates using the LogicDrawer class (TEST STUFF BELOW)
         """
         G1 = LogicDrawer("G1", x=50, y=200, n_inputs=16)
         G1.draw_and_gate()
@@ -394,6 +432,7 @@ class Gui(wx.Frame):
         # Add subtabs and titles to each tab
         fileMenu.Append(wx.ID_ABOUT, "&About")
         fileMenu.Append(wx.ID_EXIT, "&Exit")
+        sourceMenu.Append(wx.ID_OPEN, "&Open")
         sourceMenu.Append(wx.ID_EDIT, "&Edit")
         commandMenu.Append(wx.ID_HELP_COMMANDS, "&Commands")
         
@@ -489,6 +528,34 @@ class Gui(wx.Frame):
                         "\nm X - set a monitor on signal X"
                         "\nz X - zap the monitor on signal X"
                         "\nq - quit the simulation")
+        if Id == wx.ID_OPEN: 
+            with wx.FileDialog(self, "Open New Source File", 
+                               wildcard="TXT files (*.txt)|*.txt", style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as file_dialog:
+                
+
+                if file_dialog.ShowModal() == wx.ID_CANCEL: 
+                    return 
+
+                pathname = file_dialog.GetPath()
+
+                try: 
+                    # How to reload the entire file -> can't figure out where this is called
+                    """self.names = Names()
+                    self.devices = Devices(self.names)
+                    self.network = Network(self.names, self.devices)
+                    self.monitors = Monitors(self.names, self.devices, self.network)
+
+                    self.scanner = Scanner(pathname, self.names)
+                    self.parser = Parser(self.names, self.devices, self.network, self.monitors, self.scanner)
+                    
+                    self.canvas = MyGLCanvas(self, self.devices, self.monitors, self.message_display) 
+                    self.Refresh()
+                    self.parser.parse_network()
+                    self.Refresh()
+                    self.canvas.render("New File Uploaded!")"""
+
+                except Exception as ex: 
+                    wx.LogError(f"Cannot open file {ex}")
 
     def on_spin(self, event):
         """Handle the event when the user changes the spin control value."""

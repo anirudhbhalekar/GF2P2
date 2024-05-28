@@ -12,25 +12,20 @@ from logic_draw import LogicDrawer
 class ConnectDrawer:
     """Handle all Connections drawings."""
     
-    def __init__(self, connection_list: list, domain_dict: dict, padding: float) -> None:
+    def __init__(self, connection_def: tuple, domain_dict: dict, padding: float) -> None:
         
         # We receive connection_list in the form (draw_obj, outgoing id, draw_obj, input_id)
-        self.connection_list = connection_list
+        self.connection = connection_def
 
         # Stores dict of all min_max coords {LogicDraw obj: (bounding box tuple)} for all operators
         self.domain_dict = domain_dict
 
         # This is the padding when connection line tries to navigate around another bounding box
         self.padding = padding
-        
-
-    def draw_all_connections(self): 
-
-        for connection_def in self.connection_list: 
-            self.draw_one_connection(connection_def)
     
-    def draw_one_connection(self, connection_def:tuple) -> None: 
+    def draw_connection(self) -> None: 
         
+        connection_def = self.connection
         inp_obj = connection_def[0] 
         out_obj = connection_def[2]
 
@@ -38,7 +33,7 @@ class ConnectDrawer:
         out_id = connection_def[3]
 
         inp_domain = self.domain_dict[inp_obj]
-
+        
         num_inputs = len(inp_obj.input_list)
 
         (start_x, start_y) = inp_obj.input_list[inp_id]
@@ -47,12 +42,13 @@ class ConnectDrawer:
         if inp_id + 1 < num_inputs/2: 
             # We will go down and to the left
             d_coord = inp_domain[0]
-            d_coord = (d_coord[0] - self.padding * (num_inputs%inp_id), d_coord - self.padding *(1 + 0.1 * num_inputs%inp_id))
+            d_coord = (d_coord[0] - self.padding, d_coord[1] - self.padding *(1 + 0.1 * num_inputs))
         else: 
             # We will go up and to the left
             d_coord = inp_domain[1]
-            d_coord = (d_coord[0] - self.padding * (num_inputs%inp_id), d_coord + self.padding *(1 + 0.1 * num_inputs%inp_id))
+            d_coord = (d_coord[0] - self.padding, d_coord[1] + self.padding *(1 + 0.1 * num_inputs))
         
+        glColor3f(1.0, 0.0, 0.0)
         glBegin(GL_LINE_STRIP)
         glVertex2f(start_x, start_y)
         glVertex2f(d_coord[0], start_y)
@@ -63,11 +59,10 @@ class ConnectDrawer:
         # Check if there is any bounding box that intersects the ray y coordinate as it travels to 
         curr_coord = d_coord
         nav_tup = self.navigate_intersection(curr_coord, (end_x, end_y), self.domain_dict, inp_obj)
-
         while nav_tup[0]: 
             # This is the bounds of the problematic object
             new_bounds = nav_tup[1]
-            min_x, max_x = new_bounds[0][0], new_bounds[2][0]
+            min_x, max_x = new_bounds[0][0], new_bounds[1][0]
             min_y, max_y = new_bounds[0][1], new_bounds[1][1]
 
             # This is to preserve directionality - aka choose the x bound closest to you
@@ -89,6 +84,7 @@ class ConnectDrawer:
             curr_coord = (next_x_coord, next_seed_y)
 
             # Draw line between points: curr coord -> closes x value coord of next intersecting box -> down or up to corners with padding -> reset to curr coords
+            glColor3f(1.0, 0.0, 0.0)
             glBegin(GL_LINE_STRIP)
             glVertex2f(curr_coord[0], curr_coord[1])
             glVertex2f(next_x_coord, next_y_coord)
@@ -99,11 +95,11 @@ class ConnectDrawer:
             nav_tup = self.navigate_intersection(curr_coord, (end_x, end_y), self.domain_dict, inp_obj)
             
         # At this point we are at one of the corners of the bounding box of the output obj itself so we just need two updates
-
+        glColor3f(1.0, 0.0, 0.0)
         glBegin(GL_LINE_STRIP)
-        glBegin(curr_coord[0], curr_coord[1])
-        glBegin(end_x, curr_coord[1])
-        glBegin(end_x, end_y)
+        glVertex2f(curr_coord[0], curr_coord[1])
+        glVertex2f(end_x, curr_coord[1])
+        glVertex2f(end_x, end_y)
         glEnd()
 
         # Should have reached destination element now
@@ -124,7 +120,7 @@ class ConnectDrawer:
             min_x = domain_dict[key][0][0]
 
             max_y = domain_dict[key][1][1]
-            max_x = domain_dict[key][2][0]
+            max_x = domain_dict[key][1][0]
 
             if min_y <= curr_y and max_y >= curr_y: 
                 # Check if there is an object that intersects this y ray 
