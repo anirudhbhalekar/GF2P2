@@ -72,10 +72,6 @@ def test_error_definition_files(error_file_path):
     assert not bool_parse
 
     # Error codes are hardcoded in the error files
-    # interim1_ex0_error.txt has 1 error
-    # interim1_ex1_error.txt has 2 errors
-    # interim1_ex2_error.txt has 3 errors
-
     if 'interim1_ex0_error.txt' in error_file_path:
         assert parser.error_count == 1
     
@@ -84,6 +80,10 @@ def test_error_definition_files(error_file_path):
     
     elif 'interim1_ex2_error.txt' in error_file_path:
         assert parser.error_count == 3
+
+  # Checking this  
+    # elif 'test_ex8.txt' in error_file_path:
+    #     assert parser.error_count == 2
 
 
 
