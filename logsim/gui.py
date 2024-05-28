@@ -554,17 +554,23 @@ class Gui(wx.Frame):
                     
                     # Parse the new network file
                     self.parser.parse_network()
-                    
+
                     # Reinitialize the canvas with the new devices and monitors
                     self.canvas.Destroy()  # Destroy the old canvas
                     self.canvas = MyGLCanvas(self, self.devices, self.monitors, self.message_display)
-                    
-                     # Refresh the layout to include the new canvas
-                    sizer = self.GetSizer()
-                    sizer.Insert(0, self.canvas, 1, wx.EXPAND | wx.ALL, 5)  # Insert the new canvas
-                    sizer.Layout()
-                    
-                    self.canvas.render("New File Uploaded!")
+
+                    # Update the layout to replace the old canvas with the new one
+                    main_sizer = self.GetSizer()
+                    canvas_plot_sizer = main_sizer.GetChildren()[0].GetSizer()
+
+                    # Remove the old canvas and add the new one
+                    canvas_plot_sizer.Clear(delete_windows=False)
+                    canvas_plot_sizer.Add(self.canvas, 2, wx.EXPAND | wx.ALL, 1)
+                    canvas_plot_sizer.Add(self.matplotlib_canvas, 1, wx.EXPAND | wx.ALL, 1)
+
+                    # Refresh the layout
+                    main_sizer.Layout()
+
 
                 except Exception as ex:
                     wx.LogError(f"Cannot open file: {ex}")
