@@ -1,0 +1,43 @@
+% monitor unconnected and varied outputs %
+
+DEFINE
+    clock1 AS CLOCK WITH cycle_rep = 10,
+    switch1 AS SWITCH WITH initial = 0,
+    dflip1 AS DTYPE,
+    and1 AS AND WITH inputs = 2,
+    nand1 AS NAND WITH inputs = 2,
+    or1 AS OR WITH inputs = 2,
+    nor1 AS NOR WITH inputs = 2,
+    xor1 AS XOR
+;
+
+CONNECT
+    and1.I1 = switch1,
+    and1.I2 = clock1,
+    nand1.I1 = and1,
+    nand1.I2 = clock1,
+    or1.I1 = nand1,
+    or1.I2 = switch1,
+    nor1.I1 = or1,
+    nor1.I2 = clock1,
+    xor1.I1 = nor1,
+    xor1.I2 = switch1,
+    dflip1.DATA = xor1,
+    dflip1.CLK = clock1,
+    dflip1.CLEAR = switch1,
+    dflip1.SET = clock1
+;
+
+MONITOR
+    clock1,
+    switch1,
+    dflip1.Q,
+    dflip1.QBAR,
+    and1,
+    nand1,
+    or1,
+    nor1,
+    xor1
+;
+
+END;
