@@ -572,8 +572,8 @@ class Gui(wx.Frame):
                     main_sizer.Layout()
 
                     # Print the name of the file opened to the terminal (text box) window
-                    self.text_box.AppendText(f"\n> Opened file: {pathname}")
-                    
+                    self.text_box.AppendText(f"Opened file: {pathname}\n\n>")
+
                 except Exception as ex:
                     wx.LogError(f"Cannot open file: {ex}")
 
