@@ -26,7 +26,6 @@ class ConnectDrawer:
     def draw_connection(self) -> None: 
         
         connection_def = self.connection
-
         
         inp_obj = connection_def[0] 
         out_obj = connection_def[2]
@@ -37,7 +36,7 @@ class ConnectDrawer:
         inp_port_id = connection_def[1]
         out_port_id = connection_def[3]
 
-        self.padding = self.padding #+ 5*inp_id + 2* out_id
+        self.padding = self.padding
 
         inp_domain = self.domain_dict[inp_obj]
         out_domain = self.domain_dict[out_obj]
