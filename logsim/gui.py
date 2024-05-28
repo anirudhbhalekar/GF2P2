@@ -1,12 +1,23 @@
-"""Implement the graphical user interface for the Logic Simulator.
+"""
+Implement the graphical user interface for the Logic Simulator.
 
-Used in the Logic Simulator project to enable the user to run the simulation
-or adjust the network properties.
+This module provides a graphical user interface (GUI) for the Logic Simulator,
+enabling the user to run the simulation, adjust network properties, and visualize
+the circuit and its outputs.
 
 Classes:
 --------
-MyGLCanvas - handles all canvas drawing operations.
-Gui - configures the main window and all the widgets.
+MyGLCanvas - Handles all canvas drawing operations, including rendering devices,
+connections, and monitors. Supports panning and zooming.
+
+PromptedTextCtrl - Custom text control with a prompt symbol '>' that prevents
+deletion of history and only allows modification of the current line.
+
+Gui - Configures the main window and all the widgets, including menus, buttons,
+canvas, and text controls. Manages the interaction between the user and the
+simulation.
+
+RunApp - Initializes and runs the application.
 """
 import wx
 import wx.glcanvas as wxcanvas
@@ -350,10 +361,30 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
 # class for dealing with text box
 class PromptedTextCtrl(wx.TextCtrl):
+    """
+    PromptedTextCtrl - Custom text control with a prompt symbol '>' that prevents
+    deletion of history and only allows modification of the current line.
 
-    """Configure the text box located to the side of the window.
-    
-    DOCSTRING TO BE COMPLETED LATER"""
+    This class extends wx.TextCtrl to create a command-line style text box where each
+    line starts with a '>' prompt. Users can only edit the current line, preventing
+    deletion or modification of previous lines.
+
+    Methods:
+    --------
+    __init__(parent, id=wx.ID_ANY, *args, **kwargs):
+        Initializes the text control with the specified parent and parameters.
+
+    write_prompt():
+        Appends a prompt symbol '>' to the text control and moves the cursor to the end.
+
+    on_text_entered(event):
+        Handles the event when the user presses Enter, adding a new prompt symbol and
+        moving the cursor to the end.
+
+    on_key_down(event):
+        Handles key down events to prevent deletion of previous lines. Allows deletion
+        within the current line and ensures the prompt symbol remains at the beginning.
+    """
     def __init__(self, parent, id=wx.ID_ANY, *args, **kwargs):
             """Initialise the text box."""
             # Combine the necessary styles
@@ -364,6 +395,8 @@ class PromptedTextCtrl(wx.TextCtrl):
             super().__init__(parent, id, *args, **kwargs)
             self.write_prompt()
             self.Bind(wx.EVT_TEXT_ENTER, self.on_text_entered)
+            self.Bind(wx.EVT_KEY_DOWN, self.on_key_down)
+            self.Bind(wx.EVT_TEXT, self.on_text)
 
     def write_prompt(self):
         """Write the prompt symbol '>' and move the cursor to the end."""
@@ -374,9 +407,38 @@ class PromptedTextCtrl(wx.TextCtrl):
         """Handle the event when the user enters text."""
         #self.SetInsertionPointEnd()
         # Add a new prompt symbol and move the cursor to the end
+        current_position = self.GetInsertionPoint()
         self.AppendText("\n> ")
-        self.SetInsertionPointEnd()
+        self.SetInsertionPoint(current_position + 3)
 
+    def on_key_down(self, event):
+        """Handle key down events to prevent deletion of previous lines."""
+        keycode = event.GetKeyCode()
+        current_position = self.GetInsertionPoint()
+        line_start_position = self.GetLineLength(self.GetNumberOfLines() - 1)
+        
+        if keycode == wx.WXK_BACK:
+            # Prevent deletion of the prompt symbol '>'
+            if current_position > line_start_position + 2:
+                event.Skip()
+        elif keycode == wx.WXK_DELETE:
+            # Prevent deletion of the prompt symbol '>'
+            if current_position >= line_start_position + 2:
+                event.Skip()
+        elif keycode in (wx.WXK_UP, wx.WXK_DOWN):
+            # Prevent moving the cursor to other lines
+            return
+        else:
+            event.Skip()
+    
+    def on_text(self, event):
+        """Handle text change events to ensure the prompt symbol is not deleted."""
+        last_line = self.GetNumberOfLines() - 1
+        line_text = self.GetLineText(last_line)
+        
+        if not line_text.startswith("> "):
+            self.ChangeValue(self.GetValue()[:self.GetLastPosition() - len(line_text)] + "> " + line_text[2:])
+            self.SetInsertionPointEnd()
 
 class Gui(wx.Frame):
     """Configure the main window and all the widgets apart from the text box.
@@ -572,7 +634,7 @@ class Gui(wx.Frame):
                     main_sizer.Layout()
 
                     # Print the name of the file opened to the terminal (text box) window
-                    self.text_box.AppendText(f"Opened file: {pathname}\n\n>")
+                    self.text_box.AppendText(f" Opened file: {pathname}\n\n>")
 
                 except Exception as ex:
                     wx.LogError(f"Cannot open file: {ex}")
