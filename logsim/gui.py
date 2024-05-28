@@ -528,35 +528,54 @@ class Gui(wx.Frame):
                         "\ns X N - set switch X to N (0 or 1)"
                         "\nm X - set a monitor on signal X"
                         "\nz X - zap the monitor on signal X"
+                        "\nh - print a list of available commands on the terminal"
                         "\nq - quit the simulation")
-        if Id == wx.ID_OPEN: 
-            with wx.FileDialog(self, "Open New Source File", 
-                               wildcard="TXT files (*.txt)|*.txt", style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as file_dialog:
-                
+        if Id == wx.ID_OPEN:
+            with wx.FileDialog(self, "Open New Source File",
+                            wildcard="TXT files (*.txt)|*.txt",
+                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as file_dialog:
 
-                if file_dialog.ShowModal() == wx.ID_CANCEL: 
-                    return 
+                if file_dialog.ShowModal() == wx.ID_CANCEL:
+                    return
 
                 pathname = file_dialog.GetPath()
 
-                try: 
-                    # How to reload the entire file -> can't figure out where this is called
-                    """self.names = Names()
+                try:
+                    # Reinitialize the names, devices, network, and monitors
+                    self.names = Names()
                     self.devices = Devices(self.names)
                     self.network = Network(self.names, self.devices)
                     self.monitors = Monitors(self.names, self.devices, self.network)
 
+                    # Reinitialize the scanner and parser with the new file
                     self.scanner = Scanner(pathname, self.names)
                     self.parser = Parser(self.names, self.devices, self.network, self.monitors, self.scanner)
                     
-                    self.canvas = MyGLCanvas(self, self.devices, self.monitors, self.message_display) 
-                    self.Refresh()
+                    # Parse the new network file
                     self.parser.parse_network()
-                    self.Refresh()
-                    self.canvas.render("New File Uploaded!")"""
 
-                except Exception as ex: 
-                    wx.LogError(f"Cannot open file {ex}")
+                    # Reinitialize the canvas with the new devices and monitors
+                    self.canvas.Destroy()  # Destroy the old canvas
+                    self.canvas = MyGLCanvas(self, self.devices, self.monitors, self.message_display)
+
+                    # Update the layout to replace the old canvas with the new one
+                    main_sizer = self.GetSizer()
+                    canvas_plot_sizer = main_sizer.GetChildren()[0].GetSizer()
+
+                    # Remove the old canvas and add the new one
+                    canvas_plot_sizer.Clear(delete_windows=False)
+                    canvas_plot_sizer.Add(self.canvas, 2, wx.EXPAND | wx.ALL, 1)
+                    canvas_plot_sizer.Add(self.matplotlib_canvas, 1, wx.EXPAND | wx.ALL, 1)
+
+                    # Refresh the layout
+                    main_sizer.Layout()
+
+                    # Print the name of the file opened to the terminal (text box) window
+                    self.text_box.AppendText(f"Opened file: {pathname}\n\n>")
+
+                except Exception as ex:
+                    wx.LogError(f"Cannot open file: {ex}")
+
 
     def on_spin(self, event):
         """Handle the event when the user changes the spin control value."""
