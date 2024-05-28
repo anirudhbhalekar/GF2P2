@@ -110,7 +110,6 @@ class MyGLCanvas(wxcanvas.GLCanvas):
     def assemble_devices(self): 
         """Renders all devices on screen (no connections)"""
         devices_list = self.devices.devices_list
-        num_devices = len(devices_list)
         
         y_start = 300
 
@@ -122,22 +121,20 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         # First we find the CLOCK type - we typically want this to be rendered 
         # in the left most part of the canvas
 
-        clk_device = None
-        for device in devices_list: 
+        for device in devices_list:
             if device.device_kind == self.devices.CLOCK: 
-                clk_device = device
                 # Render the CLOCK device at (0,0)
                 ys = ys - count*dist
                 count += 1
 
-                clk_render = LogicDrawer(str(self.names.get_name_string(clk_device.device_id)), 
+                clk_render = LogicDrawer(self.names, self.devices, self.monitors, device.device_id, 
                                         xs, ys)
                 
                 # Dictionary handling
-                self.draw_obj_dict[clk_device.device_id] = clk_render
+                self.draw_obj_dict[device.device_id] = clk_render
                 clk_render.draw_clock()
                 self.domain_dict[clk_render] = clk_render.domain
-                self.render_text(str(self.names.get_name_string(clk_device.device_id)), 
+                self.render_text(str(self.names.get_name_string(device.device_id)), 
                                     clk_render.x - (clk_render.length / 3), 
                                     clk_render.y - (clk_render.height / 3))
 
@@ -146,10 +143,12 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
      
         # Removes all clock objects (we reserve first col for clocks only)
-        render_device_list = [d for d in devices_list if d.device_kind != self.devices.CLOCK]
 
-        for i, acc_device in enumerate(render_device_list): 
+        for i, acc_device in enumerate(devices_list): 
             
+            if acc_device.device_kind == self.devices.CLOCK: 
+                continue
+
             num_inputs = len(acc_device.inputs.keys())
             d_kind = self.names.get_name_string(acc_device.device_kind)
             d_name = self.names.get_name_string(acc_device.device_id)
@@ -166,8 +165,8 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             if pos_y < min_y: 
                 pos_y = y_start 
                 pos_x += 175
-
-            device_render = LogicDrawer(acc_device.device_id, pos_x, pos_y)
+            device_render = LogicDrawer(self.names, self.devices, self.monitors, acc_device.device_id, 
+                                        pos_x, pos_y)
             # Dictionary handling
             self.draw_obj_dict[acc_device.device_id] = device_render
             device_render.draw_with_string(d_kind)
@@ -218,8 +217,16 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                                              self.domain_dict, 15)
                     con_draw.draw_connection()
 
+
     def assemble_monitors(self): 
-        
+
+       monitors_dict = self.monitors.monitors_dictionary
+
+       for key in monitors_dict.keys(): 
+            
+            pass
+
+
     def render(self, text):
         """Handle all drawing operations."""
         self.SetCurrent(self.context)
@@ -235,7 +242,8 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         #self.render_text(text, 10, 10)
 
         self.assemble_devices()
-        self.assemble_connections()
+        #self.assemble_connections()
+        self.assemble_monitors()
         # Draw logic gates using the LogicDrawer class (TEST STUFF BELOW)
         """
         G1 = LogicDrawer("G1", x=50, y=200, n_inputs=16)
