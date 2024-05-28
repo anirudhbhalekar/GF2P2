@@ -36,31 +36,6 @@ class Parser:
     --------------
     parse_network(self): Parses the circuit definition file.
     """
-    # Error codes
-    EXPECTED_NAME = 1
-    INVALID_CHAR_IN_NAME = 2
-    NULL_DEVICE_IN_CONNECT = 3
-    INVALID_CONNECT_DELIMITER = 4
-    DOUBLE_PUNCTUATION = 5
-    MISSING_SEMICOLON = 6
-    INVALID_KEYWORD = 7
-    INVALID_COMMENT_SYMBOL = 8
-    INVALID_BLOCK_ORDER = 9
-    MISSING_END_STATEMENT = 10
-    EXPECTED_NUMBER = 11
-    EXPECTED_PUNCTUATION = 12
-    INVALID_PIN_REF = 13
-    EXPECTED_EQUALS = 14
-    DEVICE_ABSENT = 15
-    INPUT_CONNECTED = 16
-    INPUT_TO_INPUT = 17
-    PORT_ABSENT = 18
-    OUTPUT_TO_OUTPUT = 19
-    DEVICE_PRESENT = 20
-    NO_QUALIFIER = 21
-    INVALID_QUALIFIER = 22
-    QUALIFIER_PRESENT = 23
-    BAD_DEVICE = 24
 
     def __init__(self, names, devices, network, monitors, scanner):
         """Initialise constants."""
@@ -121,8 +96,11 @@ class Parser:
             self.devices.NO_QUALIFIER: "Qualifier is missing",
             self.devices.INVALID_QUALIFIER: "Invalid qualifier",
             self.devices.QUALIFIER_PRESENT: "Qualifier should not be present",
-            self.devices.BAD_DEVICE: "Invalid device type"
-        }
+            self.devices.BAD_DEVICE: "Invalid device type",
+            # Monitor errors
+            self.monitors.NOT_OUTPUT: "Device output not found",
+            self.monitors.MONITOR_PRESENT: "Monitor already present"
+            }
         return error_messages.get(error_code, "Unknown error")
 
     def parse_network(self):
@@ -375,10 +353,18 @@ class Parser:
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.MONITOR_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
-                self.output_con(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
+                device_id, output_id = self.output_con(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
+                if self.error_count == 0:
+                    error_type = self.monitors.make_monitor(device_id, output_id)
+                    if error_type != self.monitors.NO_ERROR:
+                        self.error(error_type, stopping_symbols)
                 while self.symbol.type == self.scanner.COMMA:
                     self.symbol = self.scanner.get_symbol()
-                    self.output_con(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
+                    device_id, output_id = self.output_con(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
+                    if self.error_count == 0:
+                        error_type = self.monitors.make_monitor(device_id, output_id)
+                        if error_type != self.monitors.NO_ERROR:
+                            self.error(error_type, stopping_symbols)
             if self.symbol.type == self.scanner.SEMICOLON:
                 self.symbol = self.scanner.get_symbol()
             else:
