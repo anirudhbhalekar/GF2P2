@@ -98,7 +98,6 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         self.draw_obj_dict = {}
         self.domain_dict = {}
         self.monitors_dict = {} # This will take the form (dev_id, output_port_id): (canvas coords)
-        self.bound_y_dict = {}  # Stores the bounding heights of all the devices 
 
         # Bind events to the canvas
         self.Bind(wx.EVT_PAINT, self.on_paint)
@@ -131,7 +130,6 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             render_obj = LogicDrawer(self.names, self.devices, self.monitors, dev_id) 
 
             self.draw_obj_dict[dev_id] = render_obj
-            self.bound_y_dict[dev_id] = render_obj.bound_y()
 
 
     def render_circuit(self): 
@@ -169,16 +167,18 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 continue
             
             device_render = self.draw_obj_dict[acc_device.device_id]
-            num_inputs = device_render.n_inputs
+            num_inputs = len(acc_device.inputs.keys())
             d_kind = self.names.get_name_string(acc_device.device_kind)
-            dist_y = 100 #self.bound_y_dict[acc_device.device_id] = 
+            d_name = self.names.get_name_string(acc_device.device_id)
 
-            if d_kind in ["AND", "NAND", "OR", "NOR", "XOR"]: 
-                dist_y += (num_inputs) * 10
+            if d_kind in ["AND", "NAND", "NOR", "OR", "XOR"]: 
+                dist_y = 75 
+                if num_inputs > 2: 
+                    dist_y += (num_inputs - 2) * 20 
             elif d_kind == "SWITCH": 
-                dist_y = 70
-            else:
-                dist_y = 150 
+                dist_y = 75 
+            else: 
+                dist_y = 150
 
             if pos_y < min_y: 
                 pos_y = y_start 
@@ -189,12 +189,12 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.domain_dict[device_render] = device_render.domain
             pos_y -= dist_y
 
-            # We will add connections here to reduce time complexity
+        # We will add connections here to reduce time complexity
+        for device in devices_list: 
+            self.assemble_connection(device)
 
-        for i, device in enumerate(devices_list): 
-            self.assemble_connection(device, i)
-
-    def assemble_connection(self, input_device, i): 
+    def assemble_connection(self, input_device): 
+        """Render all wires (connections) on screen."""
         input_obj = self.draw_obj_dict[input_device.device_id]
             
         for input_port_id in input_device.inputs.keys(): 
@@ -623,11 +623,11 @@ class Gui(wx.Frame):
                           "About Logsim", wx.ICON_INFORMATION | wx.OK)
         if Id == wx.ID_EDIT:
             if hasattr(self, 'editor') and self.editor.IsShown():
-                # If the editor is already open don't create it again
+                # If the editor is already open and visible, just bring it to front
                 self.editor.Raise()
             else:
                 # Otherwise, open and create the editor
-                self.editor = TextEditor(self, "Text Editor", initial_text="")
+                self.editor = TextEditor(self, "Text Editor", initial_text="Hello world")
                 self.editor.Show()
         if Id == wx.ID_HELP_COMMANDS:
             wx.MessageBox("List of user commands: "
@@ -694,7 +694,7 @@ class Gui(wx.Frame):
     def on_run_button(self, event):
         """Handle the event when the user clicks the run button."""
         text = "Run button pressed."
-        run_bool = self.run_circuit(self.cycle_count)
+        run_bool = self.run_circuit()
         self.canvas.render(text)
 
     def on_clear_button(self, event):
@@ -713,6 +713,3 @@ class RunApp(wx.App):
     """Combines Canvas onto App with Matplotlib"""
     def __init__(self):
         wx.App.__init__(self, redirect=False)
-
-    
-
