@@ -537,7 +537,7 @@ class Gui(wx.Frame):
         self.network = network
         self.monitors = monitors
 
-        self.cycle_count = 1
+        self.cycle_count = 10
 
         # Message display widget
         self.message_display = wx.TextCtrl(self, wx.ID_ANY, "", style=wx.TE_MULTILINE | wx.TE_READONLY)
@@ -547,7 +547,7 @@ class Gui(wx.Frame):
 
         # Configure the widgets
         self.text = wx.StaticText(self, wx.ID_ANY, "Cycles")
-        self.spin = wx.SpinCtrl(self, wx.ID_ANY, initial=10, min=1, max=50)
+        self.spin = wx.SpinCtrl(self, wx.ID_ANY, initial=self.cycle_count, min=1, max=50)
         self.run_button = wx.Button(self, wx.ID_ANY, "Run")
         self.reset_view_button = wx.Button(self, wx.ID_ANY, "Reset View")
         self.text_box = PromptedTextCtrl(self, wx.ID_ANY, style=wx.TE_PROCESS_ENTER)
@@ -688,6 +688,8 @@ class Gui(wx.Frame):
     def on_spin(self, event):
         """Handle the event when the user changes the spin control value."""
         spin_value = self.spin.GetValue()
+        self.cycle_count = spin_value
+        
         text = "".join(["New spin control value: ", str(spin_value)])
         self.canvas.render(text)
 
