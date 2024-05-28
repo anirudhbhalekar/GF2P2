@@ -94,18 +94,18 @@ class ConnectDrawer:
 
             # This is to preserve directionality - aka choose the x bound closest to you
             if abs(curr_coord[0] - min_x) < abs(curr_coord[0] - max_x):
-                next_x_coord = min_x - self.padding * 2
+                next_x_coord = min_x - self.padding 
                 next_y_coord = curr_coord[1]
             else: 
-                next_x_coord = max_x + self.padding * 2
+                next_x_coord = max_x + self.padding 
                 next_y_coord = curr_coord[1]
 
             # If we have to go up overall we will choose to travel to the top corner
 
             if end_y < curr_coord[1]: 
-                next_seed_y = min_y - self.padding * 2
+                next_seed_y = min_y - self.padding 
             else: 
-                next_seed_y = max_y + self.padding * 2
+                next_seed_y = max_y + self.padding 
 
             
 
