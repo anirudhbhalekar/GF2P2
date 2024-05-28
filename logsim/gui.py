@@ -192,7 +192,8 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
                     output_obj = self.draw_obj_dict[output_dev_id]
                     con_draw = ConnectDrawer((input_obj, input_port_id, output_obj, output_port_id), 
-                                             self.domain_dict, 15)
+                                             self.domain_dict, 10)
+                    # Don't put padding too high - will break code 
                     con_draw.draw_connection()
 
     def assemble_monitors(self): 
