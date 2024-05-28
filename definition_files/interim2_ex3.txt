@@ -6,20 +6,18 @@ DEFINE
     gate1 AS NAND WITH inputs = 2,
     gate2 AS OR WITH inputs = 2,
     dtype1 AS DTYPE;
-
+    
 CONNECT
-    gate1.I0 = sw1,
-    gate1.I1 = sw2,
-    gate2.I0 = gate1,
-    gate2.I1 = clk1,
+    gate1.I1 = sw1,
+    gate1.I2 = sw2,
+    gate2.I1 = dtype1.QBAR,
+    gate2.I2 = clk1,
     dtype1.CLEAR = sw2,
-    dtype1.CLOCK = clk1,
+    dtype1.CLK = clk1,
     dtype1.SET = gate2;
-
+    
 MONITOR
-    gate1.Q,
-    gate2.Q,
-    dtype1.Q,
-    dtype1.QBAR;
-
+    gate1,
+    gate2;
+    
 END;
