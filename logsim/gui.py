@@ -404,25 +404,23 @@ class PromptedTextCtrl(wx.TextCtrl):
 
     def on_text_entered(self, event):
         """Handle the event when the user enters text."""
-        #self.SetInsertionPointEnd()
-        # Add a new prompt symbol and move the cursor to the end
-        current_position = self.GetInsertionPoint()
-        self.AppendText("\n> ")
-        self.SetInsertionPoint(current_position + 3)
+        # Move the cursor to the end, then append the prompt
+        self.AppendText("") # I have no idea why this works but don't delete it
+        self.SetInsertionPointEnd()
 
     def on_key_down(self, event):
         """Handle key down events to prevent deletion of previous lines."""
         keycode = event.GetKeyCode()
         current_position = self.GetInsertionPoint()
-        line_start_position = self.GetLineLength(self.GetNumberOfLines() - 1)
-        
+        last_line_start = self.GetLastPosition() - self.GetLineLength(self.GetNumberOfLines() - 1)
+
         if keycode == wx.WXK_BACK:
             # Prevent deletion of the prompt symbol '>'
-            if current_position > line_start_position + 2:
+            if current_position > last_line_start + 2:
                 event.Skip()
         elif keycode == wx.WXK_DELETE:
             # Prevent deletion of the prompt symbol '>'
-            if current_position >= line_start_position + 2:
+            if current_position >= last_line_start + 2:
                 event.Skip()
         elif keycode in (wx.WXK_UP, wx.WXK_DOWN):
             # Prevent moving the cursor to other lines
