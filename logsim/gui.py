@@ -623,11 +623,11 @@ class Gui(wx.Frame):
                           "About Logsim", wx.ICON_INFORMATION | wx.OK)
         if Id == wx.ID_EDIT:
             if hasattr(self, 'editor') and self.editor.IsShown():
-                # If the editor is already open and visible, just bring it to front
+                # If the editor is already open don't create it again
                 self.editor.Raise()
             else:
                 # Otherwise, open and create the editor
-                self.editor = TextEditor(self, "Text Editor", initial_text="Hello world")
+                self.editor = TextEditor(self, "Text Editor", initial_text="")
                 self.editor.Show()
         if Id == wx.ID_HELP_COMMANDS:
             wx.MessageBox("List of user commands: "
@@ -694,7 +694,6 @@ class Gui(wx.Frame):
     def on_run_button(self, event):
         """Handle the event when the user clicks the run button."""
         text = "Run button pressed."
-        
         run_bool = self.run_circuit(self.cycle_count)
         self.canvas.render(text)
 
