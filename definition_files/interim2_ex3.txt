@@ -3,23 +3,21 @@ DEFINE
     clk1 AS CLOCK WITH cycle_rep = 10,
     sw1 AS SWITCH WITH initial = 1,
     sw2 AS SWITCH WITH initial = 0,
-    gate1 AS NAND WITH input = 2,
-    gate2 AS OR WITH input = 2,
+    gate1 AS NAND WITH inputs = 2,
+    gate2 AS OR WITH inputs = 2,
     dtype1 AS DTYPE;
-
+    
 CONNECT
-    gate1.I0 = sw1.DATA,
-    gate1.I1 = sw2.DATA,
-    gate2.I0 = gate1.Q,
-    gate2.I1 = clk1.CYCLE,
-    dtype1.CLEAR = sw2.DATA,
-    dtype1.CLOCK = clk1.CYCLE,
-    dtype1.SET = gate2.Q;
-
+    gate1.I1 = sw1,
+    gate1.I2 = sw2,
+    gate2.I1 = dtype1.QBAR,
+    gate2.I2 = clk1,
+    dtype1.CLEAR = sw2,
+    dtype1.CLK = clk1,
+    dtype1.SET = gate2;
+    
 MONITOR
-    gate1.Q,
-    gate2.Q,
-    dtype1.Q,
-    dtype1.QBAR;
-
+    gate1,
+    gate2;
+    
 END;

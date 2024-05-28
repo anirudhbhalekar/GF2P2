@@ -110,7 +110,7 @@ class Parser:
             if self.symbol.type == self.scanner.EOF:
                 return False
             self.spec_file()
-            print(self.error_count)
+            print(f"Total Error Count:{self.error_count}")
             return self.error_count == 0
         except SyntaxError as e:
             print(f"Syntax Error: {e}")
@@ -161,6 +161,8 @@ class Parser:
                     device_property = self.set_param(stopping_symbols)
                 else:
                     device_property = None
+            else:
+                self.error(self.INVALID_KEYWORD, stopping_symbols)
             # Make device 
             if self.error_count == 0:
                 error_type = self.devices.make_device(device_id, device_kind, device_property)
@@ -246,7 +248,6 @@ class Parser:
         """Implement rule con_list = input_con, "=", output_con, {",", input_con, "=", output_con} ;"""
         in_device_id, in_port_id = self.input_con(stopping_symbols)
         if in_device_id is not None and in_port_id is not None:
-            print(f"input device id: {in_device_id}, input port id: {in_port_id}")
             if self.symbol.type == self.scanner.EQUALS:
                 self.symbol = self.scanner.get_symbol()
                 out_device_id, out_port_id = self.output_con(stopping_symbols)
@@ -268,7 +269,6 @@ class Parser:
                     self.symbol = self.scanner.get_symbol()
                     out_device_id, out_port_id = self.output_con(stopping_symbols)
                 else:
-                    print(f"2 symbol type: {self.symbol.type}, symbol id: {self.symbol.id}")
                     self.error(self.INVALID_CONNECT_DELIMITER, stopping_symbols)
                 if self.error_count == 0:
                     error_type = self.network.make_connection(in_device_id, in_port_id, out_device_id, out_port_id)

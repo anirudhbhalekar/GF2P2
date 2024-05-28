@@ -136,6 +136,7 @@ class Network:
                                                       second_port_id)
                 error_type = self.NO_ERROR
             else:  # second_port_id is not a valid input or output port
+                print(second_port_id, second_device.outputs)
                 error_type = self.PORT_ABSENT
 
         elif first_port_id in first_device.outputs:
