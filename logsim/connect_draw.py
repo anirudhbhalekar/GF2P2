@@ -34,7 +34,7 @@ class ConnectDrawer:
         inp_port_id = connection_def[1]
         out_port_id = connection_def[3]
 
-        self.padding = self.padding
+        self.padding = self.padding 
 
         inp_domain = self.domain_dict[inp_obj]
         out_domain = self.domain_dict[out_obj]

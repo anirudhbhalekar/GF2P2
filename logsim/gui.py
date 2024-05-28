@@ -167,7 +167,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             if d_kind in ["AND", "NAND", "NOR", "OR", "XOR"]: 
                 dist_y = 75 
                 if num_inputs > 2: 
-                    dist_y += (num_inputs - 2) * 5 
+                    dist_y += (num_inputs - 2) * 20 
             elif d_kind == "SWITCH": 
                 dist_y = 75 
             else: 
@@ -181,9 +181,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             device_render = self.draw_obj_dict[acc_device.device_id]
             device_render.draw_with_string(d_kind, pos_x, pos_y)
             self.domain_dict[device_render] = device_render.domain
-            self.render_text(str(d_name), 
-                             device_render.x - (device_render.length / 2), 
-                             device_render.y - (device_render.height / 1.5))
+            
             pos_y -= dist_y
 
             # We will add connections here to reduce time complexity
@@ -250,50 +248,6 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
         self.render_circuit()
         self.assemble_monitors()
-
-        # Draw logic gates using the LogicDrawer class (TEST STUFF BELOW)
-        """
-        G1 = LogicDrawer("G1", x=50, y=200, n_inputs=16)
-        G1.draw_and_gate()
-        # Add the text label
-        self.render_text(str(G1.name), G1.x + (G1.length / 2), G1.y + (G1.height / 2))
-
-        G2 = LogicDrawer("G2", x=150, y=200)
-        G2.draw_nand_gate()
-        self.render_text(str(G2.name), G2.x + (G2.length / 2), G2.y + (G2.height / 2))
-
-        G3 = LogicDrawer("G3", x=250, y = 200)
-        G3.draw_or_gate()
-        self.render_text(str(G3.name), G3.x + (G3.length / 2), G3.y + (G3.height / 2))
-
-        G4 = LogicDrawer("G4", x=350, y = 200)
-        G4.draw_nor_gate()
-        self.render_text(str(G4.name), G4.x + (G4.length / 2), G4.y + (G4.height / 2))
-
-        G5 = LogicDrawer("G5", x=450, y = 200)
-        G5.draw_xor_gate()
-        self.render_text(str(G5.name), G5.x + (G5.length / 2), G5.y + (G5.height / 2))
-        
-        SW1 = LogicDrawer("SWITCH1", x=50, y=100)
-        SW1.draw_switch()
-        # For switches render text under the circle
-        self.render_text(str(SW1.name), SW1.x - 10, SW1.y - 30)
-
-        CLK1 = LogicDrawer("CLOCK1", x=150, y=100)
-        CLK1.draw_clock()
-        # For clocks render text under the square
-        self.render_text(str(CLK1.name), CLK1.x - 10, CLK1.y - 30)
-
-        DTYPE1 = LogicDrawer("DTYPE1", x=250, y=50)
-        DTYPE1.draw_dtype()
-        # For dtypes render text under the object
-        self.render_text(str(DTYPE1.name), DTYPE1.x, DTYPE1.y)
-        
-        MONITOR1 = LogicDrawer("MONITOR1", x=350, y=100)
-        MONITOR1.draw_monitor()
-        # For monitors render text below triangle
-        self.render_text(str(MONITOR1.name), MONITOR1.x - 10, MONITOR1.y + 10)
-        """
 
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front
@@ -476,6 +430,9 @@ class Gui(wx.Frame):
         self.path = path 
         self.names = names
         self.network = network
+        self.monitors = monitors
+
+        self.cycle_count = 1
 
         # Message display widget
         self.message_display = wx.TextCtrl(self, wx.ID_ANY, "", style=wx.TE_MULTILINE | wx.TE_READONLY)
@@ -535,6 +492,21 @@ class Gui(wx.Frame):
         # Initialise window size and make main_sizer parent sizer
         self.SetSizeHints(600, 600)
         self.SetSizer(main_sizer)
+    
+    def run_circuit(self, N): 
+        """Executes the network"""
+        
+        for _ in range(N):
+            if self.network.execute_network():
+                self.monitors.record_signals()
+            else:
+                print("Error! Network oscillating.")
+                return False
+        self.monitors.display_signals()
+        return True
+    
+    def continue_circuit(self, N):
+        """Continues n cycles"""
 
     def plot_monitors(self): 
         """Given some monitor outputs, draw the resulting plot on the matplotlib axes"""
@@ -607,6 +579,8 @@ class Gui(wx.Frame):
     def on_run_button(self, event):
         """Handle the event when the user clicks the run button."""
         text = "Run button pressed."
+        
+        run_bool = self.run_circuit()
         self.canvas.render(text)
 
     def on_clear_button(self, event):

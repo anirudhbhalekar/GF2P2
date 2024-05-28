@@ -10,7 +10,7 @@ from OpenGL import GL, GLUT
 class LogicDrawer:
     """Handle all logic gate drawings."""
     
-    def __init__(self, names, devices, monitors, id, n_iter=10, n_inputs=2):
+    def __init__(self, names, devices, monitors, id, n_iter=10):
             """Initialize logic drawer with the number of inputs for 
             certain gates and also the number of iterations used to
             draw circles for certain gates."""
@@ -19,14 +19,14 @@ class LogicDrawer:
             self.id = id # -> This is the device id
 
             self.n_iter = n_iter
-            self.n_inputs = n_inputs
+            
 
             # 2 input gate is 40 high, and every additional input gate adds 5 units of height
             # n_inputs is between 1 and 16, but ONLY 2 for XOR gate. This is checked as a semantic error before.
 
             self.operator_height = 30 
             self.operator_length = 25
-            self.inc_height = 5 
+            self.inc_height = 10 
            
             self.names = names
             self.devices = devices
@@ -37,6 +37,8 @@ class LogicDrawer:
             self.device_inputs = self.device.inputs
             self.device_outputs = self.device.outputs
 
+            self.n_inputs = len(self.device_inputs.keys())
+
             """try: del self.device_inputs[None]
             except: pass
             try: del self.device_outputs[None]
@@ -46,8 +48,9 @@ class LogicDrawer:
             # top and bottom padding 5 px each
             # self.height is only the vertical straight bit
             self.height = self.operator_height 
+
             if self.n_inputs > 2: 
-                self.height += (n_inputs - 2) * self.inc_height
+                self.height += (self.n_inputs - 2) * self.inc_height
             # we can maybe add self.length later to make the length scale with gates
             self.length = self.operator_length
 
@@ -58,7 +61,7 @@ class LogicDrawer:
             self.monitor_dict = {} 
            
             self.domain = [] # This is a list of tuples
-
+                
     def draw_with_string(self, op_string, x, y): 
         """Calls appropriate draw function"""
         
@@ -110,7 +113,7 @@ class LogicDrawer:
         radius = 2
 
         glBegin(GL_POLYGON)    
-
+        glColor3f(0.0, 0.0, 0.0)
         for i in range(20):    
             cosine= radius * cos(i*2*pi/sides) + posx    
             sine  = radius * sin(i*2*pi/sides) + posy    
@@ -148,6 +151,9 @@ class LogicDrawer:
                          
         glEnd()
         
+        d_name = self.names.get_name_string(self.id)
+        self.render_text(d_name, self.x + self.length/2, self.y + self.height/2, color="black")
+
         inp_space = self.height - 2 * self.inc_height
         div_space = inp_space/(self.n_inputs + 1)
 
@@ -203,6 +209,9 @@ class LogicDrawer:
         glVertex2f(self.x, self.y)
                          
         glEnd()
+
+        d_name = self.names.get_name_string(self.id)
+        self.render_text(d_name, self.x + self.length/2, self.y + self.height/2, color="black")
 
         # Draw the circle for the NOT part, radius 5
         glColor3f(1.0, 0.0, 0.0)  # Red color
@@ -272,6 +281,9 @@ class LogicDrawer:
         
         glEnd()
 
+        d_name = self.names.get_name_string(self.id)
+        self.render_text(d_name, self.x + self.length/2, self.y + self.height/2, color="black")
+
         inp_space = self.height - 2 * self.inc_height
         div_space = inp_space/(self.n_inputs + 1)
 
@@ -334,6 +346,9 @@ class LogicDrawer:
             y1 = r * sin(angle) + self.y + R
             glVertex2f(x1, y1)
         glEnd()
+        
+        d_name = self.names.get_name_string(self.id)
+        self.render_text(d_name, self.x + self.length/2, self.y + self.height/2, color="black")
 
         inp_space = self.height - 2 * self.inc_height
         div_space = inp_space/(self.n_inputs + 1)
@@ -390,6 +405,8 @@ class LogicDrawer:
         
         glEnd()
 
+        d_name = self.names.get_name_string(self.id)
+        self.render_text(d_name, self.x + self.length/2 - 5, self.y + self.height/2, color="black")
 
         glColor3f(1.0, 0.0, 0.0)  # Red color
         glBegin(GL_LINE_STRIP)
@@ -444,6 +461,8 @@ class LogicDrawer:
             glVertex2f(x1, y1)
         glEnd()
 
+        d_name = self.names.get_name_string(self.id)
+        self.render_text(d_name, self.x, self.y, color="black")
 
 
         # Switch has no input
@@ -484,8 +503,9 @@ class LogicDrawer:
         input_ids = self.device_inputs.keys()
         output_ids = self.device_outputs.keys()
 
-        
-        
+        d_name = self.names.get_name_string(self.id)
+        self.render_text(d_name, self.x + self.width/2 - 5, self.y + self.height/2, color="black")
+
         for i, i_id in enumerate(input_ids): 
             y_coord = self.y + self.inc_height + (i+1)*div_space
             x_coord = self.x
@@ -534,6 +554,8 @@ class LogicDrawer:
         glVertex2f(self.x - (self.width / 2), self.y - 10)
         glEnd()
 
+        d_name = self.names.get_name_string(self.id)
+        self.render_text(d_name, self.x + self.width/2 - 10, self.y - self.height/2 - 15, color="black")
 
         inp_space = self.height - 2 * self.inc_height
         div_space = inp_space/(self.n_inputs + 1)
@@ -593,6 +615,9 @@ class LogicDrawer:
         
         elif color == "purple":
             GL.glColor3f(1.0, 0.0, 1.0)  # text is purple
+
+        elif color == "black": 
+            GL.glColor3f(0.0, 0.0, 0.0)  # text is black
 
         GL.glRasterPos2f(x_pos, y_pos)
         font = GLUT.GLUT_BITMAP_HELVETICA_12
