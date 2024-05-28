@@ -85,7 +85,7 @@ class ConnectDrawer:
         # We are now at one of the bounding box corners
         # Check if there is any bounding box that intersects the ray y coordinate as it travels to 
        
-        nav_tup = self.navigate_intersection(curr_coord, (end_x, end_y), self.domain_dict, inp_obj)
+        nav_tup = self.navigate_intersection(curr_coord, (end_x, end_y), self.domain_dict)
         while nav_tup[0]: 
             # This is the bounds of the problematic object
             new_bounds = nav_tup[1]
@@ -122,7 +122,7 @@ class ConnectDrawer:
             curr_coord = (next_x_coord, next_seed_y)
             
             # We call the navigation function again
-            nav_tup = self.navigate_intersection(curr_coord, (end_x, end_y), self.domain_dict, inp_obj)
+            nav_tup = self.navigate_intersection(curr_coord, (end_x, end_y), self.domain_dict)
             
         # At this point we are at one of the corners of the bounding box of the output obj itself so we just need two updates
         glColor3f(0.0, 0.0, 0.0)
@@ -135,18 +135,16 @@ class ConnectDrawer:
 
         # Should have reached destination element now
     
-    def navigate_intersection(self, curr_coord, dest_coord, domain_dict, inp_obj): 
+    def navigate_intersection(self, curr_coord, dest_coord, domain_dict): 
         
         curr_y = curr_coord[1]
         curr_x = curr_coord[0]
 
         dest_x = dest_coord[0]
+        dest_y = dest_coord[1]
 
         for key in domain_dict.keys(): 
             
-            if key is inp_obj: 
-                continue
-
             min_y = domain_dict[key][0][1]
             min_x = domain_dict[key][0][0]
 
@@ -157,6 +155,11 @@ class ConnectDrawer:
                 # Check if there is an object that intersects this y ray 
                 if min_x <= max(curr_x, dest_x) and max_x >= min(dest_x, curr_x): 
                     # Check if it lies between the two (src and dest) x values
+                    return (True, domain_dict[key])
+                
+            elif min_x <= curr_x and max_x >= curr_x: 
+                # Object intersectes this x ray 
+                if min_y <= max(curr_y, dest_y) and max_y >= min(dest_y, curr_y): 
                     return (True, domain_dict[key])
 
         return (False, None)

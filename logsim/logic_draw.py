@@ -104,6 +104,27 @@ class LogicDrawer:
         glEnd()
         glPopAttrib()
 
+    def bound_y(self): 
+
+        if self.device.device_kind == self.devices.AND: 
+            return self.height + 20 
+        elif self.device.device_kind == self.devices.NAND: 
+            return self.height + 20 
+        elif self.device.device_kind == self.devices.OR: 
+            return self.height + 30
+        elif self.device.device_kind == self.devices.NOR: 
+            return self.height + 30 
+        elif self.device.device_kind == self.devices.XOR: 
+            return self.height + 44
+        elif self.device.device_kind == self.devices.SWITCH: 
+            return self.height + 10
+        elif self.device.device_kind == self.devices.CLOCK: 
+            return self.height + 10 
+        elif self.device.device_kind == self.devices.D_TYPE: 
+            return self.height + 40
+        else: 
+            pass 
+
 
 
     def make_circle(self, x, y): 
@@ -438,7 +459,7 @@ class LogicDrawer:
             self.make_circle(x_coord, y_coord)
             
         
-        self.domain = [(self.x - 25 + 1, self.y - 20 + 1), (self.x + self.length + (self.height / 2) - 1 + 25, self.y + self.height + 20 - 1)]
+        self.domain = [(self.x - 22, self.y - 22), (self.x + self.length + (self.height / 2) + 22, self.y + self.height + 22 )]
 
     def draw_switch(self, x, y):
         """Render and draw a switch from the LogicDrawer on the canvas,
@@ -603,7 +624,7 @@ class LogicDrawer:
             self.render_text(out_labels[index], x_coord - 15, y_coord + 5)
 
     
-        self.domain = [(self.x - (self.width / 2) + 1, self.y - (self.height / 2) + 1), (self.x + (self.width / 2) - 1, self.y + (self.height / 2) - 1)]
+        self.domain = [(self.x - (self.width / 2) - 20, self.y - (self.height / 2) - 20), (self.x + (self.width / 2) + 20, self.y + (self.height / 2) + 20)]
   
     
     def render_text(self, text, x_pos, y_pos, color = 'blue'):

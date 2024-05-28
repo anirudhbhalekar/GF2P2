@@ -431,10 +431,10 @@ class PromptedTextCtrl(wx.TextCtrl):
 class TextEditor(wx.Frame):
     """Text editor window for editing source files."""
     def __init__(self, parent, title, initial_text=""):
-        super().__init__(parent, title=title, size=(800, 600))
+        super().__init__(parent, title=title, size=(400, 600))
         
-        # Use the custom PromptedTextCtrl instead of wx.TextCtrl
-        self.text_ctrl = PromptedTextCtrl(self, style=wx.TE_MULTILINE)
+        # Use default text control format wx.TextCtrl
+        self.text_ctrl = wx.TextCtrl(self, style=wx.TE_MULTILINE)
         self.text_ctrl.SetValue(initial_text)
 
         # Add a Save button
@@ -446,6 +446,8 @@ class TextEditor(wx.Frame):
         sizer.Add(self.text_ctrl, proportion=1, flag=wx.EXPAND | wx.ALL, border=5)
         sizer.Add(self.save_button, flag=wx.ALIGN_RIGHT | wx.ALL, border=5)
 
+        # Set minimum window size and make "sizer" the sizer
+        self.SetSizeHints(200, 400)
         self.SetSizer(sizer)
 
     def get_text(self):
@@ -588,7 +590,7 @@ class Gui(wx.Frame):
         button_sizer.Add(self.reset_view_button, 1, wx.ALL, 5)
         button_sizer.Add(self.run_button, 1, wx.ALL, 5)
         
-        # Initialise window size and make main_sizer parent sizer
+        # Set minimum window size and make main_sizer parent sizer
         self.SetSizeHints(600, 600)
         self.SetSizer(main_sizer)
     
@@ -620,8 +622,13 @@ class Gui(wx.Frame):
             wx.MessageBox("Logic Simulator\nCreated by Mojisola Agboola\n2017",
                           "About Logsim", wx.ICON_INFORMATION | wx.OK)
         if Id == wx.ID_EDIT:
-            wx.MessageBox("Coming soon!",
-                          "Source Definition File", wx.CANCEL | wx.APPLY)
+            if hasattr(self, 'editor') and self.editor.IsShown():
+                # If the editor is already open and visible, just bring it to front
+                self.editor.Raise()
+            else:
+                # Otherwise, open and create the editor
+                self.editor = TextEditor(self, "Text Editor", initial_text="Hello world")
+                self.editor.Show()
         if Id == wx.ID_HELP_COMMANDS:
             wx.MessageBox("List of user commands: "
                         "\nr N - run the simulation for N cycles"
@@ -706,6 +713,3 @@ class RunApp(wx.App):
     """Combines Canvas onto App with Matplotlib"""
     def __init__(self):
         wx.App.__init__(self, redirect=False)
-
-    
-
