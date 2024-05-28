@@ -5,8 +5,8 @@ DEFINE
     SW2 AS SWITCH WITH initial=0;	
 
 CONNECT 
-    G1.I1 = SW1,
-    G1.I2 = SW2;    
+    SW1 = G1.I1,
+    SW2 = G1.I2;    
 
 % For readability, we recommend indenting all further connect
 statements to the same level as the initial statement %
