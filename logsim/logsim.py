@@ -73,7 +73,7 @@ def main(arg_list):
             sys.exit()
 
         [path] = arguments
-        # path = "C:/Users/Bhalekar's/Desktop/Part 2A/PROJECTS/GF2P2/definition_files/interim1_ex2.txt"
+        path = "C:/Users/Bhalekar's/Desktop/Part 2A/PROJECTS/GF2P2/definition_files/interim1_ex2.txt"
         scanner = Scanner(path, names)
         parser = Parser(names, devices, network, monitors, scanner)
         if parser.parse_network():
