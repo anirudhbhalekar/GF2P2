@@ -125,6 +125,7 @@ class ConnectDrawer:
             nav_tup = self.navigate_intersection(curr_coord, (end_x, end_y), self.domain_dict)
             
         # At this point we are at one of the corners of the bounding box of the output obj itself so we just need two updates
+    
         glColor3f(0.0, 0.0, 0.0)
         glBegin(GL_LINE_STRIP)
         glVertex2f(curr_coord[0], curr_coord[1])
