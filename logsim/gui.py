@@ -428,6 +428,51 @@ class PromptedTextCtrl(wx.TextCtrl):
             self.ChangeValue(self.GetValue()[:self.GetLastPosition() - len(line_text)] + "> " + line_text[2:])
             self.SetInsertionPointEnd()
 
+class TextEditor(wx.Frame):
+    """Text editor window for editing source files."""
+    def __init__(self, parent, title, initial_text=""):
+        super().__init__(parent, title=title, size=(800, 600))
+        
+        # Use the custom PromptedTextCtrl instead of wx.TextCtrl
+        self.text_ctrl = PromptedTextCtrl(self, style=wx.TE_MULTILINE)
+        self.text_ctrl.SetValue(initial_text)
+
+        # Add a Save button
+        self.save_button = wx.Button(self, label='Save')
+        self.save_button.Bind(wx.EVT_BUTTON, self.on_save)
+
+        # Use a sizer for layout
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.text_ctrl, proportion=1, flag=wx.EXPAND | wx.ALL, border=5)
+        sizer.Add(self.save_button, flag=wx.ALIGN_RIGHT | wx.ALL, border=5)
+
+        self.SetSizer(sizer)
+
+    def get_text(self):
+        """Get text content of the text editor."""
+        return self.text_ctrl.GetValue()
+
+    def on_save(self, event):
+        """Handle save button click."""
+        # Open a file dialog for the user to choose a file location
+        with wx.FileDialog(self, "Save File", wildcard="Text files (*.txt)|*.txt",
+                           style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as file_dialog:
+            if file_dialog.ShowModal() == wx.ID_CANCEL:
+                # If the user cancels, return without saving
+                return
+            
+            # Get the selected file path
+            filepath = file_dialog.GetPath()
+            
+            try:
+                # Open the file in write mode and write the text from the editor
+                with open(filepath, 'w') as file:
+                    text = self.text_ctrl.GetValue()
+                    file.write(text)
+            except IOError:
+                # Handle any errors that occur during file saving
+                wx.LogError("Cannot save current data to file.")
+
 class Gui(wx.Frame):
     """Configure the main window and all the widgets apart from the text box.
 
