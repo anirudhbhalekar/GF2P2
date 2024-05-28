@@ -1,7 +1,7 @@
 from math import cos, sin, pi
 from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, GL_LINE_STRIP
 from logic_draw import LogicDrawer
-
+import numpy.random as rd
 
 """ Basic Premis of ConnectDrawer is to take a dictionary of connections and 
     draw out all the connections as poly-lines 
@@ -19,7 +19,7 @@ class ConnectDrawer:
         # Stores dict of all min_max coords {LogicDraw obj: (bounding box tuple)} for all operators
         self.domain_dict = domain_dict
         # This is the padding when connection line tries to navigate around another bounding box
-        self.padding = padding
+        self.padding = 1
     
     def draw_connection(self) -> None: 
         
@@ -33,8 +33,6 @@ class ConnectDrawer:
 
         inp_port_id = connection_def[1]
         out_port_id = connection_def[3]
-
-        self.padding = self.padding 
 
         inp_domain = self.domain_dict[inp_obj]
         out_domain = self.domain_dict[out_obj]
@@ -91,8 +89,10 @@ class ConnectDrawer:
             new_bounds = nav_tup[1]
             min_x, max_x = new_bounds[0][0], new_bounds[1][0]
             min_y, max_y = new_bounds[0][1], new_bounds[1][1]
+            direction = nav_tup[2]
 
             # This is to preserve directionality - aka choose the x bound closest to you
+            # IF WE ARE GOING SIDEWAYS
             if abs(curr_coord[0] - min_x) < abs(curr_coord[0] - max_x):
                 next_x_coord = min_x - self.padding 
                 next_y_coord = curr_coord[1]
@@ -156,16 +156,24 @@ class ConnectDrawer:
                 # Check if there is an object that intersects this y ray 
                 if min_x <= max(curr_x, dest_x) and max_x >= min(dest_x, curr_x): 
                     # Check if it lies between the two (src and dest) x values
-                    return (True, domain_dict[key])
-                
-            elif min_x <= curr_x and max_x >= curr_x: 
-                # Object intersectes this x ray 
-                if min_y <= max(curr_y, dest_y) and max_y >= min(dest_y, curr_y): 
-                    return (True, domain_dict[key])
+                    return (True, domain_dict[key], 1)
 
-        return (False, None)
+        return (False, None, -1)
 
+    def new_intersection(self, curr_coord, dest_coord, domain_dict): 
 
+        curr_y = curr_coord[1]
+        curr_x = curr_coord[0]
+
+        dest_x = dest_coord[0]
+        dest_y = dest_coord[1]
+
+        # Want to check - we shoot an x ray from the new position, do we intersect any domains?
+
+        for key in domain_dict.keys(): 
+            # key is a draw obj
+
+            obj_minx, obj_miny = domain_dict[key][0][0]
 
 
             

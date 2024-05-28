@@ -21,6 +21,7 @@ RunApp - Initializes and runs the application.
 """
 import wx
 import wx.glcanvas as wxcanvas
+import numpy as np
 from math import cos, sin, pi
 from OpenGL import GL, GLUT
 from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, GL_LINE_STRIP, GL_TRIANGLE_FAN, GL_LINE_LOOP
@@ -97,7 +98,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
         self.draw_obj_dict = {}
         self.domain_dict = {}
-        self.monitors_dict = {} # This will take the form (dev_id, output_port_id): (canvas coords)
+        self.random_pertubation = []
 
         # Bind events to the canvas
         self.Bind(wx.EVT_PAINT, self.on_paint)
@@ -253,7 +254,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         #self.render_text(text, 10, 10)
 
         self.render_circuit()
-        #self.assemble_monitors()
+        self.assemble_monitors()
 
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front
@@ -539,8 +540,10 @@ class Gui(wx.Frame):
         self.names = names
         self.network = network
         self.monitors = monitors
+        self.devices = devices
 
         self.cycle_count = 10
+        self.cycles_completed = 0
 
         # Message display widget
         self.message_display = wx.TextCtrl(self, wx.ID_ANY, "", style=wx.TE_MULTILINE | wx.TE_READONLY)
@@ -570,10 +573,7 @@ class Gui(wx.Frame):
         button_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         # Initialise some empty matplotlib figure
-        self.figure = Figure(figsize=(5,2))
-        self.axes = self.figure.add_subplot(111)
-        self.axes.set_title("Monitor Plots")
-        self.axes.tick_params(axis = 'both', left = False, right = False, labelright = False, labelleft = False, labelbottom = False)
+        self.configure_matplotlib_canvas()
         self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
 
         # Arrange sizers, all stemming from main sizer
@@ -597,20 +597,32 @@ class Gui(wx.Frame):
         self.SetSizeHints(600, 600)
         self.SetSizer(main_sizer)
     
-    def run_circuit(self, N): 
+    def execute_circuit(self, cycles): 
         """Simulates the circuit for N cycles"""
-        for _ in range(N):
+        for _ in range(cycles):
             if self.network.execute_network():
                 self.monitors.record_signals()
             else:
-                print("Error! Network oscillating.")
+                wx.LogError("Error! Network oscillating.")
                 return False
         self.monitors.display_signals()
         return True
     
-    def continue_circuit(self, N):
+    def run_circuit(self, cycles): 
+        self.cycles_completed = 0
+        self.monitors.reset_monitors()
+        self.devices.cold_startup()
+
+        if self.execute_circuit(cycles): 
+            self.cycles_completed += cycles
+    
+
+    def continue_circuit(self, cycles):
         """Continues the simulation for N cycles"""
-        pass
+        if self.cycles_completed == 0: 
+            wx.LogError("Nothing to continue - run the simulation first")
+        elif self.execute_circuit(cycles): 
+            self.cycles_completed += cycles
 
     def plot_monitors(self): 
         """Given some monitor outputs, draw the resulting plot on the matplotlib axes"""
@@ -663,26 +675,36 @@ class Gui(wx.Frame):
                     self.parser = Parser(self.names, self.devices, self.network, self.monitors, self.scanner)
                     
                     # Parse the new network file
-                    self.parser.parse_network()
+                    if self.parser.parse_network(): 
 
-                    # Reinitialize the canvas with the new devices and monitors
-                    self.canvas.Destroy()  # Destroy the old canvas
-                    self.canvas = MyGLCanvas(self, self.devices, self.monitors, self.message_display)
+                        # Reinitialize the canvas with the new devices and monitors
+                        self.canvas.Destroy()  # Destroy the old canvas
+                        self.canvas = MyGLCanvas(self, self.devices, self.monitors, self.message_display)
 
-                    # Update the layout to replace the old canvas with the new one
-                    main_sizer = self.GetSizer()
-                    canvas_plot_sizer = main_sizer.GetChildren()[0].GetSizer()
+                        # Update the layout to replace the old canvas with the new one
+                        main_sizer = self.GetSizer()
+                        canvas_plot_sizer = main_sizer.GetChildren()[0].GetSizer()
 
-                    # Remove the old canvas and add the new one
-                    canvas_plot_sizer.Clear(delete_windows=False)
-                    canvas_plot_sizer.Add(self.canvas, 2, wx.EXPAND | wx.ALL, 1)
-                    canvas_plot_sizer.Add(self.matplotlib_canvas, 1, wx.EXPAND | wx.ALL, 1)
+                        # Clear matplotlib canvas
+                        self.configure_matplotlib_canvas()
+                        self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
 
-                    # Refresh the layout
-                    main_sizer.Layout()
+                        # Remove the old canvas and add the new one
+                        canvas_plot_sizer.Clear(delete_windows=False)
+                        canvas_plot_sizer.Add(self.canvas, 2, wx.EXPAND | wx.ALL, 1)
+                        canvas_plot_sizer.Add(self.matplotlib_canvas, 1, wx.EXPAND | wx.ALL, 1)
 
-                    # Print the name of the file opened to the terminal (text box) window
-                    self.text_box.AppendText(f" Opened file: {pathname}\n>")
+                        # Refresh the layout
+                        main_sizer.Layout()
+
+                        # Print the name of the file opened to the terminal (text box) window
+                        self.text_box.AppendText(f" Opened file: {pathname}\n>")
+                    else: 
+                        num_errors = self.parser.error_count
+                      
+                        wx.MessageBox(f"Error! Faulty definition file! \n"
+                                      "\n"
+                                      f"{num_errors} errors caught")
 
                 except Exception as ex:
                     wx.LogError(f"Cannot open file: {ex}")
@@ -699,8 +721,80 @@ class Gui(wx.Frame):
     def on_run_button(self, event):
         """Handle the event when the user clicks the run button."""
         text = "Run button pressed."
-        run_bool = self.run_circuit()
+        run_bool = self.run_circuit(self.cycle_count)
         self.canvas.render(text)
+
+        
+        self.monitor_plot()
+        """else: 
+            wx.LogError("Run failed - cannot plot monitors")
+            pass """
+
+    def configure_matplotlib_canvas(self): 
+        """ Sets the config params of the matplotlib canvas"""
+        self.figure = Figure(figsize=(5,2))
+        self.axes = self.figure.add_subplot(111)
+        self.axes.set_title("Monitor Plots")
+        self.axes.tick_params(axis = 'both', left = False, right = False, labelright = False, labelleft = False, labelbottom = False)
+    def on_continue_button(self, event): 
+        pass
+    
+    def monitor_plot(self):
+        
+        plot_array = []
+        name_array = []
+
+        
+
+        for device_id, output_id in self.monitors.monitors_dictionary: 
+
+            one_d_signal = []
+            monitor_name = self.devices.get_signal_name(device_id, output_id)
+            signal_list = self.monitors.monitors_dictionary[(device_id, output_id)]
+
+            for signal in signal_list: 
+                if signal == self.devices.HIGH: 
+                    one_d_signal.append(1)
+                    one_d_signal.append(1)
+                if signal == self.devices.LOW: 
+                    one_d_signal.append(0)
+                    one_d_signal.append(0)
+                if signal == self.devices.RISING: 
+                    one_d_signal.append(0)
+                    one_d_signal.append(1)
+                if signal == self.devices.FALLING: 
+                    one_d_signal.append(1)
+                    one_d_signal.append(0)
+                if signal == self.devices.BLANK: 
+                    one_d_signal.append(np.nan)
+                    one_d_signal.append(np.nan)
+            
+            plot_array.append(one_d_signal)
+            name_array.append(monitor_name)
+        
+        self.configure_matplotlib_canvas()
+
+        for i, int_signal in enumerate(plot_array): 
+            name = name_array[i]
+            print(int_signal)
+            int_signal = np.array(int_signal) + 2*i
+            self.axes.plot(int_signal, label = name) 
+        
+        self.axes.set_ylim(0, 2*i + 2)
+        self.axes.legend(fontsize="8", loc ="upper left")
+        self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
+        
+        main_sizer = self.GetSizer()
+        canvas_plot_sizer = main_sizer.GetChildren()[0].GetSizer()
+
+        # Remove the old canvas and add the new one
+        canvas_plot_sizer.Clear(delete_windows=False)
+        canvas_plot_sizer.Add(self.canvas, 2, wx.EXPAND | wx.ALL, 1)
+        canvas_plot_sizer.Add(self.matplotlib_canvas, 1, wx.EXPAND | wx.ALL, 1)
+
+        # Refresh the layout
+        main_sizer.Layout()
+
 
     def on_clear_button(self, event):
         """Handle the event when the user clicks the clear button."""
