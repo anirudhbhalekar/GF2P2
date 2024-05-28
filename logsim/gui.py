@@ -1,12 +1,23 @@
-"""Implement the graphical user interface for the Logic Simulator.
+"""
+Implement the graphical user interface for the Logic Simulator.
 
-Used in the Logic Simulator project to enable the user to run the simulation
-or adjust the network properties.
+This module provides a graphical user interface (GUI) for the Logic Simulator,
+enabling the user to run the simulation, adjust network properties, and visualize
+the circuit and its outputs.
 
 Classes:
 --------
-MyGLCanvas - handles all canvas drawing operations.
-Gui - configures the main window and all the widgets.
+MyGLCanvas - Handles all canvas drawing operations, including rendering devices,
+connections, and monitors. Supports panning and zooming.
+
+PromptedTextCtrl - Custom text control with a prompt symbol '>' that prevents
+deletion of history and only allows modification of the current line.
+
+Gui - Configures the main window and all the widgets, including menus, buttons,
+canvas, and text controls. Manages the interaction between the user and the
+simulation.
+
+RunApp - Initializes and runs the application.
 """
 import wx
 import wx.glcanvas as wxcanvas
@@ -29,16 +40,16 @@ from logic_draw import LogicDrawer
 from connect_draw import ConnectDrawer
 
 class MyGLCanvas(wxcanvas.GLCanvas):
-    """Handle all drawing operations.
+    """MyGLCanvas(wxcanvas.GLCanvas) - Handle all drawing operations.
 
-    This class contains functions for drawing onto the canvas. It
-    also contains handlers for events relating to the canvas.
+    This class contains functions for drawing onto the canvas. It also contains handlers for events relating to the canvas.
 
     Parameters
     ----------
     parent: parent window.
     devices: instance of the devices.Devices() class.
     monitors: instance of the monitors.Monitors() class.
+    message_display: message display widget.
 
     Public methods
     --------------
@@ -52,10 +63,10 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
     on_mouse(self, event): Handles mouse events.
 
-    render_text(self, text, x_pos, y_pos): Handles text drawing
-                                           operations.
-    """
+    render_text(self, text, x_pos, y_pos): Handles text drawing operations.
 
+    reset_view(self): Resets the view to the default state.   
+    """
     def __init__(self, parent, devices, monitors, message_display):
         """Initialise canvas properties and useful variables."""
         super().__init__(parent, -1,
@@ -112,7 +123,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         GL.glScaled(self.zoom, self.zoom, self.zoom)
 
     def construct_dicts(self): 
-        """Constructs required dictionaries"""
+        """Construct required dictionaries."""
         devices_list = self.devices.devices_list
 
         for device in devices_list: 
@@ -124,7 +135,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
 
     def render_circuit(self): 
-        """Renders all devices, connections, and monitors on screen """
+        """Render all devices, connections, and monitors on screen."""
         devices_list = self.devices.devices_list
         
         y_start = 300
@@ -134,9 +145,9 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         dist = 100
 
         max_vertical = 4
+
         # First we find the CLOCK type - we typically want this to be rendered 
         # in the left most part of the canvas
-
         for device in devices_list:
             if device.device_kind == self.devices.CLOCK: 
                 # Render the CLOCK device at (0,0)
@@ -148,13 +159,10 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 clk_render.draw_clock(xs, ys)
                 self.domain_dict[clk_render] = clk_render.domain
                
-
         pos_x, pos_y = 150, y_start
         min_y = 0
 
-     
-        # Removes all clock objects (we reserve first col for clocks only)
-
+        # Remove all clock objects (we reserve first col for clocks only)
         for i, acc_device in enumerate(devices_list): 
             
             if acc_device.device_kind == self.devices.CLOCK: 
@@ -177,10 +185,8 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 pos_x += 175
             
             # Call from dict
-            
             device_render.draw_with_string(d_kind, pos_x, pos_y)
             self.domain_dict[device_render] = device_render.domain
-            
             pos_y -= dist_y
 
             # We will add connections here to reduce time complexity
@@ -206,10 +212,10 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
 
     def assemble_monitors(self): 
+        """Assemble all monitors on screen."""
+        monitors_dict = self.monitors.monitors_dictionary
 
-       monitors_dict = self.monitors.monitors_dictionary
-
-       for key in monitors_dict.keys(): 
+        for key in monitors_dict.keys(): 
             dev_id = key[0]
             port_id = key[1]
 
@@ -228,8 +234,6 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
             monitor_obj = LogicDrawer(self.names, self.devices, self.monitors, dev_id)
             monitor_obj.draw_monitor(m_coord[0], m_coord[1], name_string)
-
-
 
     def render(self, text):
         """Handle all drawing operations."""
@@ -347,12 +351,30 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         self.init = False
         self.Refresh()  # triggers the paint event
 
-# class for dealing with text box
 class PromptedTextCtrl(wx.TextCtrl):
+    """
+    PromptedTextCtrl - Custom text control with a prompt symbol '>' that prevents
+    deletion of history and only allows modification of the current line.
 
-    """Configure the text box located to the side of the window.
-    
-    DOCSTRING TO BE COMPLETED LATER"""
+    This class extends wx.TextCtrl to create a command-line style text box where each
+    line starts with a '>' prompt. Users can only edit the current line, preventing
+    deletion or modification of previous lines.
+
+    Methods
+    -------
+    __init__(parent, id=wx.ID_ANY, *args, **kwargs)
+        Initializes the text control with the specified parent and parameters.
+    write_prompt()
+        Appends a prompt symbol '>' to the text control and moves the cursor to the end.
+    on_text_entered(event)
+        Handles the event when the user presses Enter, adding a new prompt symbol and
+        moving the cursor to the end.
+    on_key_down(event)
+        Handles key down events to prevent deletion of previous lines. Allows deletion
+        within the current line and ensures the prompt symbol remains at the beginning.
+    on_text(event)
+        Handle text change events to ensure the prompt symbol is not deleted.
+    """
     def __init__(self, parent, id=wx.ID_ANY, *args, **kwargs):
             """Initialise the text box."""
             # Combine the necessary styles
@@ -363,6 +385,8 @@ class PromptedTextCtrl(wx.TextCtrl):
             super().__init__(parent, id, *args, **kwargs)
             self.write_prompt()
             self.Bind(wx.EVT_TEXT_ENTER, self.on_text_entered)
+            self.Bind(wx.EVT_KEY_DOWN, self.on_key_down)
+            self.Bind(wx.EVT_TEXT, self.on_text)
 
     def write_prompt(self):
         """Write the prompt symbol '>' and move the cursor to the end."""
@@ -371,37 +395,119 @@ class PromptedTextCtrl(wx.TextCtrl):
 
     def on_text_entered(self, event):
         """Handle the event when the user enters text."""
-        #self.SetInsertionPointEnd()
-        # Add a new prompt symbol and move the cursor to the end
-        self.AppendText("\n> ")
+        # Move the cursor to the end, then append the prompt
+        self.AppendText("") # I have no idea why this works but don't delete it
         self.SetInsertionPointEnd()
 
+    def on_key_down(self, event):
+        """Handle key down events to prevent deletion of previous lines."""
+        keycode = event.GetKeyCode()
+        current_position = self.GetInsertionPoint()
+        last_line_start = self.GetLastPosition() - self.GetLineLength(self.GetNumberOfLines() - 1)
+
+        if keycode == wx.WXK_BACK:
+            # Prevent deletion of the prompt symbol '>'
+            if current_position > last_line_start + 2:
+                event.Skip()
+        elif keycode == wx.WXK_DELETE:
+            # Prevent deletion of the prompt symbol '>'
+            if current_position >= last_line_start + 2:
+                event.Skip()
+        elif keycode in (wx.WXK_UP, wx.WXK_DOWN):
+            # Prevent moving the cursor to other lines
+            return
+        else:
+            event.Skip()
+    
+    def on_text(self, event):
+        """Handle text change events to ensure the prompt symbol is not deleted."""
+        last_line = self.GetNumberOfLines() - 1
+        line_text = self.GetLineText(last_line)
+        
+        if not line_text.startswith("> "):
+            self.ChangeValue(self.GetValue()[:self.GetLastPosition() - len(line_text)] + "> " + line_text[2:])
+            self.SetInsertionPointEnd()
+
+class TextEditor(wx.Frame):
+    """Text editor window for editing source files."""
+    def __init__(self, parent, title, initial_text=""):
+        super().__init__(parent, title=title, size=(400, 600))
+        
+        # Use the custom PromptedTextCtrl instead of wx.TextCtrl
+        self.text_ctrl = PromptedTextCtrl(self, style=wx.TE_MULTILINE)
+        self.text_ctrl.SetValue(initial_text)
+
+        # Add a Save button
+        self.save_button = wx.Button(self, label='Save')
+        self.save_button.Bind(wx.EVT_BUTTON, self.on_save)
+
+        # Use a sizer for layout
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.text_ctrl, proportion=1, flag=wx.EXPAND | wx.ALL, border=5)
+        sizer.Add(self.save_button, flag=wx.ALIGN_RIGHT | wx.ALL, border=5)
+
+        # Set minimum window size and make "sizer" the sizer
+        self.SetSizeHints(200, 400)
+        self.SetSizer(sizer)
+
+    def get_text(self):
+        """Get text content of the text editor."""
+        return self.text_ctrl.GetValue()
+
+    def on_save(self, event):
+        """Handle save button click."""
+        # Open a file dialog for the user to choose a file location
+        with wx.FileDialog(self, "Save File", wildcard="Text files (*.txt)|*.txt",
+                           style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as file_dialog:
+            if file_dialog.ShowModal() == wx.ID_CANCEL:
+                # If the user cancels, return without saving
+                return
+            
+            # Get the selected file path
+            filepath = file_dialog.GetPath()
+            
+            try:
+                # Open the file in write mode and write the text from the editor
+                with open(filepath, 'w') as file:
+                    text = self.text_ctrl.GetValue()
+                    file.write(text)
+            except IOError:
+                # Handle any errors that occur during file saving
+                wx.LogError("Cannot save current data to file.")
 
 class Gui(wx.Frame):
     """Configure the main window and all the widgets apart from the text box.
 
-    This class provides a graphical user interface for the Logic Simulator and
-    enables the user to change the circuit properties and run simulations.
+    This class provides a graphical user interface for the Logic Simulator and enables the user to change the circuit properties and run simulations.
 
     Parameters
     ----------
-    title: title of the window.
+    title : str
+        Title of the window.
+    path : str
+        Path to the source file.
+    names : Names
+        Instance of the Names class.
+    devices : Devices
+        Instance of the Devices class.
+    network : Network
+        Instance of the Network class.
+    monitors : Monitors
+        Instance of the Monitors class.
 
     Public methods
     --------------
-    on_menu(self, event): Event handler for the file menu.
-
-    on_spin(self, event): Event handler for when the user changes the spin
-                           control value.
-
-    on_run_button(self, event): Event handler for when the user clicks the run
-                                button.
-
-    on_text_box(self, event): Event handler for when the user enters text.
+    on_menu(self, event)
+        Event handler for the file menu.
+    on_spin(self, event)
+        Event handler for when the user changes the spin control value.
+    on_run_button(self, event)
+        Event handler for when the user clicks the run button.
+    on_text_box(self, event)
+        Event handler for when the user enters text.
     """
-
     def __init__(self, title, path, names, devices, network, monitors):
-        """Initialise widgets and layout."""
+        """Initialise main window, widgets and layout."""
         super().__init__(parent=None, title=title, size=(800, 600))
 
         # Configure the file menu
@@ -441,11 +547,7 @@ class Gui(wx.Frame):
 
         # Configure the widgets
         self.text = wx.StaticText(self, wx.ID_ANY, "Cycles")
-        ''' Spin is the up/down number widget. 
-        For now, I set this to have a range of 1 to 10, with a default of 2
-        This will have to be changed as the user can specify clock cycle
-        (output changes every n cycles)'''
-        self.spin = wx.SpinCtrl(self, wx.ID_ANY, initial=2, min=1, max=10)
+        self.spin = wx.SpinCtrl(self, wx.ID_ANY, initial=10, min=1, max=50)
         self.run_button = wx.Button(self, wx.ID_ANY, "Run")
         self.reset_view_button = wx.Button(self, wx.ID_ANY, "Reset View")
         self.text_box = PromptedTextCtrl(self, wx.ID_ANY, style=wx.TE_PROCESS_ENTER)
@@ -488,13 +590,12 @@ class Gui(wx.Frame):
         button_sizer.Add(self.reset_view_button, 1, wx.ALL, 5)
         button_sizer.Add(self.run_button, 1, wx.ALL, 5)
         
-        # Initialise window size and make main_sizer parent sizer
+        # Set minimum window size and make main_sizer parent sizer
         self.SetSizeHints(600, 600)
         self.SetSizer(main_sizer)
     
     def run_circuit(self, N): 
-        """Executes the network"""
-        
+        """Simulates the circuit for N cycles"""
         for _ in range(N):
             if self.network.execute_network():
                 self.monitors.record_signals()
@@ -505,11 +606,13 @@ class Gui(wx.Frame):
         return True
     
     def continue_circuit(self, N):
-        """Continues n cycles"""
+        """Continues the simulation for N cycles"""
+        pass
 
     def plot_monitors(self): 
         """Given some monitor outputs, draw the resulting plot on the matplotlib axes"""
         pass
+
     def on_menu(self, event):
         """Handle the event when the user selects a menu item."""
         Id = event.GetId()
@@ -519,8 +622,13 @@ class Gui(wx.Frame):
             wx.MessageBox("Logic Simulator\nCreated by Mojisola Agboola\n2017",
                           "About Logsim", wx.ICON_INFORMATION | wx.OK)
         if Id == wx.ID_EDIT:
-            wx.MessageBox("Coming soon!",
-                          "Source Definition File", wx.CANCEL | wx.APPLY)
+            if hasattr(self, 'editor') and self.editor.IsShown():
+                # If the editor is already open and visible, just bring it to front
+                self.editor.Raise()
+            else:
+                # Otherwise, open and create the editor
+                self.editor = TextEditor(self, "Text Editor", initial_text="Hello world")
+                self.editor.Show()
         if Id == wx.ID_HELP_COMMANDS:
             wx.MessageBox("List of user commands: "
                         "\nr N - run the simulation for N cycles"
@@ -571,7 +679,7 @@ class Gui(wx.Frame):
                     main_sizer.Layout()
 
                     # Print the name of the file opened to the terminal (text box) window
-                    self.text_box.AppendText(f"Opened file: {pathname}\n\n>")
+                    self.text_box.AppendText(f" Opened file: {pathname}\n>")
 
                 except Exception as ex:
                     wx.LogError(f"Cannot open file: {ex}")
