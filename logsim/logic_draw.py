@@ -41,6 +41,8 @@ class LogicDrawer:
             self.output_list = [] 
             self.domain = []
 
+            self.id_to_coords_map = [] # This is a list of tuples with -> (port_id, coord_x, coord_y) 
+
     def draw_with_string(self, op_string): 
         """Calls appropriate draw function"""
         if op_string == "AND": 

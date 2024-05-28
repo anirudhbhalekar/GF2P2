@@ -182,13 +182,29 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         devices_list = self.devices.devices_list
 
         for input_device in devices_list: 
+            
+            dtype_bool = False
 
+            if input_device.device_kind == self.devices.D_TYPE: 
+                dtype_bool = True
+            
             num_inputs = len(input_device.inputs.keys())
             input_obj = self.draw_obj_dict[input_device.device_id]
 
             for inp_index, input_id in enumerate(input_device.inputs.keys()): 
                 
                 con_tup = input_device.inputs[input_id]
+
+                if dtype_bool: 
+                    # This will require special indexing 
+                    if input_id == self.devices.DATA_ID: 
+                        inp_index = 0 
+                    elif input_id == self.devices.CLK_ID: 
+                        inp_index = 1
+                    elif input_id == self.devices.SET_ID: 
+                        inp_index = 2 
+                    else: 
+                        inp_index = 3
 
                 if con_tup is not None: 
                     output_dev_id = con_tup[0]
@@ -197,9 +213,10 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                     out_index = 0 
                     if output_port_id == self.devices.QBAR_ID: 
                         out_index = 1
-                    
+
                     output_obj = self.draw_obj_dict[output_dev_id]
-                    con_draw = ConnectDrawer((input_obj, inp_index, output_obj, out_index), self.domain_dict, 15)
+                    con_draw = ConnectDrawer((input_obj, inp_index, output_obj, out_index), 
+                                             self.domain_dict, 15)
                     con_draw.draw_connection()
 
     def clear_all(self): 
@@ -367,6 +384,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
 # class for dealing with text box
 class PromptedTextCtrl(wx.TextCtrl):
+
     """Configure the text box located to the side of the window.
     
     DOCSTRING TO BE COMPLETED LATER"""

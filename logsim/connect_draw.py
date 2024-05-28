@@ -33,12 +33,21 @@ class ConnectDrawer:
         out_id = connection_def[3]
 
         inp_domain = self.domain_dict[inp_obj]
-        
+
+        inp_min_x, inp_max_x = inp_domain[0][0], inp_domain[0][1]
+        inp_min_y, inp_max_y = inp_domain[1][0], inp_domain[1][1]
+
         num_inputs = len(inp_obj.input_list)
 
         (start_x, start_y) = inp_obj.input_list[inp_id]
         (end_x, end_y) = out_obj.output_list[out_id]
 
+        glColor3f(0.0,0.0,0.0) 
+        glBegin(GL_LINE_STRIP)
+        glVertex2f(start_x, start_y)
+        glVertex2f(end_x, end_y)
+        glEnd()
+        '''
         if inp_id + 1 < num_inputs/2: 
             # We will go down and to the left
             d_coord = inp_domain[0]
@@ -101,6 +110,8 @@ class ConnectDrawer:
         glVertex2f(end_x, curr_coord[1])
         glVertex2f(end_x, end_y)
         glEnd()
+
+        '''
 
         # Should have reached destination element now
     
