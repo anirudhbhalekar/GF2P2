@@ -38,6 +38,7 @@ from scanner import Scanner
 from parse import Parser
 from logic_draw import LogicDrawer
 from connect_draw import ConnectDrawer
+import userint
 
 class MyGLCanvas(wxcanvas.GLCanvas):
     """MyGLCanvas(wxcanvas.GLCanvas) - Handle all drawing operations.
@@ -562,6 +563,7 @@ class Gui(wx.Frame):
         self.run_button.Bind(wx.EVT_BUTTON, self.on_run_button)
         self.clear_button.Bind(wx.EVT_BUTTON, self.on_clear_button)
         self.reset_view_button.Bind(wx.EVT_BUTTON, self.on_reset_view_button)
+        self.text_box.Bind(wx.EVT_TEXT_ENTER, self.on_text_box)
 
         # Configure sizers for layout
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -713,6 +715,67 @@ class Gui(wx.Frame):
         text = "Reset view button pressed"
         self.canvas.render(text)
         self.canvas.reset_view()
+
+    def on_text_box(self, event):
+        """Handle the event when the user enters text."""
+        text = self.text_box.GetValue().strip()  # Get the user's input and remove leading/trailing spaces
+
+        # Parse the user's input and call the corresponding functions from userint
+        if text.startswith('r '):
+            # Run simulation for N cycles
+            try:
+                N = int(text[2:])
+                userint.run_command(N)
+                self.text_box.AppendText(f"Running simulation for {N} cycles.\n")
+            except ValueError:
+                self.text_box.AppendText("Invalid command. Please provide a valid number of cycles.\n")
+        elif text.startswith('c '):
+            # Continue the simulation for N cycles
+            try:
+                N = int(text[2:])
+                userint.continue_command(N)
+                self.text_box.AppendText(f"Continuing simulation for {N} cycles.\n")
+            except ValueError:
+                self.text_box.AppendText("Invalid command. Please provide a valid number of cycles.\n")
+        elif text.startswith('s '):
+            # Set switch X to N (0 or 1)
+            try:
+                switch_id, value = text[2:].split()
+                switch_id = int(switch_id)
+                value = int(value)
+                userint.switch_command(switch_id, value)
+                self.text_box.AppendText(f"Setting switch {switch_id} to {value}.\n")
+            except ValueError:
+                self.text_box.AppendText("Invalid command format. Please provide switch ID and value.\n")
+        elif text.startswith('m '):
+            # Add a monitor on signal X
+            signal = text[2:]
+            userint.monitor_command(signal)
+            self.text_box.AppendText(f"Adding monitor on signal {signal}.\n")
+        elif text.startswith('z '):
+            # Zap the monitor on signal X
+            signal = text[2:]
+            userint.zap_command(signal)
+            self.text_box.AppendText(f"Zapping monitor on signal {signal}.\n")
+        elif text == 'h':
+            # Print a list of available commands
+            self.text_box.AppendText(
+                "List of available commands:\n"
+                "r N       - run the simulation for N cycles\n"
+                "c N       - continue the simulation for N cycles\n"
+                "s X N     - set switch X to N (0 or 1)\n"
+                "m X       - add a monitor on signal X\n"
+                "z X       - zap the monitor on signal X\n"
+                "h         - print a list of available commands\n"
+                "q         - quit the program\n"
+            )
+        elif text == 'q':
+            self.close(True)
+        else:
+            self.text_box.AppendText("Invalid command. A list of available commands can be obtained by entering 'h', or opening the 'Commands' tab.\n")
+
+        # Add the prompt symbol back to the text control
+        self.text_box.write_prompt()
 
 class RunApp(wx.App): 
     """Combines Canvas onto App with Matplotlib"""
