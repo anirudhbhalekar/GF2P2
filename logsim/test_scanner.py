@@ -84,7 +84,6 @@ def test_get_EOF(scanner_example_null):
         sym = scanner_example_null.get_symbol()
     assert sym.type == "EOF"
 
-
 @pytest.fixture
 def scanner_test_ex0():
     """Return a new instance of the Scanner class."""
@@ -164,3 +163,15 @@ def test_read_cycle_rep(scanner_interim1_ex2):
 
     assert symbol.type == "PARAM"
     assert symbol.id == scanner_interim1_ex2.cycle_rep_ID
+
+@pytest.fixture
+def scanner_test_ex7():
+    """Return a new instance of the Scanner class."""
+    return Scanner("error_definition_files/test_ex7.txt", Names())
+
+def test_ignore_invalid_char(scanner_test_ex7):
+    """Test that the scanner can handle invalid characters."""
+    symbol = scanner_test_ex7.get_symbol()
+    while symbol.type != scanner_test_ex7.EOF:
+        symbol = scanner_test_ex7.get_symbol()
+    assert symbol.type == "EOF"
