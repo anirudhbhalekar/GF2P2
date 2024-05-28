@@ -14,7 +14,7 @@ class ConnectDrawer:
     
     def __init__(self, connection_def: tuple, domain_dict: dict, padding: float) -> None:
         
-        # We receive connection_list in the form (draw_obj, outgoing id, draw_obj, input_id)
+        # We receive connection_list in the form (draw_obj, input_port_id, draw_obj, output_port_id)
         self.connection = connection_def
 
         # Stores dict of all min_max coords {LogicDraw obj: (bounding box tuple)} for all operators
@@ -31,10 +31,13 @@ class ConnectDrawer:
         inp_obj = connection_def[0] 
         out_obj = connection_def[2]
 
-        inp_id = connection_def[1]
-        out_id = connection_def[3]
+        inp_dev_id = inp_obj.id
+        out_dev_id = out_obj.id 
 
-        self.padding = self.padding + 5*inp_id + 2* out_id
+        inp_port_id = connection_def[1]
+        out_port_id = connection_def[3]
+
+        self.padding = self.padding #+ 5*inp_id + 2* out_id
 
         inp_domain = self.domain_dict[inp_obj]
         out_domain = self.domain_dict[out_obj]
@@ -42,10 +45,8 @@ class ConnectDrawer:
         inp_min_x, inp_max_x = inp_domain[0][0], inp_domain[0][1]
         inp_min_y, inp_max_y = inp_domain[1][0], inp_domain[1][1]
 
-        num_inputs = len(inp_obj.input_list)
-
-        (start_x, start_y) = inp_obj.input_list[inp_id]
-        (end_x, end_y) = out_obj.output_list[out_id]
+        (start_x, start_y) = inp_obj.input_dict[(inp_dev_id, inp_port_id)]
+        (end_x, end_y) = out_obj.output_dict[(out_dev_id, out_port_id)]
 
         """glColor3f(0.0,0.0,0.0) 
         glBegin(GL_LINE_STRIP)

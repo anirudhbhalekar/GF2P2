@@ -181,42 +181,19 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         devices_list = self.devices.devices_list
 
         for input_device in devices_list: 
-            
-            dtype_bool = False
-
-            if input_device.device_kind == self.devices.D_TYPE: 
-                dtype_bool = True
-            
             input_obj = self.draw_obj_dict[input_device.device_id]
-
-            for inp_index, input_id in enumerate(input_device.inputs.keys()): 
+            
+            for input_port_id in input_device.inputs.keys(): 
+                con_tup = input_device.inputs[input_port_id]
                 
-                con_tup = input_device.inputs[input_id]
-
-                if dtype_bool: 
-                    # This will require special indexing 
-                    if input_id == self.devices.DATA_ID: 
-                        inp_index = 0 
-                    elif input_id == self.devices.CLK_ID: 
-                        inp_index = 1
-                    elif input_id == self.devices.SET_ID: 
-                        inp_index = 2 
-                    else: 
-                        inp_index = 3
-
                 if con_tup is not None: 
                     output_dev_id = con_tup[0]
                     output_port_id = con_tup[1]
 
-                    out_index = 0 
-                    if output_port_id == self.devices.QBAR_ID: 
-                        out_index = 1
-
                     output_obj = self.draw_obj_dict[output_dev_id]
-                    con_draw = ConnectDrawer((input_obj, inp_index, output_obj, out_index), 
+                    con_draw = ConnectDrawer((input_obj, input_port_id, output_obj, output_port_id), 
                                              self.domain_dict, 15)
                     con_draw.draw_connection()
-
 
     def assemble_monitors(self): 
 
@@ -242,7 +219,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         #self.render_text(text, 10, 10)
 
         self.assemble_devices()
-        #self.assemble_connections()
+        self.assemble_connections()
         self.assemble_monitors()
         # Draw logic gates using the LogicDrawer class (TEST STUFF BELOW)
         """
