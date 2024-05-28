@@ -129,6 +129,8 @@ class Parser:
         """Parse the circuit definition file."""
         try:
             self.symbol = self.scanner.get_symbol()
+            if self.symbol.type == self.scanner.EOF:
+                return False
             self.spec_file()
             print(self.error_count)
             return self.error_count == 0
