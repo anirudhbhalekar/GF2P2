@@ -156,9 +156,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 clk_render = self.draw_obj_dict[device.device_id]
                 clk_render.draw_clock(xs, ys)
                 self.domain_dict[clk_render] = clk_render.domain
-                self.render_text(str(self.names.get_name_string(device.device_id)), 
-                                    clk_render.x - (clk_render.length / 3), 
-                                    clk_render.y - (clk_render.height / 3))
+               
 
         pos_x, pos_y = 150, y_start
         min_y = 0
@@ -170,7 +168,8 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             
             if acc_device.device_kind == self.devices.CLOCK: 
                 continue
-
+            
+            device_render = self.draw_obj_dict[acc_device.device_id]
             num_inputs = len(acc_device.inputs.keys())
             d_kind = self.names.get_name_string(acc_device.device_kind)
             d_name = self.names.get_name_string(acc_device.device_id)
@@ -189,7 +188,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 pos_x += 175
             
             # Call from dict
-            device_render = self.draw_obj_dict[acc_device.device_id]
+            
             device_render.draw_with_string(d_kind, pos_x, pos_y)
             self.domain_dict[device_render] = device_render.domain
             
