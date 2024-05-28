@@ -26,7 +26,7 @@ class LogicDrawer:
 
             self.operator_height = 30 
             self.operator_length = 25
-            self.inc_height = 10 
+            self.inc_height = 5 
            
             self.names = names
             self.devices = devices
@@ -86,7 +86,6 @@ class LogicDrawer:
         else: 
             pass
 
-        """ 
         min_x, min_y = self.domain[0][0], self.domain[0][1]
         max_x, max_y = self.domain[1][0], self.domain[1][1]
 
@@ -103,7 +102,7 @@ class LogicDrawer:
         glVertex2f(min_x, min_y)
 
         glEnd()
-        glPopAttrib()"""
+        glPopAttrib()
 
 
 
