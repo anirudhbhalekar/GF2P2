@@ -219,7 +219,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                     con_draw.draw_connection()
 
     def assemble_monitors(self): 
-        
+        pass
     def render(self, text):
         """Handle all drawing operations."""
         self.SetCurrent(self.context)
