@@ -86,11 +86,14 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
         self.draw_obj_dict = {}
         self.domain_dict = {}
+        self.monitors_dict = {} # This will take the form (dev_id, output_port_id): (canvas coords)
 
         # Bind events to the canvas
         self.Bind(wx.EVT_PAINT, self.on_paint)
         self.Bind(wx.EVT_SIZE, self.on_size)
         self.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse)
+
+        self.construct_dicts()
 
     def init_gl(self):
         """Configure and initialise the OpenGL context."""
@@ -107,8 +110,19 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         GL.glTranslated(self.pan_x, self.pan_y, 0.0)
         GL.glScaled(self.zoom, self.zoom, self.zoom)
 
-    def assemble_devices(self): 
-        """Renders all devices on screen (no connections)"""
+    def construct_dicts(self): 
+        """Constructs required dictionaries"""
+        devices_list = self.devices.devices_list
+
+        for device in devices_list: 
+            dev_id = device.device_id
+            render_obj = LogicDrawer(self.names, self.devices, self.monitors, dev_id) 
+
+            self.draw_obj_dict[dev_id] = render_obj
+
+
+    def render_circuit(self): 
+        """Renders all devices, connections, and monitors on screen """
         devices_list = self.devices.devices_list
         
         y_start = 300
@@ -126,13 +140,10 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 # Render the CLOCK device at (0,0)
                 ys = ys - count*dist
                 count += 1
-
-                clk_render = LogicDrawer(self.names, self.devices, self.monitors, device.device_id, 
-                                        xs, ys)
                 
-                # Dictionary handling
-                self.draw_obj_dict[device.device_id] = clk_render
-                clk_render.draw_clock()
+                # Call from dict
+                clk_render = self.draw_obj_dict[device.device_id]
+                clk_render.draw_clock(xs, ys)
                 self.domain_dict[clk_render] = clk_render.domain
                 self.render_text(str(self.names.get_name_string(device.device_id)), 
                                     clk_render.x - (clk_render.length / 3), 
@@ -165,44 +176,62 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             if pos_y < min_y: 
                 pos_y = y_start 
                 pos_x += 175
-            device_render = LogicDrawer(self.names, self.devices, self.monitors, acc_device.device_id, 
-                                        pos_x, pos_y)
-            # Dictionary handling
-            self.draw_obj_dict[acc_device.device_id] = device_render
-            device_render.draw_with_string(d_kind)
+            
+            # Call from dict
+            device_render = self.draw_obj_dict[acc_device.device_id]
+            device_render.draw_with_string(d_kind, pos_x, pos_y)
             self.domain_dict[device_render] = device_render.domain
             self.render_text(str(d_name), 
                              device_render.x - (device_render.length / 2), 
                              device_render.y - (device_render.height / 1.5))
             pos_y -= dist_y
 
-    def assemble_connections(self): 
-        """Renders connection poly lines"""
-        devices_list = self.devices.devices_list
+            # We will add connections here to reduce time complexity
 
-        for input_device in devices_list: 
-            input_obj = self.draw_obj_dict[input_device.device_id]
+        for device in devices_list: 
+            self.assemble_connection(device)
+
+    def assemble_connection(self, input_device): 
+        input_obj = self.draw_obj_dict[input_device.device_id]
             
-            for input_port_id in input_device.inputs.keys(): 
-                con_tup = input_device.inputs[input_port_id]
-                
-                if con_tup is not None: 
-                    output_dev_id = con_tup[0]
-                    output_port_id = con_tup[1]
+        for input_port_id in input_device.inputs.keys(): 
+            con_tup = input_device.inputs[input_port_id]
+            
+            if con_tup is not None: 
+                output_dev_id = con_tup[0]
+                output_port_id = con_tup[1]
 
-                    output_obj = self.draw_obj_dict[output_dev_id]
-                    con_draw = ConnectDrawer((input_obj, input_port_id, output_obj, output_port_id), 
-                                             self.domain_dict, 10)
-                    # Don't put padding too high - will break code 
-                    con_draw.draw_connection()
+                output_obj = self.draw_obj_dict[output_dev_id]
+                con_draw = ConnectDrawer((input_obj, input_port_id, output_obj, output_port_id), 
+                                            self.domain_dict, 10)
+                # Don't put padding too high - will break code 
+                con_draw.draw_connection()
+
 
     def assemble_monitors(self): 
 
        monitors_dict = self.monitors.monitors_dictionary
 
        for key in monitors_dict.keys(): 
-            
-            pass
+            dev_id = key[0]
+            port_id = key[1]
+
+            render_obj = self.draw_obj_dict[dev_id]
+            output_dict = render_obj.output_dict
+
+            m_coord = output_dict[(dev_id, port_id)]
+
+            device_name = self.names.get_name_string(dev_id)
+
+            if port_id is None: 
+                name_string = str(device_name)
+            else: 
+                port_name = self.names.get_name_string(port_id)
+                name_string = str(device_name + "." + port_name)
+
+            monitor_obj = LogicDrawer(self.names, self.devices, self.monitors, dev_id)
+            monitor_obj.draw_monitor(m_coord[0], m_coord[1], name_string)
+
 
 
     def render(self, text):
@@ -219,9 +248,9 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         # Draw specified text at position (10, 10)
         #self.render_text(text, 10, 10)
 
-        self.assemble_devices()
-        self.assemble_connections()
+        self.render_circuit()
         self.assemble_monitors()
+
         # Draw logic gates using the LogicDrawer class (TEST STUFF BELOW)
         """
         G1 = LogicDrawer("G1", x=50, y=200, n_inputs=16)

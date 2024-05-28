@@ -16,10 +16,8 @@ class ConnectDrawer:
         
         # We receive connection_list in the form (draw_obj, input_port_id, draw_obj, output_port_id)
         self.connection = connection_def
-
         # Stores dict of all min_max coords {LogicDraw obj: (bounding box tuple)} for all operators
         self.domain_dict = domain_dict
-
         # This is the padding when connection line tries to navigate around another bounding box
         self.padding = padding
     

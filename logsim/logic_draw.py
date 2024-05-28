@@ -10,15 +10,14 @@ from OpenGL import GL, GLUT
 class LogicDrawer:
     """Handle all logic gate drawings."""
     
-    def __init__(self, names, devices, monitors, id, x, y, n_iter=10, n_inputs=2):
+    def __init__(self, names, devices, monitors, id, n_iter=10, n_inputs=2):
             """Initialize logic drawer with the number of inputs for 
             certain gates and also the number of iterations used to
             draw circles for certain gates."""
             
             # Initialize variables
             self.id = id # -> This is the device id
-            self.x = x
-            self.y = y
+
             self.n_iter = n_iter
             self.n_inputs = n_inputs
 
@@ -60,24 +59,27 @@ class LogicDrawer:
            
             self.domain = [] # This is a list of tuples
 
-    def draw_with_string(self, op_string): 
+    def draw_with_string(self, op_string, x, y): 
         """Calls appropriate draw function"""
+        
+        self.x, self.y = x, y
+
         if op_string == "AND": 
-            self.draw_and_gate()
+            self.draw_and_gate(self.x, self.y)
         elif op_string == "NAND": 
-            self.draw_nand_gate()
+            self.draw_nand_gate(self.x, self.y)
         elif op_string == "OR": 
-            self.draw_or_gate()
+            self.draw_or_gate(self.x, self.y)
         elif op_string == "NOR": 
-            self.draw_nor_gate()
+            self.draw_nor_gate(self.x, self.y)
         elif op_string == "XOR": 
-            self.draw_xor_gate()
+            self.draw_xor_gate(self.x, self.y)
         elif op_string == "CLOCK": 
-            self.draw_clock()
+            self.draw_clock(self.x, self.y)
         elif op_string == "DTYPE": 
-            self.draw_dtype()
+            self.draw_dtype(self.x, self.y)
         elif op_string == "SWITCH": 
-            self.draw_switch()
+            self.draw_switch(self.x, self.y)
         else: 
             pass
 
@@ -116,10 +118,11 @@ class LogicDrawer:
 
         glEnd()
 
-    def draw_and_gate(self):
+    def draw_and_gate(self, x, y):
         """Render and draw an AND gate from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
-        
+        self.x, self.y = x, y
+
         # Coordinate change to center gates
         self.x = self.x - self.length / 2
         self.y = self.y - self.height / 2
@@ -169,9 +172,10 @@ class LogicDrawer:
         
         self.domain = [(self.x - 10, self.y - 10), (self.x + self.length + R + 10, self.y + self.height + 10)]
         
-    def draw_nand_gate(self):
+    def draw_nand_gate(self, x, y):
         """Render and draw an NAND gate from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
+        self.x, self.y = x, y
 
         # Coordinate change to center gates
         self.x = self.x - self.length / 2
@@ -241,10 +245,12 @@ class LogicDrawer:
         self.domain = [(self.x - 10, self.y - 10), (self.x + self.length + R + 10 + 2*r, self.y + self.height + 10)]
     
     
-    def draw_or_gate(self):
+    def draw_or_gate(self, x, y):
         """Render and draw an OR gate from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
         # Coordinate change to center gates
+        self.x, self.y = x, y
+
         self.x = self.x - self.length / 2
         self.y = self.y - self.height / 2 
 
@@ -290,9 +296,10 @@ class LogicDrawer:
         
         self.domain = [(self.x - 15 + 1, self.y - 15 + 1), (self.x + self.length + (self.height / 2) + 15 - 1, self.y + self.height + 15 - 1)]
 
-    def draw_nor_gate(self):
+    def draw_nor_gate(self, x, y):
         """Render and draw an OR gate from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
+        self.x, self.y = x, y
 
         # Coordinate change to center gates
         self.x = self.x - self.length / 2
@@ -352,7 +359,7 @@ class LogicDrawer:
         
         self.domain = [(self.x - 15 + 1, self.y - 15 + 1), (self.x + self.length + R + 2*r + 15 - 1, self.y + self.height + 15 - 1)]
 
-    def draw_xor_gate(self):
+    def draw_xor_gate(self, x, y):
         """Render and draw an OR gate from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
 
@@ -360,6 +367,7 @@ class LogicDrawer:
         assert self.n_inputs == 2
         assert self.height == 30
 
+        self.x, self.y = x, y
 
         self.x = self.x - self.length / 2
         self.y = self.y - self.height / 2 
@@ -416,11 +424,11 @@ class LogicDrawer:
         
         self.domain = [(self.x - 25 + 1, self.y - 20 + 1), (self.x + self.length + (self.height / 2) - 1 + 25, self.y + self.height + 20 - 1)]
 
-    def draw_switch(self):
+    def draw_switch(self, x, y):
         """Render and draw a switch from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
 
-        
+        self.x, self.y = x, y
         # Radius 20
         self.height = 40
         self.width = self.height
@@ -451,9 +459,10 @@ class LogicDrawer:
         
         self.domain = [(self.x - R  - 5, self.y - R - 5), (self.x + R + 5, self.y + R + 5)]
 
-    def draw_clock(self):
+    def draw_clock(self, x, y):
         """Render and draw a clock from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
+        self.x, self.y = x, y
 
         self.height = 40
         self.width = self.height
@@ -494,10 +503,10 @@ class LogicDrawer:
             
         self.domain =  [(self.x - R + 1, self.y - R + 1), (self.x + R - 1, self.y + R - 1)]
 
-    def draw_dtype(self):
+    def draw_dtype(self, x, y):
         """Render and draw a DTYPE from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
-
+        self.x, self.y = x, y
         # x, y defined from CENTRE of rectangle
         # DTYPE has height 100, width 60
         self.height = 100
@@ -576,9 +585,15 @@ class LogicDrawer:
         self.domain = [(self.x - (self.width / 2) + 1, self.y - (self.height / 2) + 1), (self.x + (self.width / 2) - 1, self.y + (self.height / 2) - 1)]
   
     
-    def render_text(self, text, x_pos, y_pos):
+    def render_text(self, text, x_pos, y_pos, color = 'blue'):
         """Handle text drawing operations."""
-        GL.glColor3f(0.0, 0.0, 1.0)  # text is blue
+
+        if color == "blue":
+            GL.glColor3f(0.0, 0.0, 1.0)  # text is blue
+        
+        elif color == "purple":
+            GL.glColor3f(1.0, 0.0, 1.0)  # text is purple
+
         GL.glRasterPos2f(x_pos, y_pos)
         font = GLUT.GLUT_BITMAP_HELVETICA_12
 
@@ -589,22 +604,22 @@ class LogicDrawer:
             else:
                 GLUT.glutBitmapCharacter(font, ord(character))
 
-    def draw_monitor(self):
-        """Render and draw a DTYPE from the LogicDrawer on the canvas,
-        with the position, inputs and iterations inherited from the class."""
-
+    def draw_monitor(self, x, y, m_name: str):
+        """Render and draw a Monitor"""
+        
+        self.x, self.y = x, y 
         # x, y defined from bottom of vertical line below tringle
-        glColor3f(0.0, 0.0, 0.0)  # Black color
-        glBegin(GL_LINE_STRIP)
-        glVertex2f(self.x, self.y)
-        glVertex2f(self.x, self.y + 20)
-        glVertex2f(self.x - 10, self.y + 40)
-        glVertex2f(self.x + 10, self.y + 40)
-        glVertex2f(self.x, self.y + 20)
+        glColor3f(1.0, 0.0, 1.0)  # Black color
+        glBegin(GL_POLYGON)
+        glVertex2f(self.x, self.y+ 5)
+        #glVertex2f(self.x, self.y + 15)
+        glVertex2f(self.x - 10, self.y + 20)
+        glVertex2f(self.x + 10, self.y + 20)
+        #glVertex2f(self.x, self.y + 15)
+        glVertex2f(self.x, self.y+ 5)
         glEnd()
 
-
-        signal_list = self.monitors.monitors_dictionary[(self.id, self.monitor_id)]
+        self.render_text(m_name, self.x + 20, self.y, 'purple')
 
         # Monitor has one input - where it monitors from
         self.input_list = [(self.x, self.y)]        
