@@ -1,0 +1,12 @@
+DEFINE
+    SW1 AS SWITCH WITH inital=0,
+@%!@DQASFAWFFAG!@$~@^TQWADDS~~~
+    G1 AS AND WITH inputs=16;
+
+CONNECT 
+    G1.I1 = SW1;
+
+MONITOR
+    SW1;
+
+END;
