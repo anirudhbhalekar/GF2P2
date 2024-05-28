@@ -1,10 +1,10 @@
 % stress test for single input %
 DEFINE
     CLK1 AS CLOCK WITH cycle_rep=3,
-    G1 AS OR WITH inputs=1, 
+    G1 AS OR WITH inputs=1;
 
 CONNECT 
-    CLK1 = G1.I1;
+    G1.I1 = CLK1;
 
 MONITOR 
     G1;
