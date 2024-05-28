@@ -1,0 +1,12 @@
+DEFINE
+    SW1 WITH inital=0,
+    G1 AS NOR WITH inputs=17, % more than number of allowed inputs %
+    G2 AS AND WITH inputs=2.5; % non-integer number of inputs %
+
+CONNECT 
+    G1.I1 = SW1;
+
+MONITOR
+    G1;
+
+END;

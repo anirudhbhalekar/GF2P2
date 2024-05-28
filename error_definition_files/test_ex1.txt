@@ -1,4 +1,4 @@
-% 1 intentional error %
+% 2 intentional errors %
 DEFINE 
     SW1 AS SWITCH WITH initial=0,
     SW2 AS SWITCH WITH initial=0,
@@ -6,7 +6,7 @@ DEFINE
     G1 AS NAND WITH inputs=2,
     G2 AS XOR,
     G3 AS OR WITH inputs=3,
-    G4 AS XOR,
+    G4 AS XOR WITH inputs=2, % XOR should always have 2 inputs by definition, so this should give error %
     G5 AS AND WITH inputs=2;
 
 CONNECT SW1 = G1.I1,

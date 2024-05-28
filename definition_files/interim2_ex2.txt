@@ -1,0 +1,42 @@
+% stress test for large inputs, hanging inputs %
+DEFINE 
+    SW1 AS SWITCH WITH initial=0,
+    SW2 AS SWITCH WITH initial=1,
+    SW3 AS SWITCH WITH initial=0,
+    SW4 AS SWITCH WITH initial=1,
+    SW5 AS SWITCH WITH initial=0,
+    SW6 AS SWITCH WITH initial=1,
+    SW7 AS SWITCH WITH initial=0,
+    SW8 AS SWITCH WITH initial=1,
+    SW9 AS SWITCH WITH initial=0,
+    SW10 AS SWITCH WITH initial=1,
+    SW11 AS SWITCH WITH initial=0,
+    SW12 AS SWITCH WITH initial=1,
+    SW13 AS SWITCH WITH initial=0,
+    SW14 AS SWITCH WITH initial=1,
+    SW15 AS SWITCH WITH initial=0,
+
+    G1 AS AND WITH inputs=16; 
+
+CONNECT 
+    G1.I1 = SW1,
+    G1.I2 = SW2,
+    G1.I3 = SW3,
+    G1.I4 = SW4,
+    G1.I5 = SW5,
+    G1.I6 = SW6,
+    G1.I7 = SW7,
+    G1.I8 = SW8,
+    G1.I9 = SW9,
+    G1.I10 = SW10,
+    G1.I11 = SW11,
+    G1.I12 = SW12,
+    G1.I13 = SW13,
+    G1.I14 = SW14,
+    G1.I15 = SW15,
+    % G1.I16 hanging %
+
+MONITOR 
+    G1;
+
+END;
