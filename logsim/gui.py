@@ -40,16 +40,16 @@ from logic_draw import LogicDrawer
 from connect_draw import ConnectDrawer
 
 class MyGLCanvas(wxcanvas.GLCanvas):
-    """Handle all drawing operations.
+    """MyGLCanvas(wxcanvas.GLCanvas) - Handle all drawing operations.
 
-    This class contains functions for drawing onto the canvas. It
-    also contains handlers for events relating to the canvas.
+    This class contains functions for drawing onto the canvas. It also contains handlers for events relating to the canvas.
 
     Parameters
     ----------
     parent: parent window.
     devices: instance of the devices.Devices() class.
     monitors: instance of the monitors.Monitors() class.
+    message_display: message display widget.
 
     Public methods
     --------------
@@ -63,10 +63,10 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
     on_mouse(self, event): Handles mouse events.
 
-    render_text(self, text, x_pos, y_pos): Handles text drawing
-                                           operations.
-    """
+    render_text(self, text, x_pos, y_pos): Handles text drawing operations.
 
+    reset_view(self): Resets the view to the default state.   
+    """
     def __init__(self, parent, devices, monitors, message_display):
         """Initialise canvas properties and useful variables."""
         super().__init__(parent, -1,
@@ -122,7 +122,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         GL.glScaled(self.zoom, self.zoom, self.zoom)
 
     def construct_dicts(self): 
-        """Constructs required dictionaries"""
+        """Construct required dictionaries."""
         devices_list = self.devices.devices_list
 
         for device in devices_list: 
@@ -133,7 +133,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
 
     def render_circuit(self): 
-        """Renders all devices, connections, and monitors on screen """
+        """Render all devices, connections, and monitors on screen."""
         devices_list = self.devices.devices_list
         
         y_start = 300
@@ -143,9 +143,9 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         dist = 100
 
         max_vertical = 4
+
         # First we find the CLOCK type - we typically want this to be rendered 
         # in the left most part of the canvas
-
         for device in devices_list:
             if device.device_kind == self.devices.CLOCK: 
                 # Render the CLOCK device at (0,0)
@@ -157,13 +157,10 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 clk_render.draw_clock(xs, ys)
                 self.domain_dict[clk_render] = clk_render.domain
                
-
         pos_x, pos_y = 150, y_start
         min_y = 0
 
-     
-        # Removes all clock objects (we reserve first col for clocks only)
-
+        # Remove all clock objects (we reserve first col for clocks only)
         for i, acc_device in enumerate(devices_list): 
             
             if acc_device.device_kind == self.devices.CLOCK: 
@@ -188,18 +185,16 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 pos_x += 175
             
             # Call from dict
-            
             device_render.draw_with_string(d_kind, pos_x, pos_y)
             self.domain_dict[device_render] = device_render.domain
-            
             pos_y -= dist_y
 
-            # We will add connections here to reduce time complexity
-
+        # We will add connections here to reduce time complexity
         for device in devices_list: 
             self.assemble_connection(device)
 
     def assemble_connection(self, input_device): 
+        """Render all wires (connections) on screen."""
         input_obj = self.draw_obj_dict[input_device.device_id]
             
         for input_port_id in input_device.inputs.keys(): 
@@ -217,10 +212,10 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
 
     def assemble_monitors(self): 
+        """Assemble all monitors on screen."""
+        monitors_dict = self.monitors.monitors_dictionary
 
-       monitors_dict = self.monitors.monitors_dictionary
-
-       for key in monitors_dict.keys(): 
+        for key in monitors_dict.keys(): 
             dev_id = key[0]
             port_id = key[1]
 
@@ -239,8 +234,6 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
             monitor_obj = LogicDrawer(self.names, self.devices, self.monitors, dev_id)
             monitor_obj.draw_monitor(m_coord[0], m_coord[1], name_string)
-
-
 
     def render(self, text):
         """Handle all drawing operations."""
@@ -358,7 +351,6 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         self.init = False
         self.Refresh()  # triggers the paint event
 
-# class for dealing with text box
 class PromptedTextCtrl(wx.TextCtrl):
     """
     PromptedTextCtrl - Custom text control with a prompt symbol '>' that prevents
@@ -368,21 +360,20 @@ class PromptedTextCtrl(wx.TextCtrl):
     line starts with a '>' prompt. Users can only edit the current line, preventing
     deletion or modification of previous lines.
 
-    Methods:
-    --------
-    __init__(parent, id=wx.ID_ANY, *args, **kwargs):
+    Methods
+    -------
+    __init__(parent, id=wx.ID_ANY, *args, **kwargs)
         Initializes the text control with the specified parent and parameters.
-
-    write_prompt():
+    write_prompt()
         Appends a prompt symbol '>' to the text control and moves the cursor to the end.
-
-    on_text_entered(event):
+    on_text_entered(event)
         Handles the event when the user presses Enter, adding a new prompt symbol and
         moving the cursor to the end.
-
-    on_key_down(event):
+    on_key_down(event)
         Handles key down events to prevent deletion of previous lines. Allows deletion
         within the current line and ensures the prompt symbol remains at the beginning.
+    on_text(event)
+        Handle text change events to ensure the prompt symbol is not deleted.
     """
     def __init__(self, parent, id=wx.ID_ANY, *args, **kwargs):
             """Initialise the text box."""
@@ -440,28 +431,36 @@ class PromptedTextCtrl(wx.TextCtrl):
 class Gui(wx.Frame):
     """Configure the main window and all the widgets apart from the text box.
 
-    This class provides a graphical user interface for the Logic Simulator and
-    enables the user to change the circuit properties and run simulations.
+    This class provides a graphical user interface for the Logic Simulator and enables the user to change the circuit properties and run simulations.
 
     Parameters
     ----------
-    title: title of the window.
+    title : str
+        Title of the window.
+    path : str
+        Path to the source file.
+    names : Names
+        Instance of the Names class.
+    devices : Devices
+        Instance of the Devices class.
+    network : Network
+        Instance of the Network class.
+    monitors : Monitors
+        Instance of the Monitors class.
 
     Public methods
     --------------
-    on_menu(self, event): Event handler for the file menu.
-
-    on_spin(self, event): Event handler for when the user changes the spin
-                           control value.
-
-    on_run_button(self, event): Event handler for when the user clicks the run
-                                button.
-
-    on_text_box(self, event): Event handler for when the user enters text.
+    on_menu(self, event)
+        Event handler for the file menu.
+    on_spin(self, event)
+        Event handler for when the user changes the spin control value.
+    on_run_button(self, event)
+        Event handler for when the user clicks the run button.
+    on_text_box(self, event)
+        Event handler for when the user enters text.
     """
-
     def __init__(self, title, path, names, devices, network, monitors):
-        """Initialise widgets and layout."""
+        """Initialise main window, widgets and layout."""
         super().__init__(parent=None, title=title, size=(800, 600))
 
         # Configure the file menu
@@ -501,11 +500,7 @@ class Gui(wx.Frame):
 
         # Configure the widgets
         self.text = wx.StaticText(self, wx.ID_ANY, "Cycles")
-        ''' Spin is the up/down number widget. 
-        For now, I set this to have a range of 1 to 10, with a default of 2
-        This will have to be changed as the user can specify clock cycle
-        (output changes every n cycles)'''
-        self.spin = wx.SpinCtrl(self, wx.ID_ANY, initial=2, min=1, max=10)
+        self.spin = wx.SpinCtrl(self, wx.ID_ANY, initial=10, min=1, max=50)
         self.run_button = wx.Button(self, wx.ID_ANY, "Run")
         self.reset_view_button = wx.Button(self, wx.ID_ANY, "Reset View")
         self.text_box = PromptedTextCtrl(self, wx.ID_ANY, style=wx.TE_PROCESS_ENTER)
@@ -553,8 +548,7 @@ class Gui(wx.Frame):
         self.SetSizer(main_sizer)
     
     def run_circuit(self, N): 
-        """Executes the network"""
-        
+        """Simulates the circuit for N cycles"""
         for _ in range(N):
             if self.network.execute_network():
                 self.monitors.record_signals()
@@ -565,11 +559,13 @@ class Gui(wx.Frame):
         return True
     
     def continue_circuit(self, N):
-        """Continues n cycles"""
+        """Continues the simulation for N cycles"""
+        pass
 
     def plot_monitors(self): 
         """Given some monitor outputs, draw the resulting plot on the matplotlib axes"""
         pass
+
     def on_menu(self, event):
         """Handle the event when the user selects a menu item."""
         Id = event.GetId()
@@ -631,7 +627,7 @@ class Gui(wx.Frame):
                     main_sizer.Layout()
 
                     # Print the name of the file opened to the terminal (text box) window
-                    self.text_box.AppendText(f" Opened file: {pathname}\n\n>")
+                    self.text_box.AppendText(f" Opened file: {pathname}\n>")
 
                 except Exception as ex:
                     wx.LogError(f"Cannot open file: {ex}")
@@ -646,7 +642,6 @@ class Gui(wx.Frame):
     def on_run_button(self, event):
         """Handle the event when the user clicks the run button."""
         text = "Run button pressed."
-        
         run_bool = self.run_circuit()
         self.canvas.render(text)
 
