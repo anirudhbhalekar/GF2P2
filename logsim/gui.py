@@ -774,9 +774,6 @@ class Gui(wx.Frame):
         else:
             self.text_box.AppendText("Invalid command. A list of available commands can be obtained by entering 'h', or opening the 'Commands' tab.\n")
 
-        # Add the prompt symbol back to the text control
-        self.text_box.write_prompt()
-
 class RunApp(wx.App): 
     """Combines Canvas onto App with Matplotlib"""
     def __init__(self):
