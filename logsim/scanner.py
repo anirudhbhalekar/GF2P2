@@ -246,7 +246,7 @@ class Scanner:
 if __name__ == "__main__": 
     
     names = Names()
-    scanner = Scanner("definition_files/test_ex_null.txt", names)
+    scanner = Scanner("definition_files/interim2_ex2.txt", names)
 
     for i in range(10): 
         sym = scanner.get_symbol()

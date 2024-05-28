@@ -715,3 +715,4 @@ class RunApp(wx.App):
     """Combines Canvas onto App with Matplotlib"""
     def __init__(self):
         wx.App.__init__(self, redirect=False)
+
