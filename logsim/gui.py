@@ -87,6 +87,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         self.draw_obj_dict = {}
         self.domain_dict = {}
         self.monitors_dict = {} # This will take the form (dev_id, output_port_id): (canvas coords)
+        self.bound_y_dict = {}  # Stores the bounding heights of all the devices 
 
         # Bind events to the canvas
         self.Bind(wx.EVT_PAINT, self.on_paint)
@@ -119,6 +120,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             render_obj = LogicDrawer(self.names, self.devices, self.monitors, dev_id) 
 
             self.draw_obj_dict[dev_id] = render_obj
+            self.bound_y_dict[dev_id] = render_obj.bound_y()
 
 
     def render_circuit(self): 
@@ -159,18 +161,16 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 continue
             
             device_render = self.draw_obj_dict[acc_device.device_id]
-            num_inputs = len(acc_device.inputs.keys())
+            num_inputs = device_render.n_inputs
             d_kind = self.names.get_name_string(acc_device.device_kind)
-            d_name = self.names.get_name_string(acc_device.device_id)
+            dist_y = 100 #self.bound_y_dict[acc_device.device_id] = 
 
-            if d_kind in ["AND", "NAND", "NOR", "OR", "XOR"]: 
-                dist_y = 75 
-                if num_inputs > 2: 
-                    dist_y += (num_inputs - 2) * 20 
+            if d_kind in ["AND", "NAND", "OR", "NOR", "XOR"]: 
+                dist_y += (num_inputs) * 10
             elif d_kind == "SWITCH": 
-                dist_y = 75 
-            else: 
-                dist_y = 150
+                dist_y = 70
+            else:
+                dist_y = 150 
 
             if pos_y < min_y: 
                 pos_y = y_start 
@@ -185,10 +185,10 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
             # We will add connections here to reduce time complexity
 
-        for device in devices_list: 
-            self.assemble_connection(device)
+        for i, device in enumerate(devices_list): 
+            self.assemble_connection(device, i)
 
-    def assemble_connection(self, input_device): 
+    def assemble_connection(self, input_device, i): 
         input_obj = self.draw_obj_dict[input_device.device_id]
             
         for input_port_id in input_device.inputs.keys(): 
@@ -587,7 +587,7 @@ class Gui(wx.Frame):
         """Handle the event when the user clicks the run button."""
         text = "Run button pressed."
         
-        run_bool = self.run_circuit()
+        run_bool = self.run_circuit(self.cycle_count)
         self.canvas.render(text)
 
     def on_clear_button(self, event):
