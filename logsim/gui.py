@@ -433,8 +433,8 @@ class TextEditor(wx.Frame):
     def __init__(self, parent, title, initial_text=""):
         super().__init__(parent, title=title, size=(400, 600))
         
-        # Use the custom PromptedTextCtrl instead of wx.TextCtrl
-        self.text_ctrl = PromptedTextCtrl(self, style=wx.TE_MULTILINE)
+        # Use default text control format wx.TextCtrl
+        self.text_ctrl = wx.TextCtrl(self, style=wx.TE_MULTILINE)
         self.text_ctrl.SetValue(initial_text)
 
         # Add a Save button
