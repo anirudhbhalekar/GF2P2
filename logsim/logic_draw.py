@@ -1,5 +1,6 @@
 from math import cos, sin, pi
-from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, GL_LINE_STRIP, GL_LINE_LOOP, GL_POLYGON
+from OpenGL.GL import GL_LINE_STRIP, GL_LINE_LOOP, GL_POLYGON, GL_ENABLE_BIT, GL_LINE_STIPPLE
+from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, glPushAttrib, glLineStipple, glPopAttrib, glEnable
 from OpenGL import GL, GLUT
 
 
@@ -63,6 +64,25 @@ class LogicDrawer:
             self.draw_switch()
         else: 
             pass
+
+        """ 
+        min_x, min_y = self.domain[0][0], self.domain[0][1]
+        max_x, max_y = self.domain[1][0], self.domain[1][1]
+
+        glPushAttrib(GL_ENABLE_BIT)
+        glLineStipple(1, 0xAAAA)
+        glEnable(GL_LINE_STIPPLE)
+        glColor3f(1.0, 0.0, 1.0)
+        glBegin(GL_LINE_STRIP)
+
+        glVertex2f(min_x, min_y)
+        glVertex2f(min_x, max_y)
+        glVertex2f(max_x, max_y)
+        glVertex2f(max_x, min_y)
+        glVertex2f(min_x, min_y)
+
+        glEnd()
+        glPopAttrib()"""
 
 
 
@@ -138,7 +158,7 @@ class LogicDrawer:
 
         self.output_list.append((self.x + self.length + self.height/2, self.y + self.height/2 ))
         self.make_circle(self.x + self.length + self.height/2, self.y + self.height/2)
-        self.domain = [(self.x + 1, self.y + 1), (self.x + self.length + R - 1, self.y + self.height - 1)]
+        self.domain = [(self.x - 10, self.y - 10), (self.x + self.length + R + 10, self.y + self.height + 10)]
 
     def draw_nand_gate(self):
         """Render and draw an NAND gate from the LogicDrawer on the canvas,
@@ -217,7 +237,7 @@ class LogicDrawer:
 
         self.output_list.append((self.x + self.length + self.height/2 + 2*r, self.y + self.height/2 ))
         self.make_circle(self.x + self.length + self.height/2 + 2*r, self.y + self.height/2)
-        self.domain = [(self.x + 1, self.y + 1), (self.x + self.length + R + 2*r - 1, self.y + self.height - 1)]
+        self.domain = [(self.x - 10, self.y - 10), (self.x + self.length + R + 2*r + 10, self.y + self.height + 10)]
 
     
     def draw_or_gate(self):
@@ -257,7 +277,7 @@ class LogicDrawer:
 
         self.output_list.append((self.x + self.length + self.height/2, self.y + self.height/2 ))
         self.make_circle(self.x + self.length + self.height/2, self.y + self.height/2)
-        self.domain = [(self.x - 10 + 1, self.y - 10 + 1), (self.x + self.length + (self.height / 2) - 1, self.y + self.height + 10 - 1)]
+        self.domain = [(self.x - 15 + 1, self.y - 15 + 1), (self.x + self.length + (self.height / 2) + 15 - 1, self.y + self.height + 15 - 1)]
     
 
     def draw_nor_gate(self):
@@ -310,7 +330,7 @@ class LogicDrawer:
         
         self.output_list.append((self.x + self.length + self.height/2 + 2*r, self.y + self.height/2 ))
         self.make_circle(self.x + self.length + self.height/2 + 2*r, self.y + self.height/2)
-        self.domain = [(self.x - 10 + 1, self.y - 10 + 1), (self.x + self.length + R + 2*r - 1, self.y + self.height + 10 - 1)]
+        self.domain = [(self.x - 15 + 1, self.y - 15 + 1), (self.x + self.length + R + 2*r + 15 - 1, self.y + self.height + 15 - 1)]
 
         """# List of tuples containing input locations
         self.input_list = [(self.x, self.y + 5 + self.inc_height*i) for i in range(self.n_inputs)]
@@ -378,7 +398,8 @@ class LogicDrawer:
         
         self.output_list.append((self.x + self.length + self.height/2, self.y + self.height/2 ))
         self.make_circle(self.x + self.length + self.height/2, self.y + self.height/2)
-        self.domain = [(self.x - 10 - 10 + 1, self.y - 10 + 1), (self.x + self.length + (self.height / 2) - 1, self.y + self.height + 10 - 1)]
+        
+        self.domain = [(self.x - 25 + 1, self.y - 20 + 1), (self.x + self.length + (self.height / 2) - 1 + 25, self.y + self.height + 20 - 1)]
 
         """# List of tuples containing input locations
         self.input_list = [(self.x - 10, self.y + 5 + self.inc_height*i) for i in range(self.n_inputs)]
@@ -420,7 +441,7 @@ class LogicDrawer:
         self.output_list = [(self.x + R, self.y)]
         # List of tuples containing domain (bottom left, top right)
         # Give padding 1 px
-        self.domain = [(self.x - R + 1, self.y - R + 1), (self.x + R - 1, self.y + R - 1)]
+        self.domain = [(self.x - R  - 5, self.y - R - 5), (self.x + R + 5, self.y + R + 5)]
 
         # draw dots for input and output spaces
         templist = (self.input_list + self.output_list)

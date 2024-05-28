@@ -188,7 +188,6 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             if input_device.device_kind == self.devices.D_TYPE: 
                 dtype_bool = True
             
-            num_inputs = len(input_device.inputs.keys())
             input_obj = self.draw_obj_dict[input_device.device_id]
 
             for inp_index, input_id in enumerate(input_device.inputs.keys()): 
@@ -219,10 +218,8 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                                              self.domain_dict, 15)
                     con_draw.draw_connection()
 
-    def clear_all(self): 
-        GL.glClearBufferData()
-        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
-    
+    def assemble_monitors(self): 
+        
     def render(self, text):
         """Handle all drawing operations."""
         self.SetCurrent(self.context)

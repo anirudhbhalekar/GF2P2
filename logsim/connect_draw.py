@@ -26,13 +26,18 @@ class ConnectDrawer:
     def draw_connection(self) -> None: 
         
         connection_def = self.connection
+
+        
         inp_obj = connection_def[0] 
         out_obj = connection_def[2]
 
         inp_id = connection_def[1]
         out_id = connection_def[3]
 
+        self.padding = self.padding + 5*inp_id + 2* out_id
+
         inp_domain = self.domain_dict[inp_obj]
+        out_domain = self.domain_dict[out_obj]
 
         inp_min_x, inp_max_x = inp_domain[0][0], inp_domain[0][1]
         inp_min_y, inp_max_y = inp_domain[1][0], inp_domain[1][1]
@@ -42,31 +47,46 @@ class ConnectDrawer:
         (start_x, start_y) = inp_obj.input_list[inp_id]
         (end_x, end_y) = out_obj.output_list[out_id]
 
-        glColor3f(0.0,0.0,0.0) 
+        """glColor3f(0.0,0.0,0.0) 
         glBegin(GL_LINE_STRIP)
         glVertex2f(start_x, start_y)
         glVertex2f(end_x, end_y)
         glEnd()
-        '''
-        if inp_id + 1 < num_inputs/2: 
-            # We will go down and to the left
-            d_coord = inp_domain[0]
-            d_coord = (d_coord[0] - self.padding, d_coord[1] - self.padding *(1 + 0.1 * num_inputs))
+"""
+        # First determine for inputs how we 'jut out' (i.e. which corner of bbox to go to)
+
+        if abs(start_x - inp_min_x) < abs(start_x - inp_max_x): 
+            # We are on the left side
+            if abs(start_y - inp_min_y) < abs(start_y - inp_max_y): 
+                # We are on the bottom side
+                # We are on the bottom left
+                curr_coord = (inp_min_x - self.padding, inp_min_y - self.padding)
+            else: 
+                # We are on the top left
+                curr_coord = (inp_min_x - self.padding, inp_max_y + self.padding)
         else: 
-            # We will go up and to the left
-            d_coord = inp_domain[1]
-            d_coord = (d_coord[0] - self.padding, d_coord[1] + self.padding *(1 + 0.1 * num_inputs))
-        
-        glColor3f(1.0, 0.0, 0.0)
+            # We are on the right side
+
+            if abs(start_y - inp_min_y) < abs(start_y - inp_max_y): 
+                # We are on the bottom side
+                # We are on the bottom right
+                curr_coord = (inp_max_x + self.padding, inp_min_y - self.padding)
+            else: 
+                # We are on the top right
+                curr_coord = (inp_max_x + self.padding, inp_max_y + self.padding)
+
+        # Similarily choose which corner of bbox we should aim to get to of the output
+
+        glColor3f(0.0, 0.0, 0.0)
         glBegin(GL_LINE_STRIP)
         glVertex2f(start_x, start_y)
-        glVertex2f(d_coord[0], start_y)
-        glVertex2f(d_coord[0], d_coord[1])
+        glVertex2f(curr_coord[0], start_y)
+        glVertex2f(curr_coord[0], curr_coord[1])
         glEnd()
 
         # We are now at one of the bounding box corners
         # Check if there is any bounding box that intersects the ray y coordinate as it travels to 
-        curr_coord = d_coord
+       
         nav_tup = self.navigate_intersection(curr_coord, (end_x, end_y), self.domain_dict, inp_obj)
         while nav_tup[0]: 
             # This is the bounds of the problematic object
@@ -89,29 +109,31 @@ class ConnectDrawer:
             else: 
                 next_seed_y = max_y + self.padding * 2
 
-            # We now update curr corner
-            curr_coord = (next_x_coord, next_seed_y)
+            
 
             # Draw line between points: curr coord -> closes x value coord of next intersecting box -> down or up to corners with padding -> reset to curr coords
-            glColor3f(1.0, 0.0, 0.0)
+            glColor3f(0.0, 0.0, 0.0)
             glBegin(GL_LINE_STRIP)
             glVertex2f(curr_coord[0], curr_coord[1])
+            glVertex2f(curr_coord[0], next_y_coord)
             glVertex2f(next_x_coord, next_y_coord)
             glVertex2f(next_x_coord, next_seed_y)
             glEnd()
+
+            # We now update curr corner
+            curr_coord = (next_x_coord, next_seed_y)
             
             # We call the navigation function again
             nav_tup = self.navigate_intersection(curr_coord, (end_x, end_y), self.domain_dict, inp_obj)
             
         # At this point we are at one of the corners of the bounding box of the output obj itself so we just need two updates
-        glColor3f(1.0, 0.0, 0.0)
+        glColor3f(0.0, 0.0, 0.0)
         glBegin(GL_LINE_STRIP)
         glVertex2f(curr_coord[0], curr_coord[1])
-        glVertex2f(end_x, curr_coord[1])
+        glVertex2f(end_x + self.padding, curr_coord[1])
+        glVertex2f(end_x + self.padding, end_y)
         glVertex2f(end_x, end_y)
         glEnd()
-
-        '''
 
         # Should have reached destination element now
     
