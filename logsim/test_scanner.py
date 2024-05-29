@@ -31,7 +31,7 @@ def test_symbol_properties():
 @pytest.fixture
 def scanner_example_null():
     """Return a new instance of the Scanner class."""
-    return Scanner("definition_files/test_ex_null.txt", Names())
+    return Scanner("test_definition_files/test_ex_null.txt", Names())
 
 
 @pytest.fixture
@@ -97,6 +97,27 @@ def test_get_EOF(scanner_example_null):
 
 
 @pytest.fixture
+def scanner_interim1_ex2():
+    """Return a new instance of the Scanner class."""
+    return Scanner("test_definition_files/interim1_ex2.txt", Names())
+
+
+def test_read_cycle_rep(scanner_interim1_ex2):
+    """Check that cycle_rep is read in correctly with the underscore in DEFINE.
+
+    Example:
+    CLK1 AS CLOCK WITH cycle_rep=1000,
+    SW1 AS SWITCH WITH initial=1
+    """
+    symbol = scanner_interim1_ex2.get_symbol()
+    while symbol.type != scanner_interim1_ex2.PARAM:
+        symbol = scanner_interim1_ex2.get_symbol()
+
+    assert symbol.type == "PARAM"
+    assert symbol.id == scanner_interim1_ex2.cycle_rep_ID
+    
+
+@pytest.fixture
 def scanner_test_ex0():
     """Return a new instance of the Scanner class."""
     return Scanner("error_definition_files/test_ex0.txt", Names())
@@ -154,27 +175,6 @@ def test_EOF(scanner_interim1_ex1):
     while symbol.type != scanner_interim1_ex1.EOF:
         symbol = scanner_interim1_ex1.get_symbol()
     assert symbol.type == "EOF"
-
-
-@pytest.fixture
-def scanner_interim1_ex2():
-    """Return a new instance of the Scanner class."""
-    return Scanner("definition_files/interim1_ex2.txt", Names())
-
-
-def test_read_cycle_rep(scanner_interim1_ex2):
-    """Check that cycle_rep is read in correctly with the underscore in DEFINE.
-
-    Example:
-    CLK1 AS CLOCK WITH cycle_rep=1000,
-    SW1 AS SWITCH WITH initial=1
-    """
-    symbol = scanner_interim1_ex2.get_symbol()
-    while symbol.type != scanner_interim1_ex2.PARAM:
-        symbol = scanner_interim1_ex2.get_symbol()
-
-    assert symbol.type == "PARAM"
-    assert symbol.id == scanner_interim1_ex2.cycle_rep_ID
 
 
 @pytest.fixture
