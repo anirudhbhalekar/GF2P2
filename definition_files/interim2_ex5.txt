@@ -1,15 +1,23 @@
-% Original example in handout, but with no monitor points initially so we can try adding %
-
+% Time varying XOR output %
 DEFINE
-    G1 AS NAND WITH inputs=2, 
-    G2 AS NAND WITH inputs=2,
-    SW1 AS SWITCH WITH initial=0,
-    SW2 AS SWITCH WITH initial=0;	
+    clock1 AS CLOCK WITH cycle_rep=1,
+    switch1 AS SWITCH WITH initial=0,
+    switch_set AS SWITCH WITH initial=0,
+    switch_clear AS SWITCH WITH initial=0,
+    dff1 AS DTYPE,
+    xor1 AS XOR;
 
-CONNECT 
-    G1.I1 = SW1,
-    G1.I2 = SW2;    
+CONNECT
+    dff1.CLK = clock1,
+    dff1.DATA = switch1,
+    dff1.SET = switch_set,
+    dff1.CLEAR = switch_clear,
+    xor1.I1 = dff1.Q,
+    xor1.I2 = switch1
+;
 
-MONITOR ;
+MONITOR
+    dff1.Q, xor1, switch1
+;
 
 END;
