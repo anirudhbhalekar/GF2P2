@@ -97,6 +97,8 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         self.monitors = monitors
         self.names = parent.names
 
+        self.is_zap_monitor = parent.is_zap_monitor
+        self.is_add_monitor = parent.is_add_monitor
 
         self.draw_obj_dict = {}
         self.domain_dict = {}
@@ -305,6 +307,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
     def on_mouse(self, event):
         """Handle mouse events."""
+    
         text = ""
         # Calculate object coordinates of the mouse position
         size = self.GetClientSize()
@@ -571,6 +574,9 @@ class Gui(wx.Frame):
         self.monitors = monitors
         self.devices = devices
 
+        self.is_zap_monitor = False
+        self.is_add_monitor = False
+
         self.cycle_count = 10
         self.cycles_completed = 0
 
@@ -585,7 +591,9 @@ class Gui(wx.Frame):
         self.spin = wx.SpinCtrl(self, wx.ID_ANY, initial=self.cycle_count, min=1, max=50)
         self.run_button = wx.Button(self, wx.ID_ANY, "Run")
         self.continue_button = wx.Button(self, wx.ID_ANY, "Continue")
-        self.zap_or_add_bttn = wx.Button(self, wx.ID_ANY, "Zap/Add Monitor")
+        self.reset_plot_button = wx.Button(self, wx.ID_ANY, "Reset Plot")
+        self.zap_monitor_button = wx.Button(self,wx.ID_ANY, "Zap Monitor")
+        self.add_monitor_button = wx.Button(self, wx.ID_ANY, "Add Monitor")
         self.reset_view_button = wx.Button(self, wx.ID_ANY, "Reset View")
         self.text_box = PromptedTextCtrl(self, wx.ID_ANY, style=wx.TE_PROCESS_ENTER)
         self.clear_button = wx.Button(self, wx.ID_ANY, "Clear terminal") # button for clearing terminal output
@@ -594,17 +602,22 @@ class Gui(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_menu)
         self.spin.Bind(wx.EVT_SPINCTRL, self.on_spin)
         self.run_button.Bind(wx.EVT_BUTTON, self.on_run_button)
+        self.reset_plot_button.Bind(wx.EVT_BUTTON, self.on_reset_plot_button)
         self.continue_button.Bind(wx.EVT_BUTTON, self.on_continue_button)
         self.clear_button.Bind(wx.EVT_BUTTON, self.on_clear_button)
         self.reset_view_button.Bind(wx.EVT_BUTTON, self.on_reset_view_button)
         self.text_box.Bind(wx.EVT_TEXT_ENTER, self.on_text_box)
-
+        self.zap_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_clear_button) # TEMPORARY!!!!!!!!!!!!!!!!!!!!
+        self.add_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_clear_button) # TEMPORARY!!!!!!!!!!!!!!!!!!!!
         # Configure sizers for layout
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)
         canvas_plot_sizer = wx.BoxSizer(wx.VERTICAL)
         side_sizer = wx.BoxSizer(wx.VERTICAL)
+        button_sizer0 = wx.BoxSizer(wx.HORIZONTAL)
         button_sizer1 = wx.BoxSizer(wx.HORIZONTAL)
         button_sizer2 = wx.BoxSizer(wx.HORIZONTAL)
+
+
 
         # Initialise some empty matplotlib figure
         self.configure_matplotlib_canvas()
@@ -621,14 +634,17 @@ class Gui(wx.Frame):
         side_sizer.Add(self.spin, 1, wx.ALL, 5)
         side_sizer.Add(button_sizer1, 1, wx.EXPAND | wx.ALL, 5)
         side_sizer.Add(button_sizer2, 1, wx.EXPAND | wx.ALL, 5)
+        side_sizer.Add(button_sizer0, 1, wx.EXPAND | wx.ALL, 5)
         side_sizer.Add(self.text_box, 15, wx.EXPAND | wx.ALL, 5) # expanding text box
         side_sizer.Add(self.clear_button, 1, wx.EXPAND | wx.ALL, 5)
         side_sizer.Add(self.message_display, 1, wx.EXPAND | wx.ALL, 5)
 
+        button_sizer0.Add(self.zap_monitor_button, 1, wx.ALL, 1) 
+        button_sizer0.Add(self.add_monitor_button, 1, wx.ALL, 1)
         button_sizer2.Add(self.continue_button, 1, wx.ALL, 1)
-        button_sizer2.Add(self.zap_or_add_bttn, 1, wx.ALL, 1)
+        button_sizer2.Add(self.run_button, 1, wx.ALL, 1)
         button_sizer1.Add(self.reset_view_button, 1, wx.ALL, 1)
-        button_sizer1.Add(self.run_button, 1, wx.ALL, 1)
+        button_sizer1.Add(self.reset_plot_button, 1, wx.ALL, 1)
 
         # Set minimum window size and make main_sizer parent sizer
         self.SetSizeHints(600, 600)
@@ -653,17 +669,12 @@ class Gui(wx.Frame):
         if self.execute_circuit(cycles): 
             self.cycles_completed += cycles
     
-
     def continue_circuit(self, cycles):
         """Continues the simulation for N cycles"""
         if self.cycles_completed == 0: 
             wx.LogError("Nothing to continue - run the simulation first")
         elif self.execute_circuit(cycles): 
             self.cycles_completed += cycles
-
-    def plot_monitors(self): 
-        """Given some monitor outputs, draw the resulting plot on the matplotlib axes"""
-        pass
 
     def on_menu(self, event):
         """Handle the event when the user selects a menu item."""
@@ -759,6 +770,7 @@ class Gui(wx.Frame):
 
     def on_run_button(self, event):
         """Handle the event when the user clicks the run button."""
+
         text = "Run button pressed."
         self.run_circuit(self.cycle_count)
         self.canvas.render(text)
@@ -766,18 +778,43 @@ class Gui(wx.Frame):
         try: 
             self.monitor_plot()
         except Exception: 
+            self.on_reset_plot_button(None)
             wx.LogError("Run failed - cannot plot monitors")
-        
+    
+    def on_reset_plot_button(self, event): 
+        """Clears the matplotlib plot"""
+        try: 
+            self.matplotlib_canvas.Destroy()
+        except: 
+            pass
+
+        self.configure_matplotlib_canvas()
+        self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
+        main_sizer = self.GetSizer()
+        canvas_plot_sizer = main_sizer.GetChildren()[0].GetSizer()
+
+        # Remove the old canvas and add the new one
+        canvas_plot_sizer.Clear(delete_windows=False)
+        canvas_plot_sizer.Add(self.canvas, 2, wx.EXPAND | wx.ALL, 1)
+        canvas_plot_sizer.Add(self.matplotlib_canvas, 1, wx.EXPAND | wx.ALL, 1)
+
+        # Refresh the layout
+        main_sizer.Layout()
+
+    def on_zap_button(self, event): 
+        """Starts zap procedure"""
+
+
     def on_continue_button(self, event): 
         """Handle continue button event"""
       
         text = "Continue button pressed."
-        print("test")
         self.continue_circuit(self.cycle_count)
         self.canvas.render(text)
         try: 
             self.monitor_plot()
         except Exception: 
+            self.on_reset_plot_button(None)
             wx.LogError("Run failed - cannot plot monitors")
 
     def configure_matplotlib_canvas(self): 
@@ -790,9 +827,9 @@ class Gui(wx.Frame):
         self.axes.tick_params(axis = 'both', left = False, right = False, labelright = False, labelleft = False, labelbottom = False)
     
     def monitor_plot(self):
-        
-        plot_array = []
-        name_array = []
+        self.axes.clear()
+        self.plot_array = []
+        self.name_array = []
 
         for device_id, output_id in self.monitors.monitors_dictionary: 
 
@@ -817,20 +854,22 @@ class Gui(wx.Frame):
                     one_d_signal.append(np.nan)
                     one_d_signal.append(np.nan)
             
-            plot_array.append(one_d_signal)
-            name_array.append(monitor_name)
+            self.plot_array.append(one_d_signal)
+            self.name_array.append(monitor_name)
         
+        self.matplotlib_canvas.Destroy()
         self.configure_matplotlib_canvas()
 
-        for i, int_signal in enumerate(plot_array): 
-            name = name_array[i]
-            print(int_signal)
+        for i, int_signal in enumerate(self.plot_array): 
+            
+            name = self.name_array[i]
             int_signal = np.array(int_signal) + 2*i
             zero_signal = np.zeros_like(int_signal) + 2*i
             self.axes.plot(int_signal, label = name)
             self.axes.plot(zero_signal, color = 'black', linestyle = "dashed") 
         
         self.axes.set_ylim(0, 2*i + 2)
+        self.axes.set_xlim(0, self.cycles_completed - 1)
         prop={'family':'Consolas', 'size':8}
         self.figure.legend(fontsize="8", loc ="upper left", prop = prop)
         self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
