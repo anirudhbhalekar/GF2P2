@@ -20,6 +20,7 @@ simulation.
 RunApp - Initializes and runs the application.
 """
 import wx
+import wx.grid as gridlib 
 import wx.glcanvas as wxcanvas
 import numpy as np
 from math import cos, sin, pi
@@ -99,7 +100,8 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
         self.draw_obj_dict = {}
         self.domain_dict = {}
-        self.random_pertubation = []
+        self.random_pertubation = {} # A random perturbation for each device in the form {device_id: rand_int}
+        self.random_fraction = {} # random fraction for each device
 
         # Bind events to the canvas
         self.Bind(wx.EVT_PAINT, self.on_paint)
@@ -132,7 +134,8 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             render_obj = LogicDrawer(self.names, self.devices, self.monitors, dev_id) 
 
             self.draw_obj_dict[dev_id] = render_obj
-
+            self.random_pertubation[dev_id] = 1
+            self.random_fraction[dev_id] = np.random.uniform(0.15, 0.85)
 
     def render_circuit(self): 
         """Render all devices, connections, and monitors on screen."""
@@ -143,7 +146,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         xs, ys = 0,y_start
         count = 0
         dist = 100
-
+        min_y = 0
         max_vertical = 4
 
         # First we find the CLOCK type - we typically want this to be rendered 
@@ -158,15 +161,28 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 clk_render = self.draw_obj_dict[device.device_id]
                 clk_render.draw_clock(xs, ys)
                 self.domain_dict[clk_render] = clk_render.domain
-               
-        pos_x, pos_y = 150, y_start
-        min_y = 0
+            
+            elif device.device_kind == self.devices.SWITCH: 
+                ys = ys - count*dist
+                if ys < min_y: 
+                    ys = y_start
+                    xs += 175
+                count += 1
+
+                device_render = self.draw_obj_dict[device.device_id]
+                device_render.draw_with_string("SWITCH", xs + 150, ys)
+                self.domain_dict[device_render] = device_render.domain
+
+        pos_x, pos_y = xs + 300, y_start
+        
 
         
         # Remove all clock objects (we reserve first col for clocks only)
         for i, acc_device in enumerate(devices_list): 
             
             if acc_device.device_kind == self.devices.CLOCK: 
+                continue
+            elif acc_device.device_kind == self.devices.SWITCH: 
                 continue
             
             device_render = self.draw_obj_dict[acc_device.device_id]
@@ -201,7 +217,10 @@ class MyGLCanvas(wxcanvas.GLCanvas):
     def assemble_connection(self, input_device): 
         """Render all wires (connections) on screen."""
         input_obj = self.draw_obj_dict[input_device.device_id]
-            
+        
+        random_perturb = self.random_pertubation[input_device.device_id]
+        random_frac = self.random_fraction[input_device.device_id]
+
         for input_port_id in input_device.inputs.keys(): 
             con_tup = input_device.inputs[input_port_id]
             
@@ -211,7 +230,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
                 output_obj = self.draw_obj_dict[output_dev_id]
                 con_draw = ConnectDrawer((input_obj, input_port_id, output_obj, output_port_id), 
-                                            self.domain_dict, 5)
+                                            self.domain_dict, random_perturb, random_frac)
                 # Don't put padding too high - will break code 
                 con_draw.draw_connection()
 
@@ -559,9 +578,11 @@ class Gui(wx.Frame):
         self.canvas = MyGLCanvas(self, devices, monitors, self.message_display)
 
         # Configure the widgets
-        self.text = wx.StaticText(self, wx.ID_ANY, "Cycles")
+        self.text = wx.StaticText(self, wx.ID_ANY, "Cycles") 
         self.spin = wx.SpinCtrl(self, wx.ID_ANY, initial=self.cycle_count, min=1, max=50)
         self.run_button = wx.Button(self, wx.ID_ANY, "Run")
+        self.continue_button = wx.Button(self, wx.ID_ANY, "Continue")
+        self.zap_or_add_bttn = wx.Button(self, wx.ID_ANY, "Zap/Add Monitor")
         self.reset_view_button = wx.Button(self, wx.ID_ANY, "Reset View")
         self.text_box = PromptedTextCtrl(self, wx.ID_ANY, style=wx.TE_PROCESS_ENTER)
         self.clear_button = wx.Button(self, wx.ID_ANY, "Clear terminal") # button for clearing terminal output
@@ -570,6 +591,7 @@ class Gui(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_menu)
         self.spin.Bind(wx.EVT_SPINCTRL, self.on_spin)
         self.run_button.Bind(wx.EVT_BUTTON, self.on_run_button)
+        self.continue_button.Bind(wx.EVT_BUTTON, self.on_continue_button)
         self.clear_button.Bind(wx.EVT_BUTTON, self.on_clear_button)
         self.reset_view_button.Bind(wx.EVT_BUTTON, self.on_reset_view_button)
         self.text_box.Bind(wx.EVT_TEXT_ENTER, self.on_text_box)
@@ -578,7 +600,8 @@ class Gui(wx.Frame):
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)
         canvas_plot_sizer = wx.BoxSizer(wx.VERTICAL)
         side_sizer = wx.BoxSizer(wx.VERTICAL)
-        button_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        button_sizer1 = wx.BoxSizer(wx.HORIZONTAL)
+        button_sizer2 = wx.BoxSizer(wx.HORIZONTAL)
 
         # Initialise some empty matplotlib figure
         self.configure_matplotlib_canvas()
@@ -593,13 +616,16 @@ class Gui(wx.Frame):
 
         side_sizer.Add(self.text, 1, wx.TOP, 10)
         side_sizer.Add(self.spin, 1, wx.ALL, 5)
-        side_sizer.Add(button_sizer, 1, wx.EXPAND | wx.ALL, 5)
+        side_sizer.Add(button_sizer1, 1, wx.EXPAND | wx.ALL, 5)
+        side_sizer.Add(button_sizer2, 1, wx.EXPAND | wx.ALL, 5)
         side_sizer.Add(self.text_box, 15, wx.EXPAND | wx.ALL, 5) # expanding text box
         side_sizer.Add(self.clear_button, 1, wx.EXPAND | wx.ALL, 5)
         side_sizer.Add(self.message_display, 1, wx.EXPAND | wx.ALL, 5)
 
-        button_sizer.Add(self.reset_view_button, 1, wx.ALL, 5)
-        button_sizer.Add(self.run_button, 1, wx.ALL, 5)
+        button_sizer2.Add(self.continue_button, 1, wx.ALL, 1)
+        button_sizer2.Add(self.zap_or_add_bttn, 1, wx.ALL, 1)
+        button_sizer1.Add(self.reset_view_button, 1, wx.ALL, 1)
+        button_sizer1.Add(self.run_button, 1, wx.ALL, 1)
 
         # Set minimum window size and make main_sizer parent sizer
         self.SetSizeHints(600, 600)
@@ -687,6 +713,7 @@ class Gui(wx.Frame):
 
                         # Reinitialize the canvas with the new devices and monitors
                         self.canvas.Destroy()  # Destroy the old canvas
+                        self.matplotlib_canvas.Destroy() # destroy plot canvas
                         self.canvas = MyGLCanvas(self, self.devices, self.monitors, self.message_display)
 
                         # Update the layout to replace the old canvas with the new one
@@ -708,8 +735,9 @@ class Gui(wx.Frame):
                         # Print the name of the file opened to the terminal (text box) window
                         self.text_box.AppendText(f" Opened file: {pathname}\n>")
                     else: 
-                        num_errors = self.parser.error_count
-                      
+                        print(self.parser.parse_network())
+                        num_errors = self.parser.error_count + 1
+
                         wx.MessageBox(f"Error! Faulty definition file! \n"
                                       "\n"
                                       f"{num_errors} errors caught")
@@ -739,10 +767,11 @@ class Gui(wx.Frame):
         
     def on_continue_button(self, event): 
         """Handle continue button event"""
+      
         text = "Continue button pressed."
+        print("test")
         self.continue_circuit(self.cycle_count)
         self.canvas.render(text)
-
         try: 
             self.monitor_plot()
         except Exception: 
@@ -756,9 +785,6 @@ class Gui(wx.Frame):
         self.axes = self.figure.add_subplot(111)
         self.axes.set_title("Monitor Plots", **hfont)
         self.axes.tick_params(axis = 'both', left = False, right = False, labelright = False, labelleft = False, labelbottom = False)
-
-    def on_continue_button(self, event): 
-        pass
     
     def monitor_plot(self):
         
@@ -797,7 +823,9 @@ class Gui(wx.Frame):
             name = name_array[i]
             print(int_signal)
             int_signal = np.array(int_signal) + 2*i
-            self.axes.plot(int_signal, label = name) 
+            zero_signal = np.zeros_like(int_signal) + 2*i
+            self.axes.plot(int_signal, label = name)
+            self.axes.plot(zero_signal, color = 'black', linestyle = "dashed") 
         
         self.axes.set_ylim(0, 2*i + 2)
         prop={'family':'Consolas', 'size':8}
