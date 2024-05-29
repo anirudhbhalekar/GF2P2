@@ -738,7 +738,7 @@ class Gui(wx.Frame):
                         # Print the name of the file opened to the terminal (text box) window
                         self.text_box.AppendText(f" Opened file: {pathname}\n>")
                     else: 
-                        print(self.parser.parse_network())
+                        #print(self.parser.parse_network())
                         num_errors = self.parser.error_count + 1
 
                         wx.MessageBox(f"Error! Faulty definition file! \n"
@@ -772,7 +772,7 @@ class Gui(wx.Frame):
         """Handle continue button event"""
       
         text = "Continue button pressed."
-        print("test")
+        #print("test")
         self.continue_circuit(self.cycle_count)
         self.canvas.render(text)
         try: 
@@ -782,7 +782,6 @@ class Gui(wx.Frame):
 
     def configure_matplotlib_canvas(self): 
         """ Sets the config params of the matplotlib canvas"""
-        
         hfont = {'fontname':'Consolas'}
         self.figure = Figure(figsize=(5,2))
         self.axes = self.figure.add_subplot(111)
@@ -790,7 +789,7 @@ class Gui(wx.Frame):
         self.axes.tick_params(axis = 'both', left = False, right = False, labelright = False, labelleft = False, labelbottom = False)
     
     def monitor_plot(self):
-        
+        """Show the matplotlib plot."""
         plot_array = []
         name_array = []
 
@@ -824,7 +823,7 @@ class Gui(wx.Frame):
 
         for i, int_signal in enumerate(plot_array): 
             name = name_array[i]
-            print(int_signal)
+            #print(int_signal)
             int_signal = np.array(int_signal) + 2*i
             zero_signal = np.zeros_like(int_signal) + 2*i
             self.axes.plot(int_signal, label = name)
