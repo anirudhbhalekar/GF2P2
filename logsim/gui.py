@@ -1030,9 +1030,8 @@ class Gui(wx.Frame):
             # Quit the program
             self.Close()
         else:
-            print("else statement triggered by", text, "end else statement triggered by")
             # Invalid command
-            self.text_box.AppendText("Invalid command. A list of available commands can be obtained by entering 'h'.\n")
+            self.text_box.AppendText(f"<{text}> is an invalid command. A list of available commands can be obtained by entering 'h', or navigating to 'Commands' in the Menu.\n")
 
 class RunApp(wx.App): 
     """Combines Canvas onto App with Matplotlib"""
