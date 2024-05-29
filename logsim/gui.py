@@ -522,7 +522,13 @@ class Gui(wx.Frame):
         fileMenu = wx.Menu()
         sourceMenu = wx.Menu()
         commandMenu = wx.Menu()
-
+        
+        try: 
+            font = wx.Font(wx.FontInfo(9).FaceName("Consolas"))
+            self.SetFont(font)
+        except: 
+            pass
+        
         # Add subtabs and titles to each tab
         fileMenu.Append(wx.ID_ABOUT, "&About")
         fileMenu.Append(wx.ID_EXIT, "&Exit")
@@ -594,7 +600,7 @@ class Gui(wx.Frame):
 
         button_sizer.Add(self.reset_view_button, 1, wx.ALL, 5)
         button_sizer.Add(self.run_button, 1, wx.ALL, 5)
-        
+
         # Set minimum window size and make main_sizer parent sizer
         self.SetSizeHints(600, 600)
         self.SetSizer(main_sizer)
@@ -723,21 +729,34 @@ class Gui(wx.Frame):
     def on_run_button(self, event):
         """Handle the event when the user clicks the run button."""
         text = "Run button pressed."
-        run_bool = self.run_circuit(self.cycle_count)
+        self.run_circuit(self.cycle_count)
         self.canvas.render(text)
 
-        
-        self.monitor_plot()
-        """else: 
+        try: 
+            self.monitor_plot()
+        except Exception: 
             wx.LogError("Run failed - cannot plot monitors")
-            pass """
+        
+    def on_continue_button(self, event): 
+        """Handle continue button event"""
+        text = "Continue button pressed."
+        self.continue_circuit(self.cycle_count)
+        self.canvas.render(text)
+
+        try: 
+            self.monitor_plot()
+        except Exception: 
+            wx.LogError("Run failed - cannot plot monitors")
 
     def configure_matplotlib_canvas(self): 
         """ Sets the config params of the matplotlib canvas"""
+        
+        hfont = {'fontname':'Consolas'}
         self.figure = Figure(figsize=(5,2))
         self.axes = self.figure.add_subplot(111)
-        self.axes.set_title("Monitor Plots")
+        self.axes.set_title("Monitor Plots", **hfont)
         self.axes.tick_params(axis = 'both', left = False, right = False, labelright = False, labelleft = False, labelbottom = False)
+
     def on_continue_button(self, event): 
         pass
     
@@ -745,8 +764,6 @@ class Gui(wx.Frame):
         
         plot_array = []
         name_array = []
-
-        
 
         for device_id, output_id in self.monitors.monitors_dictionary: 
 
@@ -783,7 +800,8 @@ class Gui(wx.Frame):
             self.axes.plot(int_signal, label = name) 
         
         self.axes.set_ylim(0, 2*i + 2)
-        self.axes.legend(fontsize="8", loc ="upper left")
+        prop={'family':'Consolas', 'size':8}
+        self.figure.legend(fontsize="8", loc ="upper left", prop = prop)
         self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
         
         main_sizer = self.GetSizer()
@@ -812,13 +830,18 @@ class Gui(wx.Frame):
 
     def on_text_box(self, event):
         """Handle the event when the user enters text."""
-        text = self.text_box.GetValue().strip()  # Get the user's input and remove leading/trailing spaces
-
+        text = self.text_box.GetValue()# Get the user's input and remove leading/trailing spaces
+        text = str(text) 
+        print(text)
+        print(text[2:].strip())
+        print('h')
+        print(text == 'h')
         # Parse the user's input and call the corresponding functions from userint
         if text.startswith('r '):
             # Run simulation for N cycles
             try:
                 N = int(text[2:])
+                print(N)
                 userint.run_command(N)
                 self.text_box.AppendText(f"Running simulation for {N} cycles.\n")
             except ValueError:
@@ -827,6 +850,7 @@ class Gui(wx.Frame):
             # Continue the simulation for N cycles
             try:
                 N = int(text[2:])
+                print(N)
                 userint.continue_command(N)
                 self.text_box.AppendText(f"Continuing simulation for {N} cycles.\n")
             except ValueError:
@@ -866,8 +890,8 @@ class Gui(wx.Frame):
         elif text == 'q':
             self.close(True)
         else:
-            self.text_box.AppendText("Invalid command. A list of available commands can be obtained by entering 'h', or opening the 'Commands' tab.\n")
-
+            #self.text_box.AppendText("Invalid command. A list of available commands can be obtained by entering 'h', or opening the 'Commands' tab.\n")
+            wx.LogError("Invalid command. A list of available commands can be obtained by entering 'h', or opening the 'Commands' tab.\n")
 class RunApp(wx.App): 
     """Combines Canvas onto App with Matplotlib"""
     def __init__(self):
