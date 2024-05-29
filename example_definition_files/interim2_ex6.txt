@@ -1,4 +1,4 @@
-% stores the state of the SWITCH on every rising edge of the CLOCK in the D Flip-Flop, 
+% stores the state of the SWITCH on every rising edge of the CLOCK in the DTYPE, 
 with the XOR gate outputting a constant 1 and the AND gate outputting a constant 0 %
 
 DEFINE CLK1 AS CLOCK WITH cycle_rep = 2,

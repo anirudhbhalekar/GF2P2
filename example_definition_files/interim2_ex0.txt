@@ -1,4 +1,4 @@
-% stress test for single input %
+% single input %
 DEFINE
     CLK1 AS CLOCK WITH cycle_rep=3,
     G1 AS OR WITH inputs=1;

@@ -464,7 +464,6 @@ class LogicDrawer:
     def draw_switch(self, x, y):
         """Render and draw a switch from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
-
         self.x, self.y = x, y
         # Radius 20
         self.height = 40
@@ -481,13 +480,45 @@ class LogicDrawer:
             glVertex2f(x1, y1)
         glEnd()
 
+        # Render the switch name
         d_name = self.names.get_name_string(self.id)
-        self.render_text(d_name, self.x, self.y, color="black")
-
+        self.render_text(d_name, self.x, self.y + self.height, color="black")
 
         # Switch has no input
         inp_space = self.height - 2 * self.inc_height
         output_ids = self.device_outputs.keys()
+        
+        this_device = self.devices.get_device(self.id)
+        #print(this_device.device_id)
+        if this_device.switch_state == 0:
+            # Draw open circuit switch symbol
+            glColor3f(0.0, 0.0, 0.0) # Black color
+            glBegin(GL_LINE_STRIP)
+            glVertex2f((self.x - self.width / 2), self.y)
+            glVertex2f((self.x - self.width / 4), self.y)
+            glVertex2f((self.x + self.width / 4), (self.y + self.height / 3))
+            glEnd()
+            
+            self.make_circle(self.x - self.width / 4, self.y)
+            self.make_circle(self.x + self.width / 4, self.y)
+
+            glBegin(GL_LINE_STRIP)
+            glVertex2f(self.x + self.width / 4, self.y)
+            glVertex2f(self.x + self.width / 2, self.y)
+            glEnd()
+            
+        elif this_device.switch_state == 1:
+            # Draw closed circuit switch symbol
+            glColor3f(0.0, 0.0, 0.0) # Black color
+            glBegin(GL_LINE_STRIP)
+            glVertex2f((self.x - self.width / 2), self.y)
+            glVertex2f((self.x + self.width / 2), self.y)
+            glEnd()
+            self.make_circle(self.x - self.width / 4, self.y)
+            self.make_circle(self.x + self.width / 4, self.y)
+
+        else: 
+            self.render_text("Error: Unknown switch state!", self.x, (self.y - self.height), color="red")
 
         for o, o_id in enumerate(output_ids): 
             y_coord = self.y
@@ -517,12 +548,25 @@ class LogicDrawer:
         glVertex2f(self.x - (self.width / 2), self.y - (self.height / 2))
         glEnd()
 
+        glColor3f(0.0, 0.0, 0.0)
+        glBegin(GL_LINE_STRIP)
+        glVertex2f(self.x - self.width / 2 + 1, self.y)
+        glVertex2f(self.x - self.width / 4, self.y)
+        glVertex2f(self.x - self.width / 4, self.y + self.height / 4)
+        glVertex2f(self.x, self.y + self.height / 4)
+        glVertex2f(self.x, self.y)
+        glVertex2f(self.x + self.width / 4, self.y)
+        glVertex2f(self.x + self.width / 4, self.y + self.height / 4)
+        glVertex2f(self.x + self.width / 2 - 1, self.y + self.height / 4)
+        glEnd()
+
         inp_space = self.height - 2 * self.inc_height
         div_space = inp_space/(self.n_inputs + 1)
 
         input_ids = self.device_inputs.keys()
         output_ids = self.device_outputs.keys()
-
+        
+        # Render clock label
         d_name = self.names.get_name_string(self.id)
         self.render_text(d_name, self.x + self.width/2 - 5, self.y + self.height/2, color="black")
 
@@ -638,6 +682,12 @@ class LogicDrawer:
 
         elif color == "black": 
             GL.glColor3f(0.0, 0.0, 0.0)  # text is black
+        
+        elif color == "red":
+            GL.glColor3f(1.0, 0.0, 0.0) # text is red
+        
+        elif color == "green":
+            GL.glColor3f(0.0, 1.0, 0.0) # text is green
 
         GL.glRasterPos2f(x_pos, y_pos)
         font = GLUT.GLUT_BITMAP_HELVETICA_12
@@ -654,7 +704,7 @@ class LogicDrawer:
         
         self.x, self.y = x, y 
         # x, y defined from bottom of vertical line below tringle
-        glColor3f(1.0, 0.0, 1.0)  # Black color
+        glColor3f(1.0, 0.0, 1.0)  # Purple color
         glBegin(GL_POLYGON)
         glVertex2f(self.x, self.y+ 5)
         #glVertex2f(self.x, self.y + 15)
