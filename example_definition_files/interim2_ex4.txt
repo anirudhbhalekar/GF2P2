@@ -1,5 +1,5 @@
-% toggles the state of the D flip-flop's Q output on each rising edge of the clock, 
-influenced by the XOR of a switch input and the current state of Q, creating a feedback loop%
+% toggles the state of the DTYPE Q output on each rising edge of the clock, 
+changed by the XOR of a switch input and the current state of Q%
 
 DEFINE 
     clk AS CLOCK WITH cycle_rep=2, 

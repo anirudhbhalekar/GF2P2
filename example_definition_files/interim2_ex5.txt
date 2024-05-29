@@ -1,4 +1,4 @@
-% Different XOR based on switch and DFF%
+% Different XOR based on switch and DTYPE%
 DEFINE
     clock1 AS CLOCK WITH cycle_rep=5,
     switch1 AS SWITCH WITH initial=0,
