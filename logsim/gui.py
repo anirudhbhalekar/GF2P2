@@ -40,7 +40,7 @@ from scanner import Scanner
 from parse import Parser
 from logic_draw import LogicDrawer
 from connect_draw import ConnectDrawer
-from userint import UserInterface
+from userint import UserInterface 
 
 class MyGLCanvas(wxcanvas.GLCanvas):
     """MyGLCanvas(wxcanvas.GLCanvas) - Handle all drawing operations.
@@ -906,70 +906,86 @@ class Gui(wx.Frame):
 
     def on_text_box(self, event):
         """Handle the event when the user enters text."""
+        
         # Get the entered text
         text = self.text_box.GetValue().strip()
+        # strip() doesn't do anything btw
         
-        # Check if the entered text ends with a newline character
-        if text.endswith('\n'):
-            # Process the entered text without the newline character
-            text = text[:-1]
-            
-            # Parse the user's input and call the corresponding functions from UserInterface
-            if text.startswith('r '):
-                # Run simulation for N cycles
-                try:
-                    N = int(text[2:].strip())
-                    UserInterface.run_command(N)
-                    self.AppendText(f"Running simulation for {N} cycles.\n")
-                except ValueError:
-                    self.AppendText("Invalid command. Please provide a valid number of cycles.\n")
-            elif text.startswith('c '):
-                # Continue the simulation for N cycles
-                try:
-                    N = int(text[2:].strip())
-                    UserInterface.continue_command(N)
-                    self.AppendText(f"Continuing simulation for {N} cycles.\n")
-                except ValueError:
-                    self.AppendText("Invalid command. Please provide a valid number of cycles.\n")
-            elif text.startswith('s '):
-                # Set switch X to N (0 or 1)
-                try:
-                    switch_id, value = text[2:].strip().split()
-                    switch_id = int(switch_id)
-                    value = int(value)
-                    UserInterface.switch_command(switch_id, value)
-                    self.AppendText(f"Setting switch {switch_id} to {value}.\n")
-                except ValueError:
-                    self.AppendText("Invalid command format. Please provide switch ID and value.\n")
-            elif text.startswith('m '):
-                # Add a monitor on signal X
-                signal = text[2:].strip()
-                UserInterface.monitor_command(signal)
-                self.AppendText(f"Adding monitor on signal {signal}.\n")
-            elif text.startswith('z '):
-                # Zap the monitor on signal X
-                signal = text[2:].strip()
-                UserInterface.zap_command(signal)
-                self.AppendText(f"Zapping monitor on signal {signal}.\n")
-            elif text == 'h':
-                # Print a list of available commands
-                self.AppendText(
-                    "List of available commands:\n"
-                    "r N       - run the simulation for N cycles\n"
-                    "c N       - continue the simulation for N cycles\n"
-                    "s X N     - set switch X to N (0 or 1)\n"
-                    "m X       - add a monitor on signal X\n"
-                    "z X       - zap the monitor on signal X\n"
-                    "h         - print a list of available commands\n"
-                    "q         - quit the program\n"
-                )
-            elif text == 'q':
-                # Quit the program
-                self.Close()
+        # Process the entered text without the newline, > and ENTER characters
+        text = text[2:-2]
+        print(text, "without last character")
+        # On initialisation and clear, this works fine, but the second time onwards it reads '> ' at the beginning
+        # Remove whitespace and > from front of text
+        while True:
+            if text[0] == '>':
+                text = text[1:]
+            elif text[0] == ' ':
+                text = text[1:]
             else:
-                # Invalid command
-                self.AppendText("Invalid command. A list of available commands can be obtained by entering 'h'.\n")
-
+                break
+        # Remove trailing whitespace
+        while True:
+            if text[-1] == ' ':
+                text = text[:-1]
+            else:
+                break
+        print(text, "after loop")
+        # Parse the user's input and call the corresponding functions from UserInterface
+        if text.startswith('r '):
+            # Run simulation for N cycles
+            try:
+                N = int(text[2:].strip())
+                UserInterface.run_command(N)
+                self.text_box.AppendText(f"Running simulation for {N} cycles.\n")
+            except ValueError:
+                self.text_box.AppendText("Invalid command. Please provide a valid number of cycles.\n")
+        elif text.startswith('c '):
+            # Continue the simulation for N cycles
+            try:
+                N = int(text[2:].strip())
+                UserInterface.continue_command(N)
+                self.text_box.AppendText(f"Continuing simulation for {N} cycles.\n")
+            except ValueError:
+                self.text_box.AppendText("Invalid command. Please provide a valid number of cycles.\n")
+        elif text.startswith('s '):
+            # Set switch X to N (0 or 1)
+            try:
+                switch_id, value = text[2:].strip().split()
+                switch_id = int(switch_id)
+                value = int(value)
+                UserInterface.switch_command(switch_id, value)
+                self.text_box.AppendText(f"Setting switch {switch_id} to {value}.\n")
+            except ValueError:
+                self.text_box.AppendText("Invalid command format. Please provide switch ID and value.\n")
+        elif text.startswith('m '):
+            # Add a monitor on signal X
+            signal = text[2:].strip()
+            UserInterface.monitor_command(signal)
+            self.text_box.AppendText(f"Adding monitor on signal {signal}.\n")
+        elif text.startswith('z '):
+            # Zap the monitor on signal X
+            signal = text[2:].strip()
+            UserInterface.zap_command(signal)
+            self.text_box.AppendText(f"Zapping monitor on signal {signal}.\n")
+        elif text == 'h':
+            # Print a list of available commands
+            self.text_box.AppendText(
+                "List of available commands:\n"
+                "r N       - run the simulation for N cycles\n"
+                "c N       - continue the simulation for N cycles\n"
+                "s X N     - set switch X to N (0 or 1)\n"
+                "m X       - add a monitor on signal X\n"
+                "z X       - zap the monitor on signal X\n"
+                "h         - print a list of available commands\n"
+                "q         - quit the program\n"
+            )
+        elif text == 'q':
+            # Quit the program
+            self.Close()
+        else:
+            print("else statement triggered")
+            # Invalid command
+            self.text_box.AppendText("Invalid command. A list of available commands can be obtained by entering 'h'.\n")
 
 class RunApp(wx.App): 
     """Combines Canvas onto App with Matplotlib"""
