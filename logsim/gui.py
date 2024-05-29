@@ -892,7 +892,6 @@ class Gui(wx.Frame):
         # Refresh the layout
         main_sizer.Layout()
 
-
     def on_clear_button(self, event):
         """Handle the event when the user clicks the clear button."""
         text = "Clear button pressed."
