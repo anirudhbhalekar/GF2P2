@@ -1,9 +1,9 @@
-% toggles the state of the D flip-flop's Q output on each rising edge of the clock, 
-influenced by the XOR of a switch input and the current state of Q, creating a feedback loop%
+% toggles the state of the DTYPE Q output on each rising edge of the clock, 
+changed by the XOR of a switch input and the current state of Q%
 
 DEFINE 
     clk AS CLOCK WITH cycle_rep=2, 
-    sw AS SWITCH WITH initial=0, 
+    sw AS SWITCH WITH initial=1, 
     sw_set AS SWITCH WITH initial=0, 
     sw_clear AS SWITCH WITH initial=0, 
     xor1 AS XOR, 
@@ -21,14 +21,13 @@ CONNECT
     d1.DATA = or1, 
     d1.CLK = clk,
     d1.SET = sw_set,
-    d1.CLEAR = sw_clear
-;
+    d1.CLEAR = sw_clear;
 
 MONITOR 
     clk, 
-    sw, 
-    and1
-;
+    d1.Q,
+    xor1,
+    or1;
 
 END;
 

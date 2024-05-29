@@ -7,10 +7,6 @@ from scanner import *
 import pytest
 import os
 
-@pytest.fixture
-def folder_path():
-    return 'definition_files/'
-
 
 def get_all_files(folder):
     ''' Return a list of all files in the given folder. '''
@@ -38,9 +34,22 @@ def get_all_files(folder):
 # --------------------------------------------------- # 
 # Integrated tests here
 
-@pytest.mark.parametrize("file_path", get_all_files('definition_files/'))
+@pytest.mark.parametrize("file_path", get_all_files('test_definition_files/'))
 def test_definition_files(file_path): 
     ''' Tests the definition files -- these should all return True as they don't contain errors'''
+
+    names = Names()
+    scanner = Scanner(file_path, names)
+
+    devices = Devices(names)
+    network = Network(names, devices)
+    monitors = Monitors(names, devices, network)
+    parser = Parser(names, devices, network, monitors, scanner) 
+    assert parser.parse_network()
+
+@pytest.mark.parametrize("file_path", get_all_files('example_definition_files/'))
+def test_definition_files(file_path): 
+    ''' Tests the example definition files -- these should all return True as they don't contain errors'''
 
     names = Names()
     scanner = Scanner(file_path, names)
