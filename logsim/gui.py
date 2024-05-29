@@ -960,10 +960,9 @@ class Gui(wx.Frame):
         # Get the entered text
         text = self.text_box.GetValue().strip()
         # strip() doesn't do anything btw
-        
         # Process the entered text without the newline, > and ENTER characters
         text = text[2:-2]
-        print(text, "without last character")
+        
         # On initialisation and clear, this works fine, but the second time onwards it reads '> ' at the beginning
         # Remove whitespace and > from front of text
         while True:
@@ -979,10 +978,9 @@ class Gui(wx.Frame):
                 text = text[:-1]
             else:
                 break
-        print(text, "after loop")
         # The problem is after this point, text will still start with '> '. And it cannot be removed for some reason. Probs because  of the way promptedtextctrl is defined.
         # Parse the user's input and call the corresponding functions from UserInterface
-        if text.startswith('r '):
+        if text.startswith('r ') or text.startswith('> r '):
             # Run simulation for N cycles
             try:
                 N = int(text[2:].strip())
@@ -990,7 +988,7 @@ class Gui(wx.Frame):
                 self.text_box.AppendText(f"Running simulation for {N} cycles.\n")
             except ValueError:
                 self.text_box.AppendText("Invalid command. Please provide a valid number of cycles.\n")
-        elif text.startswith('c '):
+        elif text.startswith('c ') or text.startswith('> c '):
             # Continue the simulation for N cycles
             try:
                 N = int(text[2:].strip())
@@ -998,7 +996,7 @@ class Gui(wx.Frame):
                 self.text_box.AppendText(f"Continuing simulation for {N} cycles.\n")
             except ValueError:
                 self.text_box.AppendText("Invalid command. Please provide a valid number of cycles.\n")
-        elif text.startswith('s '):
+        elif text.startswith('s ') or text.startswith('> s '):
             # Set switch X to N (0 or 1)
             try:
                 switch_id, value = text[2:].strip().split()
@@ -1008,18 +1006,20 @@ class Gui(wx.Frame):
                 self.text_box.AppendText(f"Setting switch {switch_id} to {value}.\n")
             except ValueError:
                 self.text_box.AppendText("Invalid command format. Please provide switch ID and value.\n")
-        elif text.startswith('m '):
+        elif text.startswith('m ') or text.startswith('> m '):
             # Add a monitor on signal X
             signal = text[2:].strip()
-            UserInterface.monitor_command(signal)
+            # Do zap monitor from canvas with correct port tuple
+            #self.canvas.do_zap_monitor(port_tuple)
             self.text_box.AppendText(f"Adding monitor on signal {signal}.\n")
-        elif text.startswith('z '):
+        elif text.startswith('z ') or text.startswith('> z '):
             # Zap the monitor on signal X
             signal = text[2:].strip()
-            UserInterface.zap_command(signal)
+            # Do zap monitor from canvas with correct port tuple
+            #self.canvas.do_zap_monitor(port_tuple)
             self.text_box.AppendText(f"Zapping monitor on signal {signal}.\n")
-        elif text == 'h':
-            # Print a list of available commands
+        elif text == 'h' or text == '> h':
+            # Print a list of available commands to console
             self.text_box.AppendText(
                 "List of available commands:\n"
                 "r N       - run the simulation for N cycles\n"
@@ -1030,7 +1030,7 @@ class Gui(wx.Frame):
                 "h         - print a list of available commands\n"
                 "q         - quit the program\n"
             )
-        elif text == 'q':
+        elif text == 'q' or text == '> q':
             # Quit the program
             self.Close()
         else:
