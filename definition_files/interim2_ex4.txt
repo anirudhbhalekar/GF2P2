@@ -2,7 +2,7 @@
 influenced by the XOR of a switch input and the current state of Q, creating a feedback loop%
 
 DEFINE 
-    clk AS CLOCK WITH cycle_rep=4, 
+    clk AS CLOCK WITH cycle_rep=2, 
     sw AS SWITCH WITH initial=0, 
     sw_set AS SWITCH WITH initial=0, 
     sw_clear AS SWITCH WITH initial=0, 
@@ -21,10 +21,14 @@ CONNECT
     d1.DATA = or1, 
     d1.CLK = clk,
     d1.SET = sw_set,
-    d1.CLEAR = sw_clear;
+    d1.CLEAR = sw_clear
+;
 
 MONITOR 
-    d1.Q, 
-    d1.QBAR;
+    clk, 
+    sw, 
+    and1
+;
 
 END;
+
