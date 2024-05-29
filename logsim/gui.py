@@ -298,14 +298,15 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         # matrices on the next paint event
         self.init = False
 
-    def calc_distance(self, coord1, coord2): 
-        (x1, y1) = coord1
-        (x2, y2) = coord2
+    def calc_distance(self, point1, point2): 
+        """Calculate the Euclidean distance between two points, coord1 and coord2."""    
+        (x1, y1) = point1
+        (x2, y2) = point2
 
         return np.sqrt((x1-x2)**2 + (y1-y2)**2)
     
     def draw_circle(self, ox, oy): 
-        """Draws a circle - used for hover action"""
+        """Draw a circle around mouse - used for hover action"""
         radius = 10
         GL.glRasterPos2f(ox, oy)
 
@@ -322,7 +323,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         self.SwapBuffers()
 
     def return_closest_output_id(self, mouse_coords, tol = 20): 
-        
+        """Return """
         for port_tuple, coords in self.output_dicts.items():
             this_dist = self.calc_distance(coords, mouse_coords)
             if this_dist < tol: 
@@ -331,7 +332,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         return None
     
     def do_zap_monitor(self, port_tuple): 
-
+        """Remove a monitor when the user clicks on a monitor point after selecting 'Zap'."""
         if port_tuple is not None: 
             (dev_id, port_id) = port_tuple
             remove_mon = self.monitors.remove_monitor(dev_id, port_id)
@@ -339,14 +340,11 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 wx.LogMessage("Monitor removed successfully!")
             else: 
                 wx.LogError("Error! Monitor not found")
-
         else: 
             pass
     
-        
     def on_mouse(self, event):
-        """Handle mouse events."""
-    
+        """Handle mouse events."""    
         text = ""
         # Calculate object coordinates of the mouse position
         size = self.GetClientSize()
@@ -667,8 +665,6 @@ class Gui(wx.Frame):
         button_sizer0 = wx.BoxSizer(wx.HORIZONTAL)
         button_sizer1 = wx.BoxSizer(wx.HORIZONTAL)
         button_sizer2 = wx.BoxSizer(wx.HORIZONTAL)
-
-
 
         # Initialise some empty matplotlib figure
         self.configure_matplotlib_canvas()
