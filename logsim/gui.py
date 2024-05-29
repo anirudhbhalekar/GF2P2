@@ -968,6 +968,7 @@ class Gui(wx.Frame):
             else:
                 break
         print(text, "after loop")
+        # The problem is after this point, text will still start with '> '. And it cannot be removed for some reason. Probs because  of the way promptedtextctrl is defined.
         # Parse the user's input and call the corresponding functions from UserInterface
         if text.startswith('r '):
             # Run simulation for N cycles
