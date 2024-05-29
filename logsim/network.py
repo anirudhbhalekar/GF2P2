@@ -114,9 +114,7 @@ class Network:
 
         Return self.NO_ERROR if successful, or the corresponding error if not.
         """
-        # print(f"Input Device ID: {first_device_id}, Input Port ID: {first_port_id}, Output Device ID: {second_device_id}, Output Port ID: {second_port_id}")
-        # print(f"Type of first_device_id: {type(first_device_id)}, Type of first_port_id: {type(first_port_id)}, Type of second_device_id: {type(second_device_id)}, Type of second_port_id: {type(second_port_id)}")
-        
+
         first_device = self.devices.get_device(first_device_id)
         second_device = self.devices.get_device(second_device_id)
 
@@ -136,7 +134,6 @@ class Network:
                                                       second_port_id)
                 error_type = self.NO_ERROR
             else:  # second_port_id is not a valid input or output port
-                print(second_port_id, second_device.outputs)
                 error_type = self.PORT_ABSENT
 
         elif first_port_id in first_device.outputs:
@@ -266,7 +263,6 @@ class Network:
         Return True if successful.
         """
         device = self.devices.get_device(device_id)
-
         for input_id in device.inputs:
             input_signal = self.get_input_signal(device_id, input_id)
             if input_signal is None:  # if the input is unconnected
@@ -364,6 +360,7 @@ class Network:
         nand_devices = self.devices.find_devices(self.devices.NAND)
         nor_devices = self.devices.find_devices(self.devices.NOR)
         xor_devices = self.devices.find_devices(self.devices.XOR)
+
 
         # This sets clock signals to RISING or FALLING, where necessary
         self.update_clocks()
