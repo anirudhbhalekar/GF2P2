@@ -887,7 +887,7 @@ class Gui(wx.Frame):
                 "h         - print a list of available commands\n"
                 "q         - quit the program\n"
             )
-        elif text == 'q':
+        elif text == ' q':
             self.close(True)
         else:
             #self.text_box.AppendText("Invalid command. A list of available commands can be obtained by entering 'h', or opening the 'Commands' tab.\n")
