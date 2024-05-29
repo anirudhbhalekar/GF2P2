@@ -751,8 +751,13 @@ class Gui(wx.Frame):
         if Id == wx.ID_EXIT:
             self.Close(True)
         if Id == wx.ID_ABOUT:
-            wx.MessageBox("Logic Simulator\nCreated by Mojisola Agboola\n2017",
-                          "About Logsim", wx.ICON_INFORMATION | wx.OK)
+            wx.MessageBox(
+                "Logic Simulator for GF2P2\n"
+                "Created by Mojisola Agboola, 2017\n"
+                "Modified by Anirudh Bhalekar, Moses Liew, Shawn Li, 2024",
+                "About Logsim",
+                wx.ICON_INFORMATION | wx.OK
+            )
         if Id == wx.ID_EDIT:
             if hasattr(self, 'editor') and self.editor.IsShown():
                 # If the editor is already open and visible, just bring it to front
