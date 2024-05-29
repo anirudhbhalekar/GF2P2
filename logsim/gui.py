@@ -801,6 +801,8 @@ class Gui(wx.Frame):
         # Refresh the layout
         main_sizer.Layout()
 
+        self.cycles_completed = 0
+
     def on_zap_button(self, event): 
         """Starts zap procedure"""
 
@@ -812,6 +814,11 @@ class Gui(wx.Frame):
         #print("test")
         self.continue_circuit(self.cycle_count)
         self.canvas.render(text)
+
+        if self.cycles_completed == 0: 
+            wx.LogError("Nothing to Continue - try running the simulation first")
+            return
+        
         try: 
             self.monitor_plot()
         except Exception: 
@@ -884,7 +891,6 @@ class Gui(wx.Frame):
 
         # Refresh the layout
         main_sizer.Layout()
-
 
     def on_clear_button(self, event):
         """Handle the event when the user clicks the clear button."""
