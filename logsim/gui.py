@@ -134,7 +134,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             render_obj = LogicDrawer(self.names, self.devices, self.monitors, dev_id) 
 
             self.draw_obj_dict[dev_id] = render_obj
-            self.random_pertubation[dev_id] = np.random.uniform(5, 15)
+            self.random_pertubation[dev_id] = 1
             self.random_fraction[dev_id] = np.random.uniform(0.15, 0.85)
 
     def render_circuit(self): 
@@ -713,6 +713,7 @@ class Gui(wx.Frame):
 
                         # Reinitialize the canvas with the new devices and monitors
                         self.canvas.Destroy()  # Destroy the old canvas
+                        self.matplotlib_canvas.Destroy() # destroy plot canvas
                         self.canvas = MyGLCanvas(self, self.devices, self.monitors, self.message_display)
 
                         # Update the layout to replace the old canvas with the new one
@@ -734,8 +735,9 @@ class Gui(wx.Frame):
                         # Print the name of the file opened to the terminal (text box) window
                         self.text_box.AppendText(f" Opened file: {pathname}\n>")
                     else: 
-                        num_errors = self.parser.error_count
-                      
+                        print(self.parser.parse_network())
+                        num_errors = self.parser.error_count + 1
+
                         wx.MessageBox(f"Error! Faulty definition file! \n"
                                       "\n"
                                       f"{num_errors} errors caught")

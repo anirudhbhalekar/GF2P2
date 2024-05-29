@@ -1,7 +1,3 @@
-% stores the state of the SWITCH on every rising edge of the CLOCK in the D Flip-Flop, 
-with the XOR gate outputting a constant 1 and the AND gate outputting a constant 0, 
-demonstrating the complementary outputs of Q and QBAR. %
-
 DEFINE CLK1 AS CLOCK WITH cycle_rep = 2,
        SW AS SWITCH WITH initial = 0,
        DFF AS DTYPE,
@@ -18,3 +14,7 @@ CONNECT DFF.CLK = CLK1,
 MONITOR DFF.Q, DFF.QBAR, XOR1, AND1;
 
 END;
+
+% stores the state of the SWITCH on every rising edge of the CLOCK in the D Flip-Flop, 
+with the XOR gate outputting a constant 1 and the AND gate outputting a constant 0, 
+demonstrating the complementary outputs of Q and QBAR. %
