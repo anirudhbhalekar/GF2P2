@@ -283,6 +283,7 @@ class Parser:
             if self.symbol.type == self.scanner.DOT:
                 self.symbol = self.scanner.get_symbol()
                 in_port_id = self.input_notation(stopping_symbols)
+                print(f"Input Connection: {in_device_id}, {in_port_id}")
                 return in_device_id, in_port_id
             else:
                 self.error(self.EXPECTED_PUNCTUATION, stopping_symbols)
