@@ -1,4 +1,5 @@
-% Original example in handout %
+% Original example in handout, but with no monitor points initially so we can try adding %
+
 DEFINE
     G1 AS NAND WITH inputs=2, 
     G2 AS NAND WITH inputs=2,
@@ -9,11 +10,6 @@ CONNECT
     G1.I1 = SW1,
     G1.I2 = SW2;    
 
-% For readability, we recommend indenting all further connect
-statements to the same level as the initial statement %
-
-MONITOR 
-    G1,
-    G2;
+MONITOR ;
 
 END;

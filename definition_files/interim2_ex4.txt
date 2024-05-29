@@ -1,43 +1,26 @@
-% monitor unconnected and varied outputs %
+% toggles the state of the D flip-flop's Q output on each rising edge of the clock, 
+influenced by the XOR of a switch input and the current state of Q, creating a feedback loop%
 
-DEFINE
-    clock1 AS CLOCK WITH cycle_rep = 10,
-    switch1 AS SWITCH WITH initial = 0,
-    dflip1 AS DTYPE,
-    and1 AS AND WITH inputs = 2,
-    nand1 AS NAND WITH inputs = 2,
-    or1 AS OR WITH inputs = 2,
-    nor1 AS NOR WITH inputs = 2,
-    xor1 AS XOR
-;
+DEFINE 
+    clk AS CLOCK WITH cycle_rep=2, 
+    sw AS SWITCH WITH initial=0, 
+    xor1 AS XOR, 
+    and1 AS AND WITH inputs=2, 
+    or1 AS OR WITH inputs=2, 
+    d1 AS DTYPE;
 
-CONNECT
-    and1.I1 = switch1,
-    and1.I2 = clock1,
-    nand1.I1 = and1,
-    nand1.I2 = clock1,
-    or1.I1 = nand1,
-    or1.I2 = switch1,
-    nor1.I1 = or1,
-    nor1.I2 = clock1,
-    xor1.I1 = nor1,
-    xor1.I2 = switch1,
-    dflip1.DATA = xor1,
-    dflip1.CLK = clock1,
-    dflip1.CLEAR = switch1,
-    dflip1.SET = clock1
-;
+CONNECT 
+    xor1.I1 = sw, 
+    xor1.I2 = d1.Q, 
+    and1.I1 = d1.Q, 
+    and1.I2 = clk, 
+    or1.I1 = and1, 
+    or1.I2 = xor1, 
+    d1.DATA = or1, 
+    d1.CLK = clk;
 
-MONITOR
-    clock1,
-    switch1,
-    dflip1.Q,
-    dflip1.QBAR,
-    and1,
-    nand1,
-    or1,
-    nor1,
-    xor1
-;
+MONITOR 
+    d1.Q, 
+    d1.QBAR;
 
 END;

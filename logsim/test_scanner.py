@@ -52,7 +52,7 @@ def test_get_symbol(scanner_example_null):
     
     print(f"Symbol: {symbol}, {symbol.type}, {symbol.id}, {symbol.line_number}, {symbol.character}")
     assert symbol is not None
-    assert symbol.type == "KEYWORD"  # This is the KEYWORD 
+    assert symbol.type == "KEYWORD"
     assert symbol.id == scanner_example_null.DEFINE_ID
     assert symbol.line_number == 1  # Line starts at 1
     assert symbol.character == 7
@@ -75,14 +75,26 @@ def test_get_number(scanner_example_null):
     assert number == "2"
 
 
+def test_get_line_numbers(scanner_example_null):
+    """Test the get_line_numbers method."""
+    length = len(scanner_example_null.file.read())
+    scanner_example_null.file.seek(0)
+    symbol = scanner_example_null.get_symbol()
+    assert symbol.line_number == 1
+    for _ in range(length + 1):
+        symbol = scanner_example_null.get_symbol()
+    assert symbol.line_number == 10
+
+
 def test_get_EOF(scanner_example_null):
     """Test the get_EOF method."""
     length = len(scanner_example_null.file.read())
     scanner_example_null.file.seek(0)
 
     for _ in range(length + 1):
-        sym = scanner_example_null.get_symbol()
-    assert sym.type == "EOF"
+        symbol = scanner_example_null.get_symbol()
+    assert symbol.type == "EOF"
+
 
 @pytest.fixture
 def scanner_test_ex0():
@@ -92,7 +104,7 @@ def scanner_test_ex0():
 
 def test_skip_comment(scanner_test_ex0):
     """Test if the scanner properly skips a comment."""
-    symbol = scanner_test_ex0.get_symbol()  # This returns the next symbol
+    symbol = scanner_test_ex0.get_symbol()
     
     print(f"Symbol: {symbol}, {symbol.type}, {symbol.id}, {symbol.line_number}, {symbol.character}")
     assert symbol is not None
@@ -152,7 +164,7 @@ def scanner_interim1_ex2():
 
 def test_read_cycle_rep(scanner_interim1_ex2):
     """Check that cycle_rep is read in correctly with the underscore in DEFINE.
-    
+
     Example:
     CLK1 AS CLOCK WITH cycle_rep=1000,
     SW1 AS SWITCH WITH initial=1
@@ -164,10 +176,12 @@ def test_read_cycle_rep(scanner_interim1_ex2):
     assert symbol.type == "PARAM"
     assert symbol.id == scanner_interim1_ex2.cycle_rep_ID
 
+
 @pytest.fixture
 def scanner_test_ex7():
     """Return a new instance of the Scanner class."""
     return Scanner("error_definition_files/test_ex7.txt", Names())
+
 
 def test_ignore_invalid_char(scanner_test_ex7):
     """Test that the scanner can handle invalid characters."""

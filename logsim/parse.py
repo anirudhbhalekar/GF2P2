@@ -53,20 +53,21 @@ class Parser:
         self.error_count = 0
         self.symbol = Symbol()
     
+
     def error(self, error_code, stopping_symbols=None):
         """Print error message and increment error count."""
+        # Note that if there is a syntax error before a semantic one, the semantic error will not be printed
         self.error_count += 1
         line_number = self.symbol.line_number
         character = self.symbol.character
         error_message = self.get_error_message(error_code)
-        print(f"Error Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}, String: {self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME or self.symbol.type == self.scanner.KEYWORD else ''}")
         print(f"Error code {error_code} at line {line_number}, character {character}: {error_message}")
+        print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}, String: {self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME or self.symbol.type == self.scanner.KEYWORD else ''}")
         while (self.symbol.type not in stopping_symbols and self.symbol.type != self.scanner.EOF):
             self.symbol = self.scanner.get_symbol()
-        print(f"resumed at symbol type: {self.symbol.type}, String: {self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME else ''}")
-        print(f"resumed at line {self.symbol.line_number}, character {self.symbol.character}")
         if self.symbol.type == self.scanner.EOF:
             return False
+
 
     def get_error_message(self, error_code):
         """Return the error message corresponding to the error code."""
@@ -103,6 +104,7 @@ class Parser:
             }
         return error_messages.get(error_code, "Unknown error")
 
+
     def parse_network(self):
         """Parse the circuit definition file."""
         try:
@@ -116,11 +118,6 @@ class Parser:
             print(f"Syntax Error: {e}")
             return False
         
-    # Semantic analysis and network construction
-    # def connection(self)
-
-    # Error detection, throwing relevant rules
-    # One function for each non-terminal EBNF rule, and each terminal rule calls get_symbol 
 
     def spec_file(self):
         """Implements rule spec_file = definition, connection, monitor, end;."""
@@ -128,6 +125,7 @@ class Parser:
         self.connection({self.scanner.KEYWORD})
         self.monitor({self.scanner.KEYWORD})
         self.end({self.scanner.SEMICOLON})
+
 
     def definition(self, stopping_symbols):
         """Implements rule definition = "DEFINE", [def_list], ";";"""
@@ -142,6 +140,7 @@ class Parser:
                     self.symbol = self.scanner.get_symbol()
             else:
                 self.error(self.MISSING_SEMICOLON, stopping_symbols)
+
 
     def def_list(self, stopping_symbols):
         """Implements rule def_list = name, "AS", (device | gate), ["WITH", set_param], {",", name, "AS", (device | gate), ["WITH", set_param]};"""
@@ -195,6 +194,7 @@ class Parser:
 
         else:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
+
 
     def set_param(self, stopping_symbols):
         """Implements rule set_param = param, "=", value;"""
@@ -307,6 +307,7 @@ class Parser:
             return out_device_id, out_port_id
         return None, None
 
+
     def input_notation(self, stopping_symbols):
         """Implements rule input_notation = "I", digit, {digit} | "DATA" | "CLK" | "CLEAR" | "SET";"""
         # Check if proper dtype input, or if not the first letter must be "I", followed by digits (isnumeric)
@@ -325,6 +326,7 @@ class Parser:
             self.error(self.INVALID_PIN_REF, stopping_symbols)
             return None
         return in_port_id
+
 
     def output_notation(self, stopping_symbols):
         """Implements rule output_notation =  "Q" | "QBAR" ;"""
@@ -345,6 +347,7 @@ class Parser:
             self.error(self.EXPECTED_NAME, stopping_symbols)
             return None
         return name
+
 
     def monitor(self, stopping_symbols):
         """Implements rule monitor = "MONITOR", [output_con, {",", output_con}], ";";"""
@@ -372,6 +375,7 @@ class Parser:
         else:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
 
+
     def end(self, stopping_symbols):
         """Implements rule end = "END", ";";"""
         if self.symbol.type == self.scanner.EOF:
@@ -385,6 +389,7 @@ class Parser:
         else:
             self.error(self.MISSING_END_STATEMENT, stopping_symbols)
     
+
     def digit(self, stopping_symbols):
         """Implements rule digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";"""
         if self.symbol.type == self.scanner.NUMBER:
@@ -396,6 +401,7 @@ class Parser:
         # Convert str to int
         return int(value)
 
+
     def device(self, stopping_symbols):
         """Implements rule device = "CLOCK" | "SWITCH" | "DTYPE";"""
         if self.symbol.type == self.scanner.DEVICE:
@@ -404,6 +410,7 @@ class Parser:
         else:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
         return device_kind
+
 
     def gate(self, stopping_symbols):
         """Implement rule gate = "NAND" | "AND" | "OR" | "NOR" | "XOR";"""
