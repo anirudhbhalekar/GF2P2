@@ -1,5 +1,5 @@
 DEFINE
-    SW1 WITH inital=0,
+    SW1 WITH inital=0, % misspelled keyword %
     G1 AS NOR WITH inputs=17, % more than number of allowed inputs %
     G2 AS AND WITH inputs=2.5; % non-integer number of inputs %
 

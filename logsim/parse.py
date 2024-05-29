@@ -53,19 +53,18 @@ class Parser:
         self.error_count = 0
         self.symbol = Symbol()
     
-    
+
     def error(self, error_code, stopping_symbols=None):
         """Print error message and increment error count."""
+        # Note that if there is a syntax error before a semantic one, the semantic error will not be printed
         self.error_count += 1
         line_number = self.symbol.line_number
         character = self.symbol.character
         error_message = self.get_error_message(error_code)
-        print(f"Error Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}, String: {self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME or self.symbol.type == self.scanner.KEYWORD else ''}")
         print(f"Error code {error_code} at line {line_number}, character {character}: {error_message}")
+        print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}, String: {self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME or self.symbol.type == self.scanner.KEYWORD else ''}")
         while (self.symbol.type not in stopping_symbols and self.symbol.type != self.scanner.EOF):
             self.symbol = self.scanner.get_symbol()
-        print(f"resumed at symbol type: {self.symbol.type}, String: {self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME else ''}")
-        print(f"resumed at line {self.symbol.line_number}, character {self.symbol.character}")
         if self.symbol.type == self.scanner.EOF:
             return False
 
