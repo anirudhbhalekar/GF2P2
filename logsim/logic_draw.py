@@ -32,27 +32,31 @@ class LogicDrawer:
             self.devices = devices
             self.monitors = monitors
 
-            self.device = self.devices.get_device(self.id) # This is the device obj 
+            try: 
+                self.device = self.devices.get_device(self.id) # This is the device obj 
 
-            self.device_inputs = self.device.inputs
-            self.device_outputs = self.device.outputs
+                self.device_inputs = self.device.inputs
+                self.device_outputs = self.device.outputs
 
-            self.n_inputs = len(self.device_inputs.keys())
-
-            """try: del self.device_inputs[None]
-            except: pass
-            try: del self.device_outputs[None]
-            except: pass"""
+                self.n_inputs = len(self.device_inputs.keys())
             
-            # 15 pixels height increase for each additional input
-            # top and bottom padding 5 px each
-            # self.height is only the vertical straight bit
-            self.height = self.operator_height 
 
-            if self.n_inputs > 2: 
-                self.height += (self.n_inputs - 2) * self.inc_height
-            # we can maybe add self.length later to make the length scale with gates
-            self.length = self.operator_length
+                """try: del self.device_inputs[None]
+                except: pass
+                try: del self.device_outputs[None]
+                except: pass"""
+                
+                # 15 pixels height increase for each additional input
+                # top and bottom padding 5 px each
+                # self.height is only the vertical straight bit
+                self.height = self.operator_height 
+
+                if self.n_inputs > 2: 
+                    self.height += (self.n_inputs - 2) * self.inc_height
+                # we can maybe add self.length later to make the length scale with gates
+                self.length = self.operator_length
+            except: 
+                pass
 
             # These store input and output xy coords for drawing connections
 
@@ -85,7 +89,7 @@ class LogicDrawer:
             self.draw_switch(self.x, self.y)
         else: 
             pass
-        
+
         '''
         min_x, min_y = self.domain[0][0], self.domain[0][1]
         max_x, max_y = self.domain[1][0], self.domain[1][1]

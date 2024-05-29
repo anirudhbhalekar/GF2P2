@@ -157,10 +157,11 @@ class ConnectDrawer:
             max_x = domain_dict[key][1][0]
 
             if min_y <= curr_y and max_y >= curr_y: 
-                # Check if there is an object that intersects this y ray 
+                # Check if there is an object that intersects this x ray 
                 if min_x <= max(curr_x, dest_x) or max_x >= min(dest_x, curr_x): 
                     # Check if it lies between the two (src and dest) x values
                     return (True, domain_dict[key])
+                
 
         return (False, None)
 
