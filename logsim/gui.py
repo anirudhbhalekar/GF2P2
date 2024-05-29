@@ -592,8 +592,8 @@ class Gui(wx.Frame):
         self.run_button = wx.Button(self, wx.ID_ANY, "Run")
         self.continue_button = wx.Button(self, wx.ID_ANY, "Continue")
         self.reset_plot_button = wx.Button(self, wx.ID_ANY, "Reset Plot")
-        self.zap_monitor_button = wx.Button(self,wx.ID_ANY, "Zap Monitor")
-        self.add_monitor_button = wx.Button(self, wx.ID_ANY, "Add Monitor")
+        self.zap_monitor_button = wx.ToggleButton(self,wx.ID_ANY, "Zap Monitor")
+        self.add_monitor_button = wx.ToggleButton(self, wx.ID_ANY, "Add Monitor")
         self.reset_view_button = wx.Button(self, wx.ID_ANY, "Reset View")
         self.text_box = PromptedTextCtrl(self, wx.ID_ANY, style=wx.TE_PROCESS_ENTER)
         self.clear_button = wx.Button(self, wx.ID_ANY, "Clear terminal") # button for clearing terminal output
@@ -607,8 +607,8 @@ class Gui(wx.Frame):
         self.clear_button.Bind(wx.EVT_BUTTON, self.on_clear_button)
         self.reset_view_button.Bind(wx.EVT_BUTTON, self.on_reset_view_button)
         self.text_box.Bind(wx.EVT_TEXT_ENTER, self.on_text_box)
-        self.zap_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_clear_button) # TEMPORARY!!!!!!!!!!!!!!!!!!!!
-        self.add_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_clear_button) # TEMPORARY!!!!!!!!!!!!!!!!!!!!
+        self.zap_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_zap_button) # TEMPORARY!!!!!!!!!!!!!!!!!!!!
+        self.add_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_add_button) # TEMPORARY!!!!!!!!!!!!!!!!!!!!
         # Configure sizers for layout
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)
         canvas_plot_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -650,6 +650,14 @@ class Gui(wx.Frame):
         self.SetSizeHints(600, 600)
         self.SetSizer(main_sizer)
     
+    def configure_matplotlib_canvas(self): 
+        """ Sets the config params of the matplotlib canvas"""
+        hfont = {'fontname':'Consolas'}
+        self.figure = Figure(figsize=(5,2))
+        self.axes = self.figure.add_subplot(111)
+        self.axes.set_title("Monitor Plots", **hfont)
+        self.axes.tick_params(axis = 'both', left = False, right = False, labelright = False, labelleft = False, labelbottom = False)
+
     def execute_circuit(self, cycles): 
         """Simulates the circuit for N cycles"""
         for _ in range(cycles):
@@ -783,29 +791,21 @@ class Gui(wx.Frame):
     
     def on_reset_plot_button(self, event): 
         """Clears the matplotlib plot"""
-        try: 
-            self.matplotlib_canvas.Destroy()
-        except: 
-            pass
-
-        self.configure_matplotlib_canvas()
-        self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
-        main_sizer = self.GetSizer()
-        canvas_plot_sizer = main_sizer.GetChildren()[0].GetSizer()
-
-        # Remove the old canvas and add the new one
-        canvas_plot_sizer.Clear(delete_windows=False)
-        canvas_plot_sizer.Add(self.canvas, 2, wx.EXPAND | wx.ALL, 1)
-        canvas_plot_sizer.Add(self.matplotlib_canvas, 1, wx.EXPAND | wx.ALL, 1)
-
-        # Refresh the layout
-        main_sizer.Layout()
+        
+        hfont = {'fontname':'Consolas'}
+        self.axes.clear()
+        self.axes.set_title("Monitor Plots", **hfont)
+        self.matplotlib_canvas.draw()
+        self.plot_array = []
+        self.name_array = []
 
         self.cycles_completed = 0
 
     def on_zap_button(self, event): 
         """Starts zap procedure"""
 
+    def on_add_button(self, event): 
+        print("dicjjbwe")
 
     def on_continue_button(self, event): 
         """Handle continue button event"""
@@ -824,17 +824,14 @@ class Gui(wx.Frame):
         except Exception: 
             self.on_reset_plot_button(None)
             wx.LogError("Run failed - cannot plot monitors")
-
-    def configure_matplotlib_canvas(self): 
-        """ Sets the config params of the matplotlib canvas"""
-        hfont = {'fontname':'Consolas'}
-        self.figure = Figure(figsize=(5,2))
-        self.axes = self.figure.add_subplot(111)
-        self.axes.set_title("Monitor Plots", **hfont)
-        self.axes.tick_params(axis = 'both', left = False, right = False, labelright = False, labelleft = False, labelbottom = False)
     
     def monitor_plot(self):
+        
+        hfont = {'fontname':'Consolas'}
         self.axes.clear()
+        self.axes.set_title("Monitor Plots", **hfont)
+        self.matplotlib_canvas.draw()
+        
         self.plot_array = []
         self.name_array = []
 
@@ -864,9 +861,6 @@ class Gui(wx.Frame):
             self.plot_array.append(one_d_signal)
             self.name_array.append(monitor_name)
         
-        self.matplotlib_canvas.Destroy()
-        self.configure_matplotlib_canvas()
-
         for i, int_signal in enumerate(self.plot_array): 
             
             name = self.name_array[i]
@@ -879,19 +873,8 @@ class Gui(wx.Frame):
         self.axes.set_xlim(0, self.cycles_completed - 1)
         prop={'family':'Consolas', 'size':8}
         self.figure.legend(fontsize="8", loc ="upper left", prop = prop)
-        self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
-        
-        main_sizer = self.GetSizer()
-        canvas_plot_sizer = main_sizer.GetChildren()[0].GetSizer()
 
-        # Remove the old canvas and add the new one
-        canvas_plot_sizer.Clear(delete_windows=False)
-        canvas_plot_sizer.Add(self.canvas, 2, wx.EXPAND | wx.ALL, 1)
-        canvas_plot_sizer.Add(self.matplotlib_canvas, 1, wx.EXPAND | wx.ALL, 1)
-
-        # Refresh the layout
-        main_sizer.Layout()
-
+        self.matplotlib_canvas.draw()
 
     def on_clear_button(self, event):
         """Handle the event when the user clicks the clear button."""
