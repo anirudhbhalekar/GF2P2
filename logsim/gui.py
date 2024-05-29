@@ -25,7 +25,10 @@ import wx.glcanvas as wxcanvas
 import numpy as np
 from math import cos, sin, pi
 from OpenGL import GL, GLUT
+from OpenGL.GL import GL_LINE_STRIP, GL_LINE_LOOP, GL_POLYGON, GL_ENABLE_BIT, GL_LINE_STIPPLE
 from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, GL_LINE_STRIP, GL_TRIANGLE_FAN, GL_LINE_LOOP
+from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, glPushAttrib, glLineStipple, glPopAttrib, glEnable
+from OpenGL import GL, GLUT
 import matplotlib
 matplotlib.use('WXAgg')
 from matplotlib.figure import Figure
@@ -40,7 +43,7 @@ from scanner import Scanner
 from parse import Parser
 from logic_draw import LogicDrawer
 from connect_draw import ConnectDrawer
-from userint import UserInterface
+from userint import UserInterface 
 
 class MyGLCanvas(wxcanvas.GLCanvas):
     """MyGLCanvas(wxcanvas.GLCanvas) - Handle all drawing operations.
@@ -97,13 +100,14 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         self.monitors = monitors
         self.names = parent.names
 
-        self.is_zap_monitor = parent.is_zap_monitor
-        self.is_add_monitor = parent.is_add_monitor
+        self.parent = parent
 
         self.draw_obj_dict = {}
         self.domain_dict = {}
         self.random_pertubation = {} # A random perturbation for each device in the form {device_id: rand_int}
         self.random_fraction = {} # random fraction for each device
+
+        self.output_dicts = {} # This is a coords -> output_port, dev_id mapping
 
         # Bind events to the canvas
         self.Bind(wx.EVT_PAINT, self.on_paint)
@@ -138,7 +142,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.draw_obj_dict[dev_id] = render_obj
             self.random_pertubation[dev_id] = 1
             self.random_fraction[dev_id] = np.random.uniform(0.15, 0.85)
-
+        
     def render_circuit(self): 
         """Render all devices, connections, and monitors on screen."""
         devices_list = self.devices.devices_list
@@ -163,28 +167,13 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 clk_render = self.draw_obj_dict[device.device_id]
                 clk_render.draw_clock(xs, ys)
                 self.domain_dict[clk_render] = clk_render.domain
-            
-            elif device.device_kind == self.devices.SWITCH: 
-                ys = ys - count*dist
-                if ys < min_y: 
-                    ys = y_start
-                    xs += 175
-                count += 1
 
-                device_render = self.draw_obj_dict[device.device_id]
-                device_render.draw_with_string("SWITCH", xs + 150, ys)
-                self.domain_dict[device_render] = device_render.domain
-
-        pos_x, pos_y = xs + 300, y_start
-        
-
+        pos_x, pos_y = xs + 150, y_start
         
         # Remove all clock objects (we reserve first col for clocks only)
         for i, acc_device in enumerate(devices_list): 
             
             if acc_device.device_kind == self.devices.CLOCK: 
-                continue
-            elif acc_device.device_kind == self.devices.SWITCH: 
                 continue
             
             device_render = self.draw_obj_dict[acc_device.device_id]
@@ -231,11 +220,17 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 output_port_id = con_tup[1]
 
                 output_obj = self.draw_obj_dict[output_dev_id]
+                monitor_dict = output_obj.output_dict
+
                 con_draw = ConnectDrawer((input_obj, input_port_id, output_obj, output_port_id), 
                                             self.domain_dict, random_perturb, random_frac)
                 # Don't put padding too high - will break code 
                 con_draw.draw_connection()
 
+                # Now we get the (dev_id, port_id) -> coord dictionary
+                for key, value in monitor_dict.items(): 
+                    self.output_dicts[key] = value
+        
 
     def assemble_monitors(self): 
         """Assemble all monitors on screen."""
@@ -273,8 +268,6 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         GL.glClear(GL.GL_COLOR_BUFFER_BIT)
 
         # Draw specified text at position (10, 10)
-        #self.render_text(text, 10, 10)
-
         self.render_circuit()
         self.assemble_monitors()
 
@@ -305,20 +298,90 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         # matrices on the next paint event
         self.init = False
 
-    def on_mouse(self, event):
-        """Handle mouse events."""
+    def calc_distance(self, point1, point2): 
+        """Calculate the Euclidean distance between two points, coord1 and coord2."""    
+        (x1, y1) = point1
+        (x2, y2) = point2
+
+        return np.sqrt((x1-x2)**2 + (y1-y2)**2)
     
+    def draw_circle(self, ox, oy): 
+        """Draw a circle around mouse - used for hover action"""
+        radius = 10
+        GL.glRasterPos2f(ox, oy)
+
+        glColor3f(0.0, 0.0, 0.0)
+        glBegin(GL_LINE_LOOP)    
+        glVertex2f(ox, oy + radius)
+        glVertex2f(ox + radius, oy)
+        glVertex2f(ox, oy - radius)
+        glVertex2f(ox - radius, oy)
+        glVertex2f(ox, oy + radius)
+        glEnd()
+
+        GL.glFlush()
+        self.SwapBuffers()
+
+    def return_closest_output_id(self, mouse_coords, tol = 20): 
+        """Return """
+        for port_tuple, coords in self.output_dicts.items():
+            this_dist = self.calc_distance(coords, mouse_coords)
+            if this_dist < tol: 
+                return port_tuple
+
+        return None
+    
+    def do_zap_monitor(self, port_tuple): 
+        """Remove a monitor when the user clicks on a monitor point after selecting 'Zap'."""
+        if port_tuple is not None: 
+            (dev_id, port_id) = port_tuple
+            remove_mon = self.monitors.remove_monitor(dev_id, port_id)
+            if remove_mon: 
+                wx.LogMessage("Monitor removed successfully!")
+            else: 
+                wx.LogError("Error! Monitor not found!")
+        else: 
+            pass
+    
+    def do_add_monitor(self, port_tuple): 
+        """Add a monitor when the user clicks on a monitor point after selecting 'Add'."""
+        if port_tuple is not None: 
+            (dev_id, port_id) = port_tuple
+            add_mon = self.monitors.make_monitor(dev_id, port_id)
+            if add_mon: 
+                wx.LogMessage("Monitor added successfully!")
+            else: 
+                wx.LogError("Error! Monitor already added!")
+        else: 
+            pass
+    
+    def on_mouse(self, event):
+        """Handle mouse events."""    
         text = ""
         # Calculate object coordinates of the mouse position
         size = self.GetClientSize()
         ox = (event.GetX() - self.pan_x) / self.zoom
         oy = (size.height - event.GetY() - self.pan_y) / self.zoom
         old_zoom = self.zoom
+
         if event.ButtonDown():
             self.last_mouse_x = event.GetX()
             self.last_mouse_y = event.GetY()
+
             text = "".join(["Mouse button pressed at: ", str(event.GetX()),
                             ", ", str(event.GetY())])
+            
+            if self.parent.is_zap_monitor or self.parent.is_add_monitor: 
+                # We draw a circle around the cursor
+                print(ox, oy)
+                self.draw_circle(ox, oy)
+                port_tuple = self.return_closest_output_id((ox, oy))
+
+                if self.parent.is_zap_monitor: 
+                    self.do_zap_monitor(port_tuple)
+                elif self.parent.is_add_monitor:
+                    self.do_add_monitor(port_tuple)
+
         if event.ButtonUp():
             text = "".join(["Mouse button released at: ", str(event.GetX()),
                             ", ", str(event.GetY())])
@@ -617,8 +680,6 @@ class Gui(wx.Frame):
         button_sizer1 = wx.BoxSizer(wx.HORIZONTAL)
         button_sizer2 = wx.BoxSizer(wx.HORIZONTAL)
 
-
-
         # Initialise some empty matplotlib figure
         self.configure_matplotlib_canvas()
         self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
@@ -793,6 +854,7 @@ class Gui(wx.Frame):
         """Clears the matplotlib plot"""
         
         hfont = {'fontname':'Consolas'}
+        
         self.axes.clear()
         self.axes.set_title("Monitor Plots", **hfont)
         self.matplotlib_canvas.draw()
@@ -803,9 +865,13 @@ class Gui(wx.Frame):
 
     def on_zap_button(self, event): 
         """Starts zap procedure"""
+        self.is_zap_monitor = not self.is_zap_monitor
+        print(self.is_zap_monitor)
 
     def on_add_button(self, event): 
-        print("dicjjbwe")
+        """Start add procedure"""
+        self.is_add_monitor = not self.is_add_monitor
+        print(self.is_add_monitor)
 
     def on_continue_button(self, event): 
         """Handle continue button event"""
@@ -890,70 +956,90 @@ class Gui(wx.Frame):
 
     def on_text_box(self, event):
         """Handle the event when the user enters text."""
+        
         # Get the entered text
         text = self.text_box.GetValue().strip()
+        # strip() doesn't do anything btw
+        # Process the entered text without the newline, > and ENTER characters
+        text = text[2:-2]
         
-        # Check if the entered text ends with a newline character
-        if text.endswith('\n'):
-            # Process the entered text without the newline character
-            text = text[:-1]
-            
-            # Parse the user's input and call the corresponding functions from UserInterface
-            if text.startswith('r '):
-                # Run simulation for N cycles
-                try:
-                    N = int(text[2:].strip())
-                    UserInterface.run_command(N)
-                    self.AppendText(f"Running simulation for {N} cycles.\n")
-                except ValueError:
-                    self.AppendText("Invalid command. Please provide a valid number of cycles.\n")
-            elif text.startswith('c '):
-                # Continue the simulation for N cycles
-                try:
-                    N = int(text[2:].strip())
-                    UserInterface.continue_command(N)
-                    self.AppendText(f"Continuing simulation for {N} cycles.\n")
-                except ValueError:
-                    self.AppendText("Invalid command. Please provide a valid number of cycles.\n")
-            elif text.startswith('s '):
-                # Set switch X to N (0 or 1)
-                try:
-                    switch_id, value = text[2:].strip().split()
-                    switch_id = int(switch_id)
-                    value = int(value)
-                    UserInterface.switch_command(switch_id, value)
-                    self.AppendText(f"Setting switch {switch_id} to {value}.\n")
-                except ValueError:
-                    self.AppendText("Invalid command format. Please provide switch ID and value.\n")
-            elif text.startswith('m '):
-                # Add a monitor on signal X
-                signal = text[2:].strip()
-                UserInterface.monitor_command(signal)
-                self.AppendText(f"Adding monitor on signal {signal}.\n")
-            elif text.startswith('z '):
-                # Zap the monitor on signal X
-                signal = text[2:].strip()
-                UserInterface.zap_command(signal)
-                self.AppendText(f"Zapping monitor on signal {signal}.\n")
-            elif text == 'h':
-                # Print a list of available commands
-                self.AppendText(
-                    "List of available commands:\n"
-                    "r N       - run the simulation for N cycles\n"
-                    "c N       - continue the simulation for N cycles\n"
-                    "s X N     - set switch X to N (0 or 1)\n"
-                    "m X       - add a monitor on signal X\n"
-                    "z X       - zap the monitor on signal X\n"
-                    "h         - print a list of available commands\n"
-                    "q         - quit the program\n"
-                )
-            elif text == 'q':
-                # Quit the program
-                self.Close()
+        # On initialisation and clear, this works fine, but the second time onwards it reads '> ' at the beginning
+        # Remove whitespace and > from front of text
+        while True:
+            if text[0] == '>':
+                text = text[1:]
+            elif text[0] == ' ':
+                text = text[1:]
             else:
-                # Invalid command
-                self.AppendText("Invalid command. A list of available commands can be obtained by entering 'h'.\n")
-
+                break
+        # Remove trailing whitespace
+        while True:
+            if text[-1] == ' ':
+                text = text[:-1]
+            else:
+                break
+        # The problem is after the first enter, text will still start with '> '. And it cannot be removed for some reason. Probs because  of the way promptedtextctrl is defined.
+        # Parse the user's input and call the corresponding functions from UserInterface
+        if text.startswith('r ') or text.startswith('> r '):
+            # Run simulation for N cycles
+            try:
+                N = int(text[2:].strip())
+                UserInterface.run_command(N)
+                self.text_box.AppendText(f"Running simulation for {N} cycles.\n")
+            except ValueError:
+                self.text_box.AppendText("Invalid command. Please provide a valid number of cycles.\n")
+        elif text.startswith('c ') or text.startswith('> c '):
+            # Continue the simulation for N cycles
+            try:
+                N = int(text[2:].strip())
+                UserInterface.continue_command(N)
+                self.text_box.AppendText(f"Continuing simulation for {N} cycles.\n")
+            except ValueError:
+                self.text_box.AppendText("Invalid command. Please provide a valid number of cycles.\n")
+        elif text.startswith('s ') or text.startswith('> s '):
+            # Set switch X to N (0 or 1)
+            try:
+                switch_id, value = text[2:].strip().split()
+                switch_id = int(switch_id)
+                value = int(value)
+                if type(value) != int or value not in [0, 1]:
+                    self.text_box.AppendText("Switch value must be 0 or 1")
+                    raise ValueError("Switch value must be 0 or 1")
+                UserInterface.switch_command(switch_id, value)
+                self.text_box.AppendText(f"Setting switch {switch_id} to {value}.\n")
+            except ValueError:
+                self.text_box.AppendText("Invalid command format. Please provide switch ID and value.\n")
+        elif text.startswith('m ') or text.startswith('> m '):
+            # Add a monitor on signal X
+            signal = text[2:].strip()
+            # Do zap monitor from canvas with correct port tuple
+            #self.canvas.do_zap_monitor(port_tuple)
+            self.text_box.AppendText(f"Adding monitor on signal {signal}.\n")
+        elif text.startswith('z ') or text.startswith('> z '):
+            # Zap the monitor on signal X
+            signal = text[2:].strip()
+            # Do zap monitor from canvas with correct port tuple
+            #self.canvas.do_zap_monitor(port_tuple)
+            self.text_box.AppendText(f"Zapping monitor on signal {signal}.\n")
+        elif text == 'h' or text[1:].strip() == 'h':
+            # Print a list of available commands to console
+            self.text_box.AppendText(
+                "List of available commands:\n"
+                "r N       - run the simulation for N cycles\n"
+                "c N       - continue the simulation for N cycles\n"
+                "s X N     - set switch X to N (0 or 1)\n"
+                "m X       - add a monitor on signal X\n"
+                "z X       - zap the monitor on signal X\n"
+                "h         - print a list of available commands\n"
+                "q         - quit the program\n"
+            )
+        elif text == 'q' or text == '> q':
+            # Quit the program
+            self.Close()
+        else:
+            print("else statement triggered by", text, "end else statement triggered by")
+            # Invalid command
+            self.text_box.AppendText("Invalid command. A list of available commands can be obtained by entering 'h'.\n")
 
 class RunApp(wx.App): 
     """Combines Canvas onto App with Matplotlib"""
