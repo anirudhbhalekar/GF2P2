@@ -339,7 +339,19 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             if remove_mon: 
                 wx.LogMessage("Monitor removed successfully!")
             else: 
-                wx.LogError("Error! Monitor not found")
+                wx.LogError("Error! Monitor not found!")
+        else: 
+            pass
+    
+    def do_add_monitor(self, port_tuple): 
+        """Add a monitor when the user clicks on a monitor point after selecting 'Add'."""
+        if port_tuple is not None: 
+            (dev_id, port_id) = port_tuple
+            add_mon = self.monitors.add_monitor(dev_id, port_id)
+            if add_mon: 
+                wx.LogMessage("Monitor added successfully!")
+            else: 
+                wx.LogError("Error! Monitor already added!")
         else: 
             pass
     
