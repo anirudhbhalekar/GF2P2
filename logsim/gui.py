@@ -960,51 +960,35 @@ class Gui(wx.Frame):
         # Get the entered text, current line only
         text = self.text_box.GetValue().strip()
         lines = text.split('\n')
-        print(lines)
-        current_line = lines[-2].strip()  # Get the most recent line of input, excluding the > at the bottom
+        #print(lines)
+        # Get the most recent line of input, excluding the > at the bottom, hence index is -2 not -1
+        current_line = lines[-2].strip()  
         if current_line[0] == '>':
             current_line = current_line[1:].strip()
         text = current_line # should be without the initial >
-        print(text, "is current line")
-        # strip() doesn't do anything btw
-        # Process the entered text without the newline, > and ENTER characters
-        '''
-        text = text[2:-2]
-        
-        # On initialisation and clear, this works fine, but the second time onwards it reads '> ' at the beginning
-        # Remove whitespace and > from front of text
-        while True:
-            if text[0] == '>':
-                text = text[1:]
-            elif text[0] == ' ':
-                text = text[1:]
-            else:
-                break
-        # Remove trailing whitespace
-        while True:
-            if text[-1] == ' ':
-                text = text[:-1]
-            else:
-                break'''
+        #print(text, "is current line")
+
         # The problem is after the first enter, text will still start with '> '. And it cannot be removed for some reason. Probs because  of the way promptedtextctrl is defined.
         # Parse the user's input and call the corresponding functions from UserInterface
-        if text.startswith('r ') or text.startswith('> r '):
+        if text.startswith('r '):
             # Run simulation for N cycles
             try:
                 N = int(text[2:].strip())
-                UserInterface.run_command(N)
+                # Execute run command here!
+                #UserInterface.run_command(N)
                 self.text_box.AppendText(f"Running simulation for {N} cycles.\n")
             except ValueError:
                 self.text_box.AppendText("Invalid command. Please provide a valid number of cycles.\n")
-        elif text.startswith('c ') or text.startswith('> c '):
+        elif text.startswith('c '):
             # Continue the simulation for N cycles
             try:
                 N = int(text[2:].strip())
-                UserInterface.continue_command(N)
+                # Execute continue command here! 
+                #UserInterface.continue_command(N)
                 self.text_box.AppendText(f"Continuing simulation for {N} cycles.\n")
             except ValueError:
                 self.text_box.AppendText("Invalid command. Please provide a valid number of cycles.\n")
-        elif text.startswith('s ') or text.startswith('> s '):
+        elif text.startswith('s '):
             # Set switch X to N (0 or 1)
             try:
                 switch_id, value = text[2:].strip().split()
@@ -1013,23 +997,24 @@ class Gui(wx.Frame):
                 if type(value) != int or value not in [0, 1]:
                     self.text_box.AppendText("Switch value must be 0 or 1")
                     raise ValueError("Switch value must be 0 or 1")
-                UserInterface.switch_command(switch_id, value)
+                # Excecute switch command here!
+                #UserInterface.switch_command(switch_id, value)
                 self.text_box.AppendText(f"Setting switch {switch_id} to {value}.\n")
             except ValueError:
                 self.text_box.AppendText("Invalid command format. Please provide switch ID and value.\n")
-        elif text.startswith('m ') or text.startswith('> m '):
+        elif text.startswith('m '):
             # Add a monitor on signal X
             signal = text[2:].strip()
             # Do zap monitor from canvas with correct port tuple
             #self.canvas.do_zap_monitor(port_tuple)
             self.text_box.AppendText(f"Adding monitor on signal {signal}.\n")
-        elif text.startswith('z ') or text.startswith('> z '):
+        elif text.startswith('z '):
             # Zap the monitor on signal X
             signal = text[2:].strip()
             # Do zap monitor from canvas with correct port tuple
             #self.canvas.do_zap_monitor(port_tuple)
             self.text_box.AppendText(f"Zapping monitor on signal {signal}.\n")
-        elif text == 'h' or text[1:].strip() == 'h':
+        elif text == 'h':
             # Print a list of available commands to console
             self.text_box.AppendText(
                 "List of available commands:\n"
@@ -1041,7 +1026,7 @@ class Gui(wx.Frame):
                 "h         - print a list of available commands\n"
                 "q         - quit the program\n"
             )
-        elif text == 'q' or text == '> q':
+        elif text == 'q' or text == 'quit':
             # Quit the program
             self.Close()
         else:
