@@ -978,7 +978,7 @@ class Gui(wx.Frame):
                 text = text[:-1]
             else:
                 break
-        # The problem is after this point, text will still start with '> '. And it cannot be removed for some reason. Probs because  of the way promptedtextctrl is defined.
+        # The problem is after the first enter, text will still start with '> '. And it cannot be removed for some reason. Probs because  of the way promptedtextctrl is defined.
         # Parse the user's input and call the corresponding functions from UserInterface
         if text.startswith('r ') or text.startswith('> r '):
             # Run simulation for N cycles
@@ -1002,6 +1002,9 @@ class Gui(wx.Frame):
                 switch_id, value = text[2:].strip().split()
                 switch_id = int(switch_id)
                 value = int(value)
+                if type(value) != int or value not in [0, 1]:
+                    self.text_box.AppendText("Switch value must be 0 or 1")
+                    raise ValueError("Switch value must be 0 or 1")
                 UserInterface.switch_command(switch_id, value)
                 self.text_box.AppendText(f"Setting switch {switch_id} to {value}.\n")
             except ValueError:
@@ -1018,7 +1021,7 @@ class Gui(wx.Frame):
             # Do zap monitor from canvas with correct port tuple
             #self.canvas.do_zap_monitor(port_tuple)
             self.text_box.AppendText(f"Zapping monitor on signal {signal}.\n")
-        elif text == 'h' or text == '> h':
+        elif text == 'h' or text[1:].strip() == 'h':
             # Print a list of available commands to console
             self.text_box.AppendText(
                 "List of available commands:\n"
@@ -1034,7 +1037,7 @@ class Gui(wx.Frame):
             # Quit the program
             self.Close()
         else:
-            print("else statement triggered")
+            print("else statement triggered by", text, "end else statement triggered by")
             # Invalid command
             self.text_box.AppendText("Invalid command. A list of available commands can be obtained by entering 'h'.\n")
 
