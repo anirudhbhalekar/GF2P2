@@ -957,10 +957,18 @@ class Gui(wx.Frame):
     def on_text_box(self, event):
         """Handle the event when the user enters text."""
         
-        # Get the entered text
+        # Get the entered text, current line only
         text = self.text_box.GetValue().strip()
+        lines = text.split('\n')
+        print(lines)
+        current_line = lines[-2].strip()  # Get the most recent line of input, excluding the > at the bottom
+        if current_line[0] == '>':
+            current_line = current_line[1:].strip()
+        text = current_line # should be without the initial >
+        print(text, "is current line")
         # strip() doesn't do anything btw
         # Process the entered text without the newline, > and ENTER characters
+        '''
         text = text[2:-2]
         
         # On initialisation and clear, this works fine, but the second time onwards it reads '> ' at the beginning
@@ -977,7 +985,7 @@ class Gui(wx.Frame):
             if text[-1] == ' ':
                 text = text[:-1]
             else:
-                break
+                break'''
         # The problem is after the first enter, text will still start with '> '. And it cannot be removed for some reason. Probs because  of the way promptedtextctrl is defined.
         # Parse the user's input and call the corresponding functions from UserInterface
         if text.startswith('r ') or text.startswith('> r '):
