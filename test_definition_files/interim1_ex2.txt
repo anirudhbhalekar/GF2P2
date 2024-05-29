@@ -1,3 +1,4 @@
+% Oscillating network, parses %
 DEFINE 
     CLK1 AS CLOCK WITH cycle_rep=1, % time 1 unit on, then 1 unit off % 
     SW1 AS SWITCH WITH initial=1,  
@@ -6,18 +7,29 @@ DEFINE
     G2 AS XOR,
     DTYPE1 AS DTYPE,
     DTYPE2 AS DTYPE,
-    DTYPE3 AS DTYPE;
+    DTYPE3 AS DTYPE,
+    SW_SET AS SWITCH WITH initial=0,
+    SW_CLEAR AS SWITCH WITH initial=0;
 
-CONNECT DTYPE1.CLK = CLK1,
+CONNECT 
+    DTYPE1.CLK = CLK1,
+    DTYPE1.DATA = SW1, % Break feedback loop by providing a stable input %
+    DTYPE1.SET = SW_SET,
+    DTYPE1.CLEAR = SW_CLEAR,
+
+    DTYPE2.CLK = DTYPE1.Q,
+    DTYPE2.DATA = SW1, % Break feedback loop by providing a stable input %
+    DTYPE2.SET = SW_SET,
+    DTYPE2.CLEAR = SW_CLEAR,
+
+    DTYPE3.CLK = CLK1,
+    DTYPE3.DATA = SW1, % Break feedback loop by providing a stable input %
+    DTYPE3.SET = SW_SET,
+    DTYPE3.CLEAR = SW_CLEAR,
+
     G2d.I1  = G2d, 
     G2d.I2  = DTYPE1.QBAR,
-    DTYPE3.CLK = CLK1,
     G1.I1 = CLK1,
-    DTYPE1.DATA = DTYPE1.QBAR,
-    DTYPE2.CLK = DTYPE1.Q,
-    DTYPE2.DATA = DTYPE2.QBAR,
-    DTYPE3.DATA = DTYPE2.Q,
-    DTYPE2.SET = G2,
     G1.I2 = DTYPE3.Q,
     G2.I1 = G1,
     G2.I2 = SW1;
