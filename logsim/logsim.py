@@ -73,16 +73,16 @@ def main(arg_list):
             sys.exit()
 
         [path] = arguments
-        # path = r"C:/Users/Bhalekar's/Desktop/Part 2A/PROJECTS/GF2P2/definition_files/interim1_ex1.txt"
+        ## path = r"C:/Users/Bhalekar's/Desktop/Part 2A/PROJECTS/GF2P2/definition_files/interim1_ex1.txt"
         scanner = Scanner(path, names)
         parser = Parser(names, devices, network, monitors, scanner)
-        if parser.parse_network():
-            # Initialise an instance of the gui.Gui() class
-            app = wx.App()
-            gui = Gui("Logic Simulator", path, names, devices, network,
-                      monitors)
-            gui.Show(True)
-            app.MainLoop()
+        
+        # Initialise an instance of the gui.Gui() class
+        app = wx.App()
+        gui = Gui("Logic Simulator", path, names, devices, network,
+                    monitors)
+        gui.Show(True)
+        app.MainLoop()
 
 
 if __name__ == "__main__":

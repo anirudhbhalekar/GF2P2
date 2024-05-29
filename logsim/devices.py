@@ -253,6 +253,7 @@ class Devices:
 
     def make_d_type(self, device_id):
         """Make a D-type device."""
+        # We've enforced adding all 4 parameters here, with no default options
         self.add_device(device_id, self.D_TYPE)
         for input_id in self.dtype_input_ids:
             self.add_input(device_id, input_id)

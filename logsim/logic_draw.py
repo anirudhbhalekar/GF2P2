@@ -85,7 +85,8 @@ class LogicDrawer:
             self.draw_switch(self.x, self.y)
         else: 
             pass
-
+        
+        '''
         min_x, min_y = self.domain[0][0], self.domain[0][1]
         max_x, max_y = self.domain[1][0], self.domain[1][1]
 
@@ -103,6 +104,7 @@ class LogicDrawer:
 
         glEnd()
         glPopAttrib()
+        '''
 
     def bound_y(self): 
 
@@ -124,8 +126,6 @@ class LogicDrawer:
             return self.height + 40
         else: 
             pass 
-
-
 
     def make_circle(self, x, y): 
         posx, posy = x, y    
