@@ -347,7 +347,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         """Add a monitor when the user clicks on a monitor point after selecting 'Add'."""
         if port_tuple is not None: 
             (dev_id, port_id) = port_tuple
-            add_mon = self.monitors.add_monitor(dev_id, port_id)
+            add_mon = self.monitors.make_monitor(dev_id, port_id)
             if add_mon: 
                 wx.LogMessage("Monitor added successfully!")
             else: 
@@ -379,6 +379,8 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
                 if self.parent.is_zap_monitor: 
                     self.do_zap_monitor(port_tuple)
+                elif self.parent.is_add_monitor:
+                    self.do_add_monitor(port_tuple)
 
         if event.ButtonUp():
             text = "".join(["Mouse button released at: ", str(event.GetX()),
@@ -867,7 +869,9 @@ class Gui(wx.Frame):
         print(self.is_zap_monitor)
 
     def on_add_button(self, event): 
-        print("dicjjbwe")
+        """Start add procedure"""
+        self.is_add_monitor = not self.is_add_monitor
+        print(self.is_add_monitor)
 
     def on_continue_button(self, event): 
         """Handle continue button event"""
