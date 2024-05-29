@@ -1,6 +1,6 @@
-% Time varying XOR output %
+% Different XOR based on switch and DFF%
 DEFINE
-    clock1 AS CLOCK WITH cycle_rep=1,
+    clock1 AS CLOCK WITH cycle_rep=5,
     switch1 AS SWITCH WITH initial=0,
     switch_set AS SWITCH WITH initial=0,
     switch_clear AS SWITCH WITH initial=0,
@@ -17,7 +17,7 @@ CONNECT
 ;
 
 MONITOR
-    dff1.Q, xor1, switch1
+    clock1, dff1.Q, xor1, switch1
 ;
 
 END;
