@@ -1,4 +1,4 @@
-% Oscillating network, parses %
+% Oscillating network, parses correctly but semantic error %
 DEFINE 
     CLK1 AS CLOCK WITH cycle_rep=1, % time 1 unit on, then 1 unit off % 
     SW1 AS SWITCH WITH initial=1,  

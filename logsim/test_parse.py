@@ -12,28 +12,6 @@ def get_all_files(folder):
     ''' Return a list of all files in the given folder. '''
     return [os.path.join(folder, f) for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
 
-# @pytest.mark.parametrize("file_path", get_all_files('definition_files/'))
-
-#use > pytest -k * runs only the test functions containing the kwd *
-
-# --------------------------------------------------- #
-# Unit tests
-
-# @pytest.mark.parametrize("file_path", get_all_files('definition_files/'))
-# def test_definition_line(file_path): 
-#     names = Names() 
-#     scanner = Scanner(file_path, names)
-
-#     devices = Devices(names)
-#     network = Network(names, devices)
-#     monitors = Monitors(names, devices, network)
-#     parser = Parser(names, devices, network, monitors, scanner) 
-#     parser.definition(scanner.EOF)
-#     assert parser.error_count == 0
-
-# --------------------------------------------------- # 
-# Integrated tests here
-
 @pytest.mark.parametrize("file_path", get_all_files('test_definition_files/'))
 def test_definition_files(file_path): 
     ''' Tests the definition files -- these should all return True as they don't contain errors'''
@@ -89,11 +67,6 @@ def test_error_definition_files(error_file_path):
     
     elif 'interim1_ex2_error.txt' in error_file_path:
         assert parser.error_count == 3
-
-  # Checking this  
-    # elif 'test_ex8.txt' in error_file_path:
-    #     assert parser.error_count == 2
-
 
 
 
