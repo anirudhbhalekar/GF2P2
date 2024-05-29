@@ -1,7 +1,7 @@
 % Different XOR based on switch and DTYPE%
 DEFINE
     clock1 AS CLOCK WITH cycle_rep=5,
-    switch1 AS SWITCH WITH initial=0,
+    switch1 AS SWITCH WITH initial=1,
     switch_set AS SWITCH WITH initial=0,
     switch_clear AS SWITCH WITH initial=0,
     dff1 AS DTYPE,
