@@ -74,6 +74,16 @@ def test_get_number(scanner_example_null):
     number = scanner_example_null.get_number()
     assert number == "2"
 
+def test_get_line_numbers(scanner_example_null):
+    """Test the get_line_numbers method."""
+    length = len(scanner_example_null.file.read())
+    scanner_example_null.file.seek(0)
+    symbol = scanner_example_null.get_symbol()
+    assert symbol.line_number == 1
+    for _ in range(length + 1):
+        symbol = scanner_example_null.get_symbol()
+    assert symbol.line_number == 10
+
 
 def test_get_EOF(scanner_example_null):
     """Test the get_EOF method."""
@@ -81,8 +91,8 @@ def test_get_EOF(scanner_example_null):
     scanner_example_null.file.seek(0)
 
     for _ in range(length + 1):
-        sym = scanner_example_null.get_symbol()
-    assert sym.type == "EOF"
+        symbol = scanner_example_null.get_symbol()
+    assert symbol.type == "EOF"
 
 @pytest.fixture
 def scanner_test_ex0():

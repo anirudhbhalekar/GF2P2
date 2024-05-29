@@ -106,7 +106,7 @@ class Scanner:
         self.total_char_count += 1
         self.line_char_count  += 1
 
-        if self.current_character == "\n" and next_char == "\n": 
+        if self.current_character == "\n": 
             self.line_count += 1
             self.line_char_count = 0
 
