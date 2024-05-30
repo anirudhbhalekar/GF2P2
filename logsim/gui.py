@@ -819,7 +819,8 @@ class Gui(wx.Frame):
                     pathname = file_dialog.GetPath()
             else:
                 pass # TEMPORARY!!!!! DO LINUX/MACOS stuff here
-
+                
+            
                 try:
                     # Reinitialize the names, devices, network, and monitors
                     self.names = Names()
