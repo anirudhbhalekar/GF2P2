@@ -808,20 +808,19 @@ class Gui(wx.Frame):
                         "\nh - print a list of available commands on the terminal"
                         "\nq - quit the simulation")
         if Id == wx.ID_OPEN:
-            if 'win' in platform.lower(): # windows
-                with wx.FileDialog(self, "Open New Source File",
-                                wildcard="TXT files (*.txt)|*.txt",
-                                style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as file_dialog:
-
-                    if file_dialog.ShowModal() == wx.ID_CANCEL:
-                        return
-
-                    pathname = file_dialog.GetPath()
-            else:
-                pass # TEMPORARY!!!!! DO LINUX/MACOS stuff here
-                
             
+            with wx.FileDialog(self, "Open New Source File",
+                            wildcard="TXT files (*.txt)|*.txt",
+                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as file_dialog:
+
+                if file_dialog.ShowModal() == wx.ID_CANCEL:
+                    return
+
+                pathname = file_dialog.GetPath()
+                print(pathname)
+
                 try:
+                    print(pathname)
                     # Reinitialize the names, devices, network, and monitors
                     self.names = Names()
                     self.devices = Devices(self.names)
