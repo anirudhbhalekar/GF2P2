@@ -576,6 +576,13 @@ class TextEditor(wx.Frame):
         """Get text content of the text editor."""
         return self.text_ctrl.GetValue()
 
+    def update_text(self, path):
+        self.path = path
+        with open(self.path, 'r') as file:
+            initial_text = file.read()
+        self.initial_text = initial_text
+        self.text_ctrl.SetValue(initial_text)
+
     def on_save(self, event):
         """Handle save button click."""
         # Open a file dialog for the user to choose a file location
@@ -800,14 +807,18 @@ class Gui(wx.Frame):
                 wx.ICON_INFORMATION | wx.OK
             )
         if Id == wx.ID_EDIT:
-            if hasattr(self, 'editor') and self.editor and self.editor.IsShown():
+            
+            if self.editor and self.editor.IsShown():
                 # If the editor is already open and visible, just bring it to front
                 self.editor.Raise()
             else:
                 # Otherwise, open and create the editor
+                self.open_text_editor()
+            '''
                 self.editor = TextEditor(self, "Text Editor")
                 self.editor.Bind(wx.EVT_CLOSE, self.on_editor_close)
                 self.editor.Show()
+            '''
         if Id == wx.ID_HELP_COMMANDS:
             wx.MessageBox("List of user commands: "
                         "\nr N - run the simulation for N cycles"
@@ -826,10 +837,14 @@ class Gui(wx.Frame):
                     return
 
                 pathname = file_dialog.GetPath()
+                self.path = pathname  # Update the current path to the new file
                 # Copy the contents of the file
-                self.current_text = open(pathname, 'r')
             
                 try:
+                    # Open the file to read contents (to be used if needed)
+                    with open(pathname, 'r') as file:
+                        self.current_text = file.read()
+                        
                     # Reinitialize the names, devices, network, and monitors
                     self.names = Names()
                     self.devices = Devices(self.names)
@@ -1082,6 +1097,12 @@ class Gui(wx.Frame):
         text = "Reset view button pressed"
         self.canvas.render(text)
         self.canvas.reset_view()
+
+    def open_text_editor(self):
+        """Handle the event when the text editor is opened."""
+        self.editor = TextEditor(self, "Text Editor", self.path)
+        self.editor.Bind(wx.EVT_CLOSE, self.on_editor_close)
+        self.editor.Show()
 
     def on_editor_close(self, event):
         """Handle the event when the text editor is closed."""
