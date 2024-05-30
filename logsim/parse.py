@@ -45,7 +45,7 @@ class Parser:
          self.INVALID_CONNECT_DELIMITER, self.DOUBLE_PUNCTUATION, self.MISSING_SEMICOLON, 
          self.INVALID_KEYWORD, self.INVALID_COMMENT_SYMBOL, self.INVALID_BLOCK_ORDER, 
          self.MISSING_END_STATEMENT, self.EXPECTED_NUMBER, self.EXPECTED_PUNCTUATION, 
-         self.INVALID_PIN_REF, self.EXPECTED_EQUALS] = self.names.unique_error_codes(14)
+         self.INVALID_PIN_REF, self.EXPECTED_EQUALS, self.UNEXPECTED_EOF] = self.names.unique_error_codes(15)
         self.devices = devices
         self.network = network
         self.monitors = monitors
@@ -86,6 +86,7 @@ class Parser:
             self.EXPECTED_PUNCTUATION: "Expected a punctuation mark",
             self.INVALID_PIN_REF: "Invalid pin reference",
             self.EXPECTED_EQUALS: "Expected an equals sign",
+            self.UNEXPECTED_EOF: "Unexpected end of file, missing a required statement",
             # Network errors
             self.network.DEVICE_ABSENT: "Device absent",
             self.network.INPUT_CONNECTED: "Input is already connected",
@@ -183,6 +184,7 @@ class Parser:
                         self.symbol = self.scanner.get_symbol()
                         device_property = self.set_param(stopping_symbols)
                     else:
+                        print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}, String: {self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME or self.symbol.type == self.scanner.KEYWORD else ''}")
                         device_property = None
                 else:
                     self.error(self.MISSING_SEMICOLON, stopping_symbols)
@@ -191,6 +193,7 @@ class Parser:
                     error_type = self.devices.make_device(device_id, device_kind, device_property)
                     if error_type != self.devices.NO_ERROR:
                         self.error(error_type, stopping_symbols)
+            print("exit while")
 
         else:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
@@ -228,7 +231,8 @@ class Parser:
     def connection(self, stopping_symbols):
         """Implements rule connection = "CONNECT", [con_list], ";";"""
         if self.symbol.type == self.scanner.EOF:
-            return
+            self.error(self.UNEXPECTED_EOF, stopping_symbols)
+        print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}, String: {self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME or self.symbol.type == self.scanner.KEYWORD else ''}")
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.CONNECT_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
@@ -351,8 +355,9 @@ class Parser:
 
     def monitor(self, stopping_symbols):
         """Implements rule monitor = "MONITOR", [output_con, {",", output_con}], ";";"""
+        print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}, String: {self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME or self.symbol.type == self.scanner.KEYWORD else ''}")
         if self.symbol.type == self.scanner.EOF:
-            return
+            self.error(self.UNEXPECTED_EOF, stopping_symbols)
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.MONITOR_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
@@ -379,6 +384,7 @@ class Parser:
     def end(self, stopping_symbols):
         """Implements rule end = "END", ";";"""
         if self.symbol.type == self.scanner.EOF:
+            self.error(self.UNEXPECTED_EOF, stopping_symbols)
             return
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.END_ID:
             self.symbol = self.scanner.get_symbol()
