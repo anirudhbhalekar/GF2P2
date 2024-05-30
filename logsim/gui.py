@@ -394,15 +394,13 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
             text = "".join(["Mouse button pressed at: ", str(event.GetX()),
                             ", ", str(event.GetY())])
-            
-            if self.parent.is_zap_monitor or self.parent.is_add_monitor: 
-                # We draw a circle around the cursor
-                port_tuple = self.return_closest_output_id((ox, oy))
 
-                if self.parent.is_zap_monitor: 
-                    self.do_zap_monitor(port_tuple)
-                elif self.parent.is_add_monitor:
-                    self.do_add_monitor(port_tuple)
+            if self.parent.is_zap_monitor: 
+                port_tuple = self.return_closest_output_id((ox, oy))
+                self.do_zap_monitor(port_tuple)
+            elif self.parent.is_add_monitor:
+                port_tuple = self.return_closest_output_id((ox, oy))
+                self.do_add_monitor(port_tuple)
             
             else: 
                 switch_id = self.return_switch_id((ox, oy))
