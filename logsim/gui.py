@@ -840,7 +840,6 @@ class Gui(wx.Frame):
                     return
 
                 pathname = file_dialog.GetPath()
-                print(pathname)
 
                 try:
                     print(pathname)
