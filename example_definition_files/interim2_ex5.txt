@@ -7,13 +7,13 @@ DEFINE
     dff1 AS DTYPE,
     xor1 AS XOR;
 
-CONNECT
+DEFINE
     dff1.CLK = clock1,
     dff1.DATA = switch1,
     dff1.SET = switch_set,
     dff1.CLEAR = switch_clear,
     xor1.I1 = dff1.Q,
-    xor1.I2 = switch1;
+    xor1.I2 = switch1;;
 
 MONITOR
     clock1, dff1.Q, xor1, switch1;

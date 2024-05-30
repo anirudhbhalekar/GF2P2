@@ -184,6 +184,7 @@ class Scanner:
             # This is a name
             name_string = self.get_name()
             if name_string in self.keywords_list: 
+                print(name_string)
                 symbol.type = self.KEYWORD
             
             elif name_string in self.param_list: 
