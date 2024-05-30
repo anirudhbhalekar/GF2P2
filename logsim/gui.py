@@ -398,6 +398,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             if self.parent.is_zap_monitor: 
                 GL.glFlush()
                 port_tuple = self.return_closest_output_id((ox, oy))
+                print(port_tuple)
                 self.do_zap_monitor(port_tuple)
             elif self.parent.is_add_monitor:
                 GL.glFlush()
