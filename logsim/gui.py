@@ -20,7 +20,7 @@ simulation.
 RunApp - Initializes and runs the application.
 """
 
-'''
+
 import wx
 import wx.grid as gridlib 
 import wx.glcanvas as wxcanvas
@@ -1255,4 +1255,3 @@ class RunApp(wx.App):
     def __init__(self):
         wx.App.__init__(self, redirect=False)
 
-'''
