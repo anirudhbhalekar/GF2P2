@@ -1102,9 +1102,14 @@ class Gui(wx.Frame):
                 except Exception: 
                     self.on_reset_plot_button(None)
                     wx.LogError("Run failed - cannot plot monitors")
-    
+                
+                if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
+                    self.text_box.AppendText("\n")
                 self.text_box.AppendText(f"Running simulation for {N} cycles.\n")
+                
             except ValueError:
+                if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
+                    self.text_box.AppendText("\n")
                 self.text_box.AppendText("Invalid command. Please provide a valid number of cycles.\n")
         elif text.startswith('c '):
             # Continue the simulation for N cycles
@@ -1117,8 +1122,12 @@ class Gui(wx.Frame):
                     self.on_reset_plot_button(None)
                     wx.LogError("Run failed - cannot plot monitors")
 
+                if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
+                    self.text_box.AppendText("\n")
                 self.text_box.AppendText(f"Continuing simulation for {N} cycles.\n")
             except ValueError:
+                if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
+                    self.text_box.AppendText("\n")
                 self.text_box.AppendText("Invalid command. Please provide a valid number of cycles.\n")
         elif text.startswith('s '):
             # Set switch X to N (0 or 1)
@@ -1127,16 +1136,20 @@ class Gui(wx.Frame):
                 value = int(value)
                 
                 if type(value) != int or value not in [0, 1]:
-                    self.text_box.AppendText("Switch value must be 0 or 1")
+                    if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
+                        self.text_box.AppendText("\n")
+                    self.text_box.AppendText("Switch value must be 0 or 1\n")
                     raise ValueError("Switch value must be 0 or 1")
                 
                 bool_switch = self.change_switch_state(switch_name, None, value)
                 if not bool_switch: 
                     wx.LogError("Switch set failed")
-                # Excecute switch command here!
-                #UserInterface.switch_command(switch_id, value)
+                if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
+                        self.text_box.AppendText("\n")
                 self.text_box.AppendText(f"Setting switch {switch_name} to {value}.\n")
             except ValueError:
+                if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
+                        self.text_box.AppendText("\n")
                 self.text_box.AppendText("Invalid command format. Please provide switch ID and value.\n")
         elif text.startswith('m '):
             # Add a monitor on signal X
@@ -1145,8 +1158,12 @@ class Gui(wx.Frame):
             bool_add_mon = self.add_monitor_with_name(signal) 
 
             if bool_add_mon:
+                if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
+                    self.text_box.AppendText("\n")
                 self.text_box.AppendText(f"Adding monitor on signal {signal}.\n")
             else: 
+                if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
+                    self.text_box.AppendText("\n")
                 self.text_box.AppendText(f"Monitor addition failed for {signal}.\n")
 
         elif text.startswith('z '):
@@ -1156,11 +1173,17 @@ class Gui(wx.Frame):
             bool_del_mon = self.del_monitor_with_name(signal) 
 
             if bool_del_mon:
+                if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
+                    self.text_box.AppendText("\n")
                 self.text_box.AppendText(f"Zapping monitor on signal {signal}.\n")
             else: 
+                if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
+                    self.text_box.AppendText("\n")
                 self.text_box.AppendText(f"Monitor zap failed for {signal}.\n")
         elif text == 'h':
             # Print a list of available commands to console
+            if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
+                self.text_box.AppendText("\n")
             self.text_box.AppendText(
                 "List of available commands:\n"
                 "r N       - run the simulation for N cycles\n"
@@ -1176,6 +1199,8 @@ class Gui(wx.Frame):
             self.Close()
         else:
             # Invalid command
+            if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
+                self.text_box.AppendText("\n")
             self.text_box.AppendText(f"<{text}> is an invalid command. A list of available commands can be obtained by entering 'h', or navigating to 'Commands' in the Menu.\n")
 
 class RunApp(wx.App): 
