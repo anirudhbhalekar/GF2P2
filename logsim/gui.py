@@ -48,6 +48,11 @@ from logic_draw import LogicDrawer
 from connect_draw import ConnectDrawer
 from userint import UserInterface 
 
+import gettext
+# Initialize gettext translation
+gettext.install('logsim', localedir='locales')
+_ = gettext.gettext
+
 class MyGLCanvas(wxcanvas.GLCanvas):
     """MyGLCanvas(wxcanvas.GLCanvas) - Handle all drawing operations.
 
@@ -300,7 +305,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.init = True
 
         size = self.GetClientSize()
-        text = "".join(["Canvas redrawn on paint event, size is ",
+        text = "".join([_("Canvas redrawn on paint event, size is "),
                         str(size.width), ", ", str(size.height)])
         self.render(text)
 
@@ -363,9 +368,9 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             (dev_id, port_id) = port_tuple
             remove_mon = self.monitors.remove_monitor(dev_id, port_id)
             if remove_mon: 
-                wx.MessageBox("Monitor Removed\n")
+                wx.MessageBox(_("Monitor Removed\n"))
             else: 
-                wx.LogError("Error! Monitor not found!")
+                wx.LogError(_("Error! Monitor not found!"))
         else: 
             pass
     
@@ -375,9 +380,9 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             (dev_id, port_id) = port_tuple
             add_mon = self.monitors.make_monitor(dev_id, port_id)
             if add_mon: 
-                wx.MessageBox("Monitor Added\n")
+                wx.MessageBox(_("Monitor Added\n"))
             else: 
-                wx.LogError("Error! Monitor already added!")
+                wx.LogError(_("Error! Monitor already added!"))
         else: 
             pass
     
@@ -394,7 +399,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.last_mouse_x = event.GetX()
             self.last_mouse_y = event.GetY()
 
-            text = "".join(["Mouse button pressed at: ", str(event.GetX()),
+            text = "".join([_("Mouse button pressed at: "), str(event.GetX()),
                             ", ", str(event.GetY())])
 
             if self.parent.is_zap_monitor: 
@@ -411,10 +416,10 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 self.flip_switch(switch_id)
 
         if event.ButtonUp():
-            text = "".join(["Mouse button released at: ", str(event.GetX()),
+            text = "".join([_("Mouse button released at: "), str(event.GetX()),
                             ", ", str(event.GetY())])
         if event.Leaving():
-            text = "".join(["Mouse left canvas at: ", str(event.GetX()),
+            text = "".join([_("Mouse left canvas at: "), str(event.GetX()),
                             ", ", str(event.GetY())])
         if event.Dragging():
             self.pan_x += event.GetX() - self.last_mouse_x
@@ -422,7 +427,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.last_mouse_x = event.GetX()
             self.last_mouse_y = event.GetY()
             self.init = False
-            text = "".join(["Mouse dragged to: ", str(event.GetX()),
+            text = "".join([_("Mouse dragged to: "), str(event.GetX()),
                             ", ", str(event.GetY()), ". Pan is now: ",
                             str(round(self.pan_x, 2)), ", ", str(round(self.pan_y, 2))])
         if event.GetWheelRotation() < 0:
@@ -432,7 +437,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.pan_x -= (self.zoom - old_zoom) * ox
             self.pan_y -= (self.zoom - old_zoom) * oy
             self.init = False
-            text = "".join(["Negative mouse wheel rotation. Zoom is now: ",
+            text = "".join([_("Negative mouse wheel rotation. Zoom is now: "),
                             str(round(self.zoom, 2))])
         if event.GetWheelRotation() > 0:
             self.zoom /= (1.0 - (
@@ -441,7 +446,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.pan_x -= (self.zoom - old_zoom) * ox
             self.pan_y -= (self.zoom - old_zoom) * oy
             self.init = False
-            text = "".join(["Positive mouse wheel rotation. Zoom is now: ",
+            text = "".join([_("Positive mouse wheel rotation. Zoom is now: "),
                             str(round(self.zoom,2))])
         if text:
             self.render(text)
@@ -562,7 +567,7 @@ class TextEditor(wx.Frame):
         #print(self.initial_text, "is the initial text")
 
         # Add a Save button
-        self.save_button = wx.Button(self, label='Save')
+        self.save_button = wx.Button(self, label=_('Save'))
         self.save_button.Bind(wx.EVT_BUTTON, self.on_save)
 
         # Use a sizer for layout
@@ -588,7 +593,7 @@ class TextEditor(wx.Frame):
     def on_save(self, event):
         """Handle save button click."""
         # Open a file dialog for the user to choose a file location
-        with wx.FileDialog(self, "Save File", wildcard="Text files (*.txt)|*.txt",
+        with wx.FileDialog(self, _("Save File"), wildcard="Text files (*.txt)|*.txt",
                            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as file_dialog:
             if file_dialog.ShowModal() == wx.ID_CANCEL:
                 # If the user cancels, return without saving
@@ -604,7 +609,7 @@ class TextEditor(wx.Frame):
                     file.write(text)
             except IOError:
                 # Handle any errors that occur during file saving
-                wx.LogError("Cannot save current data to file.")
+                wx.LogError(_("Cannot save current data to file."))
 
 class Gui(wx.Frame):
     """Configure the main window and all the widgets apart from the text box.
@@ -659,16 +664,16 @@ class Gui(wx.Frame):
         self.user_interface = UserInterface(names, devices, network, monitors)
         
         # Add subtabs and titles to each tab
-        fileMenu.Append(wx.ID_ABOUT, "&About")
-        fileMenu.Append(wx.ID_EXIT, "&Exit")
-        sourceMenu.Append(wx.ID_OPEN, "&Open")
-        sourceMenu.Append(wx.ID_EDIT, "&Edit")
-        commandMenu.Append(wx.ID_HELP_COMMANDS, "&Commands")
+        fileMenu.Append(wx.ID_ABOUT, _("&About"))
+        fileMenu.Append(wx.ID_EXIT, _("&Exit"))
+        sourceMenu.Append(wx.ID_OPEN, _("&Open"))
+        sourceMenu.Append(wx.ID_EDIT, _("&Edit"))
+        commandMenu.Append(wx.ID_HELP_COMMANDS, _("&Commands"))
         
         # Populate the menu bar
-        menuBar.Append(fileMenu, "&File")
-        menuBar.Append(sourceMenu, "&Source") # for source/definition file being parsed
-        menuBar.Append(commandMenu, "&Command") # list of user commands
+        menuBar.Append(fileMenu, _("&File"))
+        menuBar.Append(sourceMenu, _("&Source")) # for source/definition file being parsed
+        menuBar.Append(commandMenu, _("&Command")) # list of user commands
 
         self.SetMenuBar(menuBar)
 
@@ -694,16 +699,16 @@ class Gui(wx.Frame):
         self.editor = None
 
         # Configure the widgets
-        self.text = wx.StaticText(self, wx.ID_ANY, "Cycles") 
+        self.text = wx.StaticText(self, wx.ID_ANY, _("Cycles")) 
         self.spin = wx.SpinCtrl(self, wx.ID_ANY, initial=self.cycle_count, min=1, max=50)
-        self.run_button = wx.Button(self, wx.ID_ANY, "Run")
-        self.continue_button = wx.Button(self, wx.ID_ANY, "Continue")
-        self.reset_plot_button = wx.Button(self, wx.ID_ANY, "Reset Plot")
-        self.zap_monitor_button = wx.ToggleButton(self,wx.ID_ANY, "Zap Monitor")
-        self.add_monitor_button = wx.ToggleButton(self, wx.ID_ANY, "Add Monitor")
-        self.reset_view_button = wx.Button(self, wx.ID_ANY, "Reset View")
+        self.run_button = wx.Button(self, wx.ID_ANY, _("Run"))
+        self.continue_button = wx.Button(self, wx.ID_ANY, _("Continue"))
+        self.reset_plot_button = wx.Button(self, wx.ID_ANY, _("Reset Plot"))
+        self.zap_monitor_button = wx.ToggleButton(self,wx.ID_ANY, _("Zap Monitor"))
+        self.add_monitor_button = wx.ToggleButton(self, wx.ID_ANY, _("Add Monitor"))
+        self.reset_view_button = wx.Button(self, wx.ID_ANY, _("Reset View"))
         self.text_box = PromptedTextCtrl(self, wx.ID_ANY, style=wx.TE_PROCESS_ENTER)
-        self.clear_button = wx.Button(self, wx.ID_ANY, "Clear terminal") # button for clearing terminal output
+        self.clear_button = wx.Button(self, wx.ID_ANY, _("Clear terminal")) # button for clearing terminal output
 
         # Bind events to widgets
         self.Bind(wx.EVT_MENU, self.on_menu)
@@ -771,7 +776,7 @@ class Gui(wx.Frame):
             if self.network.execute_network():
                 self.monitors.record_signals()
             else:
-                wx.LogError("Error! Network oscillating.")
+                wx.LogError(_("Error! Network oscillating."))
                 return False
         return True
     
@@ -788,7 +793,7 @@ class Gui(wx.Frame):
     def continue_circuit(self, cycles):
         """Continues the simulation for N cycles"""
         if self.cycles_completed == 0: 
-            wx.LogError("Nothing to continue - run the simulation first")
+            wx.LogError(_("Nothing to continue - run the simulation first"))
             return False 
         elif self.execute_circuit(cycles): 
             self.cycles_completed += cycles
@@ -802,11 +807,11 @@ class Gui(wx.Frame):
             self.Close(True)
         if Id == wx.ID_ABOUT:
             wx.MessageBox(
-                "Logic Simulator for GF2P2\n"
-                "Created by Mojisola Agboola, 2017\n"
-                "Modified by Anirudh Bhalekar, Moses Liew, Shawn Li, 2024",
-                "About Logsim",
-                wx.ICON_INFORMATION | wx.OK
+            _(f"Logic Simulator for GF2P2\n"
+            f"Created by Mojisola Agboola, 2017\n"
+            f"Modified by Anirudh Bhalekar, Moses Liew, Shawn Li, 2024"),
+            _("About Logsim"),
+            wx.ICON_INFORMATION | wx.OK
             )
         if Id == wx.ID_EDIT:
             
@@ -822,17 +827,17 @@ class Gui(wx.Frame):
                 #self.editor.Show()
             
         if Id == wx.ID_HELP_COMMANDS:
-            wx.MessageBox("List of user commands: "
+            wx.MessageBox(_("List of user commands: "
                         "\nr N - run the simulation for N cycles"
                         "\nc N - continue simulation for N cycles"
                         "\ns X N - set switch X to N (0 or 1)"
                         "\nm X - set a monitor on signal X"
                         "\nz X - zap the monitor on signal X"
                         "\nh - print a list of available commands on the terminal"
-                        "\nq - quit the simulation")
+                        "\nq - quit the simulation"))
         if Id == wx.ID_OPEN:
             
-            with wx.FileDialog(self, "Open New Source File",
+            with wx.FileDialog(self,  _("Open New Source File"),
                             wildcard="TXT files (*.txt)|*.txt",
                             style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as file_dialog:
 
@@ -880,17 +885,16 @@ class Gui(wx.Frame):
                         main_sizer.Layout()
 
                         # Print the name of the file opened to the terminal (text box) window
-                        wx.MessageBox(f" Opened file: {pathname}")
+                        wx.MessageBox(_(" Opened file:"), pathname)
                     else: 
                         #print(self.parser.parse_network())
                         num_errors = self.parser.error_count + 1
 
-                        wx.MessageBox(f"Error! Faulty definition file! \n"
-                                      "\n"
-                                      f"{num_errors} errors caught")
+                        wx.MessageBox(_(f"Error! Faulty definition file!") + "\n\n" +
+                            _(f"{num_errors} errors caught"))
 
                 except Exception as ex:
-                    wx.LogError(f"Cannot open file: {ex}")
+                    wx.LogError(_(f"Cannot open file: {ex}"))
 
 
     def on_spin(self, event):
@@ -898,13 +902,13 @@ class Gui(wx.Frame):
         spin_value = self.spin.GetValue()
         self.cycle_count = spin_value
         
-        text = "".join(["New spin control value: ", str(spin_value)])
+        text = "".join([_("New spin control value: "), str(spin_value)])
         self.canvas.render(text)
 
     def on_run_button(self, event):
         """Handle the event when the user clicks the run button."""
 
-        text = f"Run button pressed, {self.cycle_count} cycles."
+        text = _(f"Run button pressed, {self.cycle_count} cycles.")
         self.run_circuit(self.cycle_count)
         self.canvas.render(text)
 
@@ -912,7 +916,7 @@ class Gui(wx.Frame):
             self.monitor_plot()
         except Exception: 
             self.on_reset_plot_button(None)
-            wx.LogError("Run failed - cannot plot monitors")
+            wx.LogError(_("Run failed - cannot plot monitors"))
     
     def on_reset_plot_button(self, event): 
         """Clears the matplotlib plot"""
@@ -920,7 +924,7 @@ class Gui(wx.Frame):
         hfont = {'fontname':'Consolas'}
         
         self.axes.clear()
-        self.axes.set_title("Monitor Plots", **hfont)
+        self.axes.set_title(_("Monitor Plots"), **hfont)
         
         try: self.legend.remove()
         except: pass
@@ -931,7 +935,7 @@ class Gui(wx.Frame):
 
         self.cycles_completed = 0
         
-        text = "Reset plot button pressed."
+        text = _("Reset plot button pressed.")
         self.canvas.render(text)
 
     def on_zap_button(self, event): 
@@ -952,18 +956,18 @@ class Gui(wx.Frame):
         self.is_zap_monitor = self.zap_monitor_button.GetValue()
     def on_continue_button(self, event): 
         """Handle continue button event"""
-        text = f"Continue button pressed, {self.cycle_count} cycles."
+        text = _(f"Continue button pressed, {self.cycle_count} cycles.")
         self.continue_circuit(self.cycle_count)
         self.canvas.render(text)
 
         if self.cycles_completed == 0: 
-            wx.LogError("Nothing to Continue - try running the simulation first")
+            wx.LogError(_("Nothing to Continue - try running the simulation first"))
             return
         try: 
             self.monitor_plot()
         except Exception: 
             self.on_reset_plot_button(None)
-            wx.LogError("Run failed - cannot plot monitors")
+            wx.LogError(_("Run failed - cannot plot monitors"))
     
     def change_switch_state(self, switch_name, switch_id, value): 
         
@@ -977,10 +981,10 @@ class Gui(wx.Frame):
             bool_switch = self.devices.set_switch(switch_id, value)
             self.Refresh()
         else: 
-            wx.LogError("Invalid Device Type")
+            wx.LogError(_("Invalid Device Type"))
         
         if not bool_switch: 
-            wx.LogError("Invalid Device Type")
+            wx.LogError(_("Invalid Device Type"))
 
         return bool_switch
     
@@ -1002,7 +1006,7 @@ class Gui(wx.Frame):
             bool_add_mon = self.monitors.make_monitor(dev_id, port_id, self.cycles_completed)
             self.Refresh()
         except: 
-            wx.LogError("Monitor addition error")
+            wx.LogError(_("Monitor addition error"))
         
         return bool_add_mon
     
@@ -1022,7 +1026,7 @@ class Gui(wx.Frame):
             bool_del_mon = self.monitors.remove_monitor(dev_id, port_id)
             self.Refresh()
         except: 
-            wx.LogError("Monitor addition error")
+            wx.LogError(_("Monitor addition error"))
         
         return bool_del_mon
 
@@ -1030,7 +1034,7 @@ class Gui(wx.Frame):
         
         hfont = {'fontname':'Consolas'}
         self.axes.clear()
-        self.axes.set_title("Monitor Plots", **hfont)
+        self.axes.set_title(_("Monitor Plots"), **hfont)
         try: self.legend.remove()
         except: pass
         self.matplotlib_canvas.draw()
@@ -1088,13 +1092,13 @@ class Gui(wx.Frame):
 
     def on_clear_button(self, event):
         """Handle the event when the user clicks the clear button."""
-        text = "Clear button pressed."
+        text = _("Clear button pressed.")
         self.canvas.render(text)
         self.text_box.SetValue("> ")  # Clear the text box and add prompt
 
     def on_reset_view_button(self, event):
         """Handle the event when the user clicks the reset view button."""
-        text = "Reset view button pressed"
+        text = _("Reset view button pressed")
         self.canvas.render(text)
         self.canvas.reset_view()
 
@@ -1143,16 +1147,16 @@ class Gui(wx.Frame):
                     self.monitor_plot()
                 except Exception: 
                     self.on_reset_plot_button(None)
-                    wx.LogError("Run failed - cannot plot monitors")
+                    wx.LogError(_("Run failed - cannot plot monitors"))
                 
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                     self.text_box.AppendText("\n")
-                self.text_box.AppendText(f"Running simulation for {N} cycles.\n")
+                self.text_box.AppendText(_(f"Running simulation for {N} cycles.\n"))
                 
             except ValueError:
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                     self.text_box.AppendText("\n")
-                self.text_box.AppendText("Invalid command. Please provide a valid number of cycles.\n")
+                self.text_box.AppendText(_("Invalid command. Please provide a valid number of cycles.\n"))
         elif text.startswith('c ') or text.startswith('continue '):
             # Continue the simulation for N cycles
             try:
@@ -1164,19 +1168,19 @@ class Gui(wx.Frame):
                         self.monitor_plot()
                     except Exception: 
                         self.on_reset_plot_button(None)
-                        wx.LogError("Run failed - cannot plot monitors")
+                        wx.LogError(_("Run failed - cannot plot monitors"))
 
                     if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                         self.text_box.AppendText("\n")
-                    self.text_box.AppendText(f"Continuing simulation for {N} cycles.\n")
+                    self.text_box.AppendText(_(f"Continuing simulation for {N} cycles.\n"))
                 else:
                     if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                         self.text_box.AppendText("\n")
-                    self.text_box.AppendText(f"Nothing to continue - run the simulation first.\n")
+                    self.text_box.AppendText(_(f"Nothing to continue - run the simulation first.\n"))
             except ValueError:
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                     self.text_box.AppendText("\n")
-                self.text_box.AppendText("Invalid command. Please provide a valid number of cycles.\n")
+                self.text_box.AppendText(_("Invalid command. Please provide a valid number of cycles.\n"))
         elif text.startswith('s '):
             # Set switch X to N (0 or 1)
             try:
@@ -1186,19 +1190,19 @@ class Gui(wx.Frame):
                 if type(value) != int or value not in [0, 1]:
                     if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                         self.text_box.AppendText("\n")
-                    self.text_box.AppendText("Switch value must be 0 or 1\n")
-                    raise ValueError("Switch value must be 0 or 1")
+                    self.text_box.AppendText(_("Switch value must be 0 or 1\n"))
+                    raise ValueError(_("Switch value must be 0 or 1"))
                 
                 bool_switch = self.change_switch_state(switch_name, None, value)
                 if not bool_switch: 
-                    wx.LogError("Switch set failed")
+                    wx.LogError(_("Switch set failed"))
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                         self.text_box.AppendText("\n")
-                self.text_box.AppendText(f"Setting switch {switch_name} to {value}.\n")
+                self.text_box.AppendText(_(f"Setting switch {switch_name} to {value}.\n"))
             except ValueError:
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                         self.text_box.AppendText("\n")
-                self.text_box.AppendText("Invalid command format. Please provide switch ID and value.\n")
+                self.text_box.AppendText(_("Invalid command format. Please provide switch ID and value.\n"))
         elif text.startswith('m ') or text.startswith('monitor '):
             # Add a monitor on signal X
             signal = text[2:].strip()
@@ -1207,11 +1211,11 @@ class Gui(wx.Frame):
             if bool_add_mon:
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                     self.text_box.AppendText("\n")
-                self.text_box.AppendText(f"Adding monitor on signal {signal}.\n")
+                self.text_box.AppendText(_(f"Adding monitor on signal {signal}.\n"))
             else: 
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                     self.text_box.AppendText("\n")
-                self.text_box.AppendText(f"Monitor addition failed for {signal}.\n")
+                self.text_box.AppendText(_(f"Monitor addition failed for {signal}.\n"))
 
         elif text.startswith('z ') or text.startswith('zap '):
             # Zap the monitor on signal X
@@ -1222,16 +1226,16 @@ class Gui(wx.Frame):
             if bool_del_mon:
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                     self.text_box.AppendText("\n")
-                self.text_box.AppendText(f"Zapping monitor on signal {signal}.\n")
+                self.text_box.AppendText(_(f"Zapping monitor on signal {signal}.\n"))
             else: 
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                     self.text_box.AppendText("\n")
-                self.text_box.AppendText(f"Monitor zap failed for {signal}.\n")
+                self.text_box.AppendText(_(f"Monitor zap failed for {signal}.\n"))
         elif text == 'h' or text == 'help':
             # Print a list of available commands to console
             if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                 self.text_box.AppendText("\n")
-            self.text_box.AppendText(
+            self.text_box.AppendText(_(
                 "List of available commands:\n"
                 "r N       - run the simulation for N cycles\n"
                 "c N       - continue the simulation for N cycles\n"
@@ -1240,7 +1244,7 @@ class Gui(wx.Frame):
                 "z X       - zap the monitor on signal X\n"
                 "h         - print a list of available commands\n"
                 "q         - quit the program\n"
-            )
+            ))
         elif text == 'q' or text == 'quit':
             # Quit the program
             self.Close()
@@ -1248,7 +1252,7 @@ class Gui(wx.Frame):
             # Invalid command
             if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                 self.text_box.AppendText("\n")
-            self.text_box.AppendText(f"<{text}> is an invalid command. A list of available commands can be obtained by entering 'h', or navigating to 'Commands' in the Menu.\n")
+            self.text_box.AppendText(_(f"<{text}> is an invalid command. A list of available commands can be obtained by entering 'h', or navigating to 'Commands' in the Menu.\n"))
 
 class RunApp(wx.App): 
     """Combines Canvas onto App with Matplotlib"""
