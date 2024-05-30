@@ -396,9 +396,11 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                             ", ", str(event.GetY())])
 
             if self.parent.is_zap_monitor: 
+                GL.glFlush()
                 port_tuple = self.return_closest_output_id((ox, oy))
                 self.do_zap_monitor(port_tuple)
             elif self.parent.is_add_monitor:
+                GL.glFlush()
                 port_tuple = self.return_closest_output_id((ox, oy))
                 self.do_add_monitor(port_tuple)
             
