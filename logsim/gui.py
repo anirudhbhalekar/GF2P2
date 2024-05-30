@@ -34,6 +34,7 @@ matplotlib.use('WXAgg')
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg as NavigationToolbar2Wx
+from sys import platform
 
 from names import Names
 from devices import Devices
@@ -1071,11 +1072,14 @@ class Gui(wx.Frame):
         text = self.text_box.GetValue().strip()
         lines = text.split('\n')
         #print(lines)
-        # Get the most recent line of input, excluding the > at the bottom, hence index is -2 not -1
+        # Get the most recent line of input, excluding the > at the bottom, hence index is -2 in win and -1 else
         if len(lines) == 1:
             current_line = lines[0].strip()
         else:
-            current_line = lines[-1].strip()  
+            if platform == 'linux' or platform == 'linux2':
+                current_line = lines[-1].strip()
+            else:
+                current_line = lines[-2].strip()
         print(lines)
         print(current_line)
         if current_line[0] == '>':
