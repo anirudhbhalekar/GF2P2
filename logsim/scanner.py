@@ -12,6 +12,9 @@ Symbol - encapsulates a symbol and stores its properties.
 from devices import Devices
 from names import Names
 import fileinput
+import gettext
+
+#NB no translation needed here -- no user output strings
 
 class Symbol:
 
