@@ -1,0 +1,637 @@
+commit 94a8553f43b7e86845afd9f19144c35875e3a4bd
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Thu May 30 01:05:30 2024 +0100
+
+    cnvas render text output for all buttons
+
+commit 776740def8437c13f23f9e3eb1de833af9079105
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 23:56:56 2024 +0100
+
+    logic_draw formatting
+
+commit 6373d80c7d19c5d4bfb2cd10609cd11d09b71836
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 19:32:15 2024 +0100
+
+    (Credits change)
+
+commit 5d03ad7a4a5e9b2269ef02545b094a250b296133
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 19:26:35 2024 +0100
+
+    Better user debug information, cleanup
+
+commit 8d6ddc0581e8d2d61bcdd6ddd8cdb7342c7ff248
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 19:23:10 2024 +0100
+
+    Cleanup of on_text_box. WORKING!
+
+commit 0f1acc2f0be3561cb18b79df019a4ae2ab7be1f6
+Merge: ddd63d2 3aeafae
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 19:16:58 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit ddd63d2f46d60b87bbe3c9d8ed121d07ff6ceb64
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 19:16:55 2024 +0100
+
+    COMMAND LINE NOW WORKS
+
+commit 49dd949415398eea83dfab8d4824c2c71bc04ed8
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 18:58:44 2024 +0100
+
+    text gets the whole textbox i think here
+
+commit 8a55bedfff8f35275975599b9a80d95ba25baf1e
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 18:35:10 2024 +0100
+
+    zapping from terminal succesfully identified, doesn't break the system
+
+commit dfbe245778bc35db659ad6e275ed8e7c7841ca4b
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 18:13:58 2024 +0100
+
+    ADD MONITOR WORKS
+
+commit 4af754ce77cfa198c64d366dd0f62614033a62bd
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 18:10:21 2024 +0100
+
+    zap working but add does nothing.
+
+commit 486949118f9ab8d1e131b3e9d470d775f9ab519f
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 17:57:57 2024 +0100
+
+    formatting
+
+commit a4aa1b1a1bac30b10f384d36918d66e2c6bc8083
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 17:54:01 2024 +0100
+
+    minor changes to textbox. works. (only for first time)
+
+commit d166143b26f4c08fd6677bd459fed56adf2316ac
+Merge: 2184d67 8013c6c
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 17:34:18 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit 2184d6756a57fa6f49d2bd8db260309f1f307c0a
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 17:34:09 2024 +0100
+
+    revert to working version
+
+commit 9b362e934f78209dd0596cfc46bed7c8b3f3f49e
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 15:25:50 2024 +0100
+
+    minor changes
+
+commit 6e382d851bf8c416b44b96fc5892b7cb3394c74f
+Merge: 4f6cabe 5343736
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 15:22:08 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit 4f6cabe1c7dd0129d4bc51d33f84baab5e324406
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 15:20:51 2024 +0100
+
+    comment out some prints
+
+commit 785249a7754c9ce811d088459eff210c1dbb33d6
+Merge: 3615fa4 a1f1475
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 15:04:30 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit 3615fa40830ac251d9cac8f755b72844704c6b6e
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 15:04:15 2024 +0100
+
+    clock and switch graphics on logic_draw, minor fixes
+
+commit a5f8047cd890d974b44297182eec8e4c9fa3f367
+Merge: 416105c fc5f04f
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 14:18:38 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit 416105cb787eb365615314ca7bc0ca2d0dc2dd43
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 14:11:00 2024 +0100
+
+    import syntax and later syntax for userint
+
+commit 413435353e4fd6fbb56c883339c7854d8aa70409
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Wed May 29 11:50:45 2024 +0100
+
+    revert to working version, error msg for textbox enter
+
+commit 7fe2b7d6dfa433d55ec0bf63394f5b7fd4bd18df
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 22:20:09 2024 +0100
+
+    fix double prompt on command output
+
+commit 9ef32ef53eb036ed9ca718493d517cc62da8610d
+Merge: eb0db07 9f9df05
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 22:19:02 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit eb0db0750cafdb07d5954b56b13cfba7bfe1f738
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 22:18:51 2024 +0100
+
+    Interactive command line. only does help atm
+
+commit b335d63b0501b148f9a0bc5610c2362e0aad0f1d
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 21:53:59 2024 +0100
+
+    error defo file fix
+
+commit ff025b13bff7df3bb54cc532abaeadcd1cf95c96
+Merge: 500de67 6d97b78
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 21:38:35 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit 500de670e908e12e50cfd9d432c9ca04900ef25f
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 21:36:27 2024 +0100
+
+    fix defo files
+
+commit ef670a718e5d96b7c219a99c9ddb5ae8143dd036
+Merge: cfa11ee fa8de58
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 21:27:41 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit cfa11eec8be0d62206a5dece571a7e25ca7c988f
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 21:27:36 2024 +0100
+
+    working vers
+
+commit 2c385cd6c00137642bab9ec6e76e9f7b84be76b3
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 21:27:19 2024 +0100
+
+    force - git push
+
+commit 6b233bc3471ba74cafb6636d8b01862a4222f9a2
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 21:11:42 2024 +0100
+
+    push reverted version for ani
+
+commit 5e62d7a1fb5880d0555a422b3d33999665caae6f
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 21:06:20 2024 +0100
+
+    revert working version..
+
+commit 9bac291134f3a76c20041ee1982fe65a819e609e
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 21:04:20 2024 +0100
+
+    revert to working version
+
+commit ea560171a3355159823ca28a45392bf493701ca4
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 20:55:09 2024 +0100
+
+    text control window now works, separate from promptedtextctrl
+
+commit e47504a09c5f80adacfbd8646edad4a101934995
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 20:52:10 2024 +0100
+
+    Separate window for text editor when opning files
+
+commit 567e85af0a34d2d74973f7396a383ca8a2211f9f
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 20:38:49 2024 +0100
+
+    text control class for popup window for Edit
+
+commit 3cd944a7e25a962f8b5d87db4607ca3a8ad3d877
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 20:28:27 2024 +0100
+
+    docstrings, pep257 compliance, minor changes
+
+commit dffc32e345d4dcdf6792910bc389b4a0ef238dd0
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 20:09:49 2024 +0100
+
+    text box now works 100% as we want it - no deletion of history, only modification of current line, no double spacing or >> symbol when enter, op
+ening files is fine even repeatedly
+
+commit 672216d54edae90391db8d4e7abc9405a543a98a
+Merge: f6bcd18 498dcda
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 20:03:23 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit f6bcd1803495a80ea74017f56953c8b75f4887c5
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 20:03:11 2024 +0100
+
+    gui textbox - fixed deletion bug
+
+commit af04f8bd930a262c99c8dd151d41b7efa801289b
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 19:40:42 2024 +0100
+
+    newline now happens as needed from before
+
+commit 7b860d582223c63fab53af708e734e9a1110cc83
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 19:37:01 2024 +0100
+
+    filepath/name now shows when a file is opened
+
+commit e83f84234416ba676d07a8ac8f3812b2cf9ea0c7
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 19:32:51 2024 +0100
+
+    now working code. doesn't give error after second reopen
+
+commit d6f458a26dd07e7d99ee676a85f338069d87f3f4
+Merge: 188881b 2ada06e
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 19:23:13 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit 188881bc15a62fd29c5c181c8a59064a0b87c14f
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 19:23:07 2024 +0100
+
+    allow gui open
+
+commit 7b2ea784681cb52b4fbacfd6770789237a4c0185
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 16:16:54 2024 +0100
+
+    stress test v large, test drawer too
+
+commit 65181acdc95c3897ac0563177ae6cf94d1fca362
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 16:06:05 2024 +0100
+
+    defo files stress test
+
+commit c30244debab900b1cdfee8f4bf21a52ae31e7b54
+Merge: 4ebd37d ec33e9b
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 15:52:44 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit 4ebd37d9e6b9d339915139286de438b162001d91
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 15:52:31 2024 +0100
+
+    definition files
+
+commit 92c692faec256e3b6577166a5e6494c1c6725134
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 14:08:04 2024 +0100
+
+    FIX I/P=O/P CONNECTIONS IN EARLIER DEFO FILES
+
+commit e23c567e6ad73b142cab9ef145df17b95aaf9bcd
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 14:04:07 2024 +0100
+
+    temp fix assemble monitors
+
+commit 1f748b270fb55394d701980d29dd901e2d4dcf46
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 28 14:03:34 2024 +0100
+
+    more defo files. still need to change i/p=o/p in earlier files
+
+commit 80558270e5d5730bdbc5aa3426d71684b9b301bb
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 23:08:38 2024 +0100
+
+    added monitor!
+
+commit 4f4163d65fdbca3adac98ca57f3b466c629f555e
+Merge: 64bee5a c2c1d36
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 22:48:39 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit 64bee5acc03fb98fa0953059ba8156a58c1449ac
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 22:48:36 2024 +0100
+
+    fix dtype
+
+commit e25260a66488cd6faf9b30f0eb16ca7fa965c7a7
+Merge: 2d6b890 8e1b161
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 22:45:10 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit 2d6b890b64819567a35f93532579a023ae35dc72
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 22:40:49 2024 +0100
+
+    circle dots thing
+
+commit 06a1eaee21ebec4c090936a825f160d86ef8df69
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 20:17:34 2024 +0100
+
+    consistency
+
+commit 75a67fb80ad5a0434f3a63f5f81176021836d3d9
+Merge: 045f755 996d06d
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 20:13:57 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit 045f7552e2461603cae3016bbb4b24e4dc9c2813
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 19:54:31 2024 +0100
+
+    input, output, domain coords returned by draw functions. i have tested and am happy
+
+commit 94bb5ccbad57cdd16f9248d4b135d0bcb36ec384
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 15:42:05 2024 +0100
+
+    fixed imports
+
+commit c6cfaf7e8b8d714968352e8d533cab4e8ece0365
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 15:40:27 2024 +0100
+
+    changes to coord definition points of sw,clk, dtype
+
+commit fc97f364367ccb7e121434c0038e3eeb88e99f31
+Merge: 5d9efb5 ef172f2
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 14:56:08 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit 5d9efb5509b28dc8182c8592f1e9879c82a21307
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 14:55:57 2024 +0100
+
+    text stuff working
+
+commit 083c22fd17484755d62fa36ed7b893f192659fbe
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 14:55:29 2024 +0100
+
+    move text prompt to bottom right of sidepanel
+
+commit eb8f2fb43f668a82d370924600880c55682ad677
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 14:27:33 2024 +0100
+
+    reset view works. minor sizer edits
+
+commit f0c444da71a5cf86e72c88a2c2a837462f8ced41
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 11:36:03 2024 +0100
+
+    reset button, minor edits and removals
+
+commit 13d3d86beb3f2d07102b97f5c1058891ce1a2fa1
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 11:17:36 2024 +0100
+
+    separate file for the logicdrawer stuff
+
+commit 899023c9944054bf8a48428fcd60cab7175589df
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 11:08:15 2024 +0100
+
+    all device types now work. added colours
+
+commit e32fc32460d1134ca650aff3f944261d0c1a7ae9
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 10:22:31 2024 +0100
+
+    revert to working version
+
+commit 96042f0db060179f8261d9843e964ca1bac8d671
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 10:20:15 2024 +0100
+
+    ?
+
+commit 1649426e44bee61a6e7ac98ca5825690c86ef318
+Merge: a1f379d 78aea96
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 10:18:15 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit a1f379d14137dd43156d7b8dc243f186f453ba5c
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 27 10:17:02 2024 +0100
+
+    all logic gates now working
+
+commit 2991c866b708887440481a31210abbabea6df5cb
+Merge: a68bd84 4bbd2fe
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Sat May 25 16:21:24 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit a68bd849f3be01b3b4cfedd01a33866350ffd3b1
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Sat May 25 16:21:21 2024 +0100
+
+    gates! working and, nand gate
+
+commit e4ec5aec43f6a67df871bc609d3df74a0bc46065
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Sat May 25 13:59:41 2024 +0100
+
+    first attempt gate drawing
+
+commit 1090990c3fa484d2622196f4d2718f77cbfc72c2
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Sat May 25 01:21:17 2024 +0100
+
+    first big changes to skeleton-sizers, menu,txtbox
+
+commit eb802500ae944f23fd84fa01e3c4660783587121
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Thu May 23 12:28:02 2024 +0100
+
+    did the same for error files...
+
+commit 1867d76af26a97bbd8baeaff67321afed479d9cb
+Merge: 0a7c939 7e43612
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Thu May 23 12:25:11 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit 0a7c939e759bcab1c1704290ef923366f69979ce
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Thu May 23 12:24:22 2024 +0100
+
+    fix commas instead of semicolons in define section. this should fix some of the parser unit tests
+
+commit 1c90bab36c85eb355a810d458a0194db9bea9366
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Thu May 23 12:22:23 2024 +0100
+
+    asserting no.errors hardcoded in parser test
+
+commit 7f62deccdf9ebdd1c7ec75b9c08ea4094d090253
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Thu May 23 12:21:52 2024 +0100
+
+    got rid of line/character test, was buggy
+
+commit beb8a00fdc6c6611a9f607685f9e074f85c2f821
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Thu May 23 12:07:11 2024 +0100
+
+    hardcode no. errors in error def files
+
+commit c7d9277673cbd268f0bc34e71f2569020969f6c1
+Merge: 20fb1a9 66a0041
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Thu May 23 11:59:32 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit 20fb1a9aed2d2ada6bb34f9e2ee0fd31e93eef8b
+Merge: f5bced7 616935a
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Thu May 23 11:59:24 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit f5bced7bb5d09e1182be7f8f7c23d5dac8c6c246
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Thu May 23 11:58:41 2024 +0100
+
+    parser added new test
+
+commit d91c3a8919f5bbdb0e4cbfebc0e319dfc6d684be
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Thu May 23 11:39:51 2024 +0100
+
+    create new folder for error definition files for easier unit tests
+
+commit cc14744480c62cdcae94cd65639a60e62e691c80
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Tue May 21 00:09:28 2024 +0100
+
+    changed relative proportions of sizers, added comments to Gui class
+
+commit 702fef4260ed350f951839b308718df4a89fe41a
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 20 23:26:00 2024 +0100
+
+    change the parser test file to run all definition files in the folder
+
+commit 5512b74134ae8329d465638971a9b3419425f853
+Merge: 561c86d 2d27be5
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 20 10:54:09 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit 561c86d1349d534a58f02a160fa3796d4c8a5b5f
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 20 10:53:38 2024 +0100
+
+    input/output order connect error
+
+commit 133318b5fc1378a79598dbe1dc3e28d47a6cbe4a
+Merge: 931f784 6332a9d
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 20 10:49:59 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit 931f7849c67546c2eb62faabd0237cc7a38d4123
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 20 10:49:56 2024 +0100
+
+    added 2 definition files with errors
+
+commit 245263736ea95bd15b4de524f2c60b14da76af7b
+Merge: 3101ea0 d4b0a5f
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 20 10:44:01 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit 3101ea09c6b50692a81291ec74df2819d496c8b6
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 20 10:36:06 2024 +0100
+
+    got rid of extra optional definition-this was the point of updating the DEFINE syntax
+
+commit 8550351f8f84aedd29b16aa97b70800252e26a78
+Merge: 915eec3 8878f27
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 20 10:32:15 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit 915eec3b1913a4730bde10391ed729e657f8b5a1
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 20 10:31:59 2024 +0100
+
+    updated define syntax
+
+commit 6492917f28cf5a644110674c92794c98afb2615d
+Merge: 8fd931c f9aa5a1
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 20 09:47:20 2024 +0100
+
+    Merge branch 'main' of https://github.com/anirudhbhalekar/GF2P2
+
+commit 8fd931cdacf09e82a911519f9b91ac5b1a3e1391
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 20 09:47:18 2024 +0100
+
+    new def files
+
+commit 9f1951d330ef3e5c258e41adc9f2c4881dd2928f
+Author: Shawn Li <syl52@cam.ac.uk>
+Date:   Mon May 20 09:42:01 2024 +0100
+
+    new files
