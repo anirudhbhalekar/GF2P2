@@ -871,7 +871,7 @@ class Gui(wx.Frame):
     def on_run_button(self, event):
         """Handle the event when the user clicks the run button."""
 
-        text = "Run button pressed."
+        text = f"Run button pressed, {self.cycle_count} cycles."
         self.run_circuit(self.cycle_count)
         self.canvas.render(text)
 
@@ -897,6 +897,9 @@ class Gui(wx.Frame):
         self.name_array = []
 
         self.cycles_completed = 0
+        
+        text = "Reset plot button pressed."
+        self.canvas.render(text)
 
     def on_zap_button(self, event): 
         """Starts zap procedure"""
@@ -916,16 +919,13 @@ class Gui(wx.Frame):
         self.is_zap_monitor = self.zap_monitor_button.GetValue()
     def on_continue_button(self, event): 
         """Handle continue button event"""
-      
-        text = "Continue button pressed."
-        #print("test")
+        text = f"Continue button pressed, {self.cycle_count} cycles."
         self.continue_circuit(self.cycle_count)
         self.canvas.render(text)
 
         if self.cycles_completed == 0: 
             wx.LogError("Nothing to Continue - try running the simulation first")
             return
-        
         try: 
             self.monitor_plot()
         except Exception: 

@@ -4,7 +4,46 @@ from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, glPushAttrib, glLin
 from OpenGL import GL, GLUT
 
 
-""" DOC STRING TO BE COMPLETED """
+"""
+LogicDrawer: A class for rendering various logic gates and components on a canvas using OpenGL.
+
+This class handles the drawing operations for different logic gates such as AND, NAND, OR, NOR, XOR, as well as components like clocks, switches, DTYPEs, and monitors. The gates are drawn based on their specified inputs and positions. The class supports various drawing methods for each gate type, providing functionality to render the shapes, connections, and labels on the canvas.
+
+Attributes:
+    id (int): The device id.
+    n_iter (int): Number of iterations used to draw circles for certain gates.
+    operator_height (int): Base height of the operator.
+    operator_length (int): Length of the operator.
+    inc_height (int): Height increment for additional inputs.
+    names (Names): Instance of the Names class.
+    devices (Devices): Instance of the Devices class.
+    monitors (Monitors): Instance of the Monitors class.
+    device (Device): The device object.
+    device_inputs (dict): Dictionary of device inputs.
+    device_outputs (dict): Dictionary of device outputs.
+    n_inputs (int): Number of inputs for the device.
+    height (int): Height of the gate.
+    length (int): Length of the gate.
+    input_dict (dict): Dictionary storing input coordinates.
+    output_dict (dict): Dictionary storing output coordinates.
+    monitor_dict (dict): Dictionary storing monitor coordinates.
+    domain (list): List of tuples representing the bounding domain.
+
+Methods:
+    draw_with_string(op_string, x, y): Calls the appropriate draw function based on the gate type.
+    bound_y(): Returns the y-coordinate padding bound of a device.
+    make_circle(x, y): Draws a dot at the specified (x, y) position to symbolize a connection point.
+    draw_and_gate(x, y): Renders and draws an AND gate at the specified position.
+    draw_nand_gate(x, y): Renders and draws a NAND gate at the specified position.
+    draw_or_gate(x, y): Renders and draws an OR gate at the specified position.
+    draw_nor_gate(x, y): Renders and draws a NOR gate at the specified position.
+    draw_xor_gate(x, y): Renders and draws an XOR gate at the specified position.
+    draw_switch(x, y): Renders and draws a switch at the specified position.
+    draw_clock(x, y): Renders and draws a clock at the specified position.
+    draw_dtype(x, y): Renders and draws a DTYPE at the specified position.
+    render_text(text, x_pos, y_pos, color): Handles text drawing operations at the specified position and color.
+    draw_monitor(x, y, m_name): Renders and draws a monitor at the specified position.
+"""
 
 
 class LogicDrawer:
@@ -17,13 +56,9 @@ class LogicDrawer:
             
             # Initialize variables
             self.id = id # -> This is the device id
-
             self.n_iter = n_iter
-            
-
             # 2 input gate is 40 high, and every additional input gate adds 5 units of height
-            # n_inputs is between 1 and 16, but ONLY 2 for XOR gate. This is checked as a semantic error before.
-
+            # n_inputs is between 1 and 16, but ONLY 2 for XOR gate. This is checked as a semantic error before
             self.operator_height = 30 
             self.operator_length = 25
             self.inc_height = 5 
@@ -41,12 +76,8 @@ class LogicDrawer:
                 self.n_inputs = len(self.device_inputs.keys())
             
 
-                """try: del self.device_inputs[None]
-                except: pass
-                try: del self.device_outputs[None]
-                except: pass"""
                 
-                # 15 pixels height increase for each additional input
+                # 5 pixels height increase for each additional input
                 # top and bottom padding 5 px each
                 # self.height is only the vertical straight bit
                 self.height = self.operator_height 
@@ -59,7 +90,6 @@ class LogicDrawer:
                 pass
 
             # These store input and output xy coords for drawing connections
-
             self.input_dict = {} # This in the form (device_id, port_id): coord
             self.output_dict = {} # This in the form (device_id, port_id): coord
             self.monitor_dict = {} 
@@ -67,10 +97,8 @@ class LogicDrawer:
             self.domain = [] # This is a list of tuples
                 
     def draw_with_string(self, op_string, x, y): 
-        """Calls appropriate draw function"""
-        
+        """Call appropriate draw function"""
         self.x, self.y = x, y
-
         if op_string == "AND": 
             self.draw_and_gate(self.x, self.y)
         elif op_string == "NAND": 
@@ -90,28 +118,8 @@ class LogicDrawer:
         else: 
             pass
 
-        '''
-        min_x, min_y = self.domain[0][0], self.domain[0][1]
-        max_x, max_y = self.domain[1][0], self.domain[1][1]
-
-        glPushAttrib(GL_ENABLE_BIT)
-        glLineStipple(1, 0xAAAA)
-        glEnable(GL_LINE_STIPPLE)
-        glColor3f(1.0, 0.0, 1.0)
-        glBegin(GL_LINE_STRIP)
-
-        glVertex2f(min_x, min_y)
-        glVertex2f(min_x, max_y)
-        glVertex2f(max_x, max_y)
-        glVertex2f(max_x, min_y)
-        glVertex2f(min_x, min_y)
-
-        glEnd()
-        glPopAttrib()
-        '''
-
     def bound_y(self): 
-
+        """Return the y coordinate padding bound of a device."""
         if self.device.device_kind == self.devices.AND: 
             return self.height + 20 
         elif self.device.device_kind == self.devices.NAND: 
@@ -132,6 +140,7 @@ class LogicDrawer:
             pass 
 
     def make_circle(self, x, y): 
+        """Draw a dot at posiition (x, y) to symbolise a connection point."""
         posx, posy = x, y    
         sides = 10    
         radius = 2
@@ -197,8 +206,6 @@ class LogicDrawer:
             x_coord = self.x + self.length + self.height/2
 
             self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
-            #self.make_circle(x_coord, y_coord)
-            
         
         self.domain = [(self.x - 10, self.y - 10), (self.x + self.length + R + 10, self.y + self.height + 10)]
         
@@ -210,7 +217,6 @@ class LogicDrawer:
         # Coordinate change to center gates
         self.x = self.x - self.length / 2
         self.y = self.y - self.height / 2
-
 
         # Start with the AND gate
         glColor3f(1.0, 0.0, 0.0)  # Red color
@@ -230,8 +236,7 @@ class LogicDrawer:
         
         # Close the shape
         glVertex2f(self.x + self.length, self.y)
-        glVertex2f(self.x, self.y)
-                         
+        glVertex2f(self.x, self.y)           
         glEnd()
 
         d_name = self.names.get_name_string(self.id)
@@ -273,7 +278,6 @@ class LogicDrawer:
 
             self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
             self.make_circle(x_coord, y_coord)
-            
         
         self.domain = [(self.x - 10, self.y - 10), (self.x + self.length + R + 10 + 2*r, self.y + self.height + 10)]
     
@@ -302,7 +306,7 @@ class LogicDrawer:
         glVertex2f(self.x - 10 + self.length, self.y - 10)
         glVertex2f(self.x - 10 , self.y - 10)
         glVertex2f(self.x, self.y)
-        
+    
         glEnd()
 
         d_name = self.names.get_name_string(self.id)
@@ -321,7 +325,6 @@ class LogicDrawer:
             self.input_dict[(self.id, i_id)] = (x_coord, y_coord)
             self.make_circle(x_coord, y_coord)
    
-
         for o, o_id in enumerate(output_ids): 
             y_coord = self.y + self.height/2 
             x_coord = self.x + self.length + self.height/2
@@ -329,7 +332,6 @@ class LogicDrawer:
             self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
             self.make_circle(x_coord, y_coord)
             
-        
         self.domain = [(self.x - 15 + 1, self.y - 15 + 1), (self.x + self.length + (self.height / 2) + 15 - 1, self.y + self.height + 15 - 1)]
 
     def draw_nor_gate(self, x, y):
@@ -386,7 +388,6 @@ class LogicDrawer:
 
             self.input_dict[(self.id, i_id)] = (x_coord, y_coord)
             self.make_circle(x_coord, y_coord)
-   
 
         for o, o_id in enumerate(output_ids): 
             y_coord = self.y + self.height/2 
@@ -395,7 +396,6 @@ class LogicDrawer:
             self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
             self.make_circle(x_coord, y_coord)
             
-        
         self.domain = [(self.x - 15 + 1, self.y - 15 + 1), (self.x + self.length + R + 2*r + 15 - 1, self.y + self.height + 15 - 1)]
 
     def draw_xor_gate(self, x, y):
@@ -454,7 +454,6 @@ class LogicDrawer:
             self.input_dict[(self.id, i_id)] = (x_coord, y_coord)
             self.make_circle(x_coord, y_coord)
    
-
         for o, o_id in enumerate(output_ids): 
             y_coord = self.y + self.height/2 
             x_coord = self.x + self.length + self.height/2
@@ -462,7 +461,6 @@ class LogicDrawer:
             self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
             self.make_circle(x_coord, y_coord)
             
-        
         self.domain = [(self.x - 22, self.y - 22), (self.x + self.length + (self.height / 2) + 22, self.y + self.height + 22 )]
 
     def draw_switch(self, x, y):
@@ -587,7 +585,6 @@ class LogicDrawer:
 
             self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
             self.make_circle(x_coord, y_coord)
-        
             
         self.domain =  [(self.x - R + 1, self.y - R + 1), (self.x + R - 1, self.y + R - 1)]
 
@@ -601,7 +598,6 @@ class LogicDrawer:
         self.width = 60
 
         #Introducing top heavy bias
-
         self.x = self.x 
         self.y = self.y - self.height/3
 
