@@ -1091,7 +1091,7 @@ class Gui(wx.Frame):
 
         # The problem is after the first enter, text will still start with '> '. And it cannot be removed for some reason. Probs because  of the way promptedtextctrl is defined.
         # Parse the user's input and call the corresponding functions from UserInterface
-        if text.startswith('r '):
+        if text.startswith('r ') or text.startswith('run '):
             # Run simulation for N cycles
             try:
                 N = int(text[2:].strip())
@@ -1111,7 +1111,7 @@ class Gui(wx.Frame):
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                     self.text_box.AppendText("\n")
                 self.text_box.AppendText("Invalid command. Please provide a valid number of cycles.\n")
-        elif text.startswith('c '):
+        elif text.startswith('c ') or text.startswith('continue '):
             # Continue the simulation for N cycles
             try:
                 N = int(text[2:].strip())
@@ -1151,7 +1151,7 @@ class Gui(wx.Frame):
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                         self.text_box.AppendText("\n")
                 self.text_box.AppendText("Invalid command format. Please provide switch ID and value.\n")
-        elif text.startswith('m '):
+        elif text.startswith('m ') or text.startswith('monitor '):
             # Add a monitor on signal X
             signal = text[2:].strip()
 
@@ -1166,7 +1166,7 @@ class Gui(wx.Frame):
                     self.text_box.AppendText("\n")
                 self.text_box.AppendText(f"Monitor addition failed for {signal}.\n")
 
-        elif text.startswith('z '):
+        elif text.startswith('z ') or text.startswith('zap '):
             # Zap the monitor on signal X
             signal = text[2:].strip()
 
@@ -1180,7 +1180,7 @@ class Gui(wx.Frame):
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                     self.text_box.AppendText("\n")
                 self.text_box.AppendText(f"Monitor zap failed for {signal}.\n")
-        elif text == 'h':
+        elif text == 'h' or text == 'help':
             # Print a list of available commands to console
             if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                 self.text_box.AppendText("\n")
