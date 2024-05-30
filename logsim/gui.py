@@ -551,7 +551,13 @@ class TextEditor(wx.Frame):
         
         # Use default text control format wx.TextCtrl
         self.text_ctrl = wx.TextCtrl(self, style=wx.TE_MULTILINE)
+
+        # Read the current path to populate default text in editor
+        with open(parent.path, 'r') as file:
+            initial_text = file.read()
+        self.initial_text = initial_text
         self.text_ctrl.SetValue(initial_text)
+        #print(self.initial_text, "is the initial text")
 
         # Add a Save button
         self.save_button = wx.Button(self, label='Save')
@@ -675,6 +681,9 @@ class Gui(wx.Frame):
         # Canvas for drawing
         self.canvas = MyGLCanvas(self, devices, monitors, self.message_display)
 
+        # Text editor for definition files window
+        self.editor = None
+
         # Configure the widgets
         self.text = wx.StaticText(self, wx.ID_ANY, "Cycles") 
         self.spin = wx.SpinCtrl(self, wx.ID_ANY, initial=self.cycle_count, min=1, max=50)
@@ -791,12 +800,13 @@ class Gui(wx.Frame):
                 wx.ICON_INFORMATION | wx.OK
             )
         if Id == wx.ID_EDIT:
-            if hasattr(self, 'editor') and self.editor.IsShown():
+            if hasattr(self, 'editor') and self.editor and self.editor.IsShown():
                 # If the editor is already open and visible, just bring it to front
                 self.editor.Raise()
             else:
                 # Otherwise, open and create the editor
-                self.editor = TextEditor(self, "Text Editor", initial_text="Hello world")
+                self.editor = TextEditor(self, "Text Editor")
+                self.editor.Bind(wx.EVT_CLOSE, self.on_editor_close)
                 self.editor.Show()
         if Id == wx.ID_HELP_COMMANDS:
             wx.MessageBox("List of user commands: "
@@ -808,18 +818,16 @@ class Gui(wx.Frame):
                         "\nh - print a list of available commands on the terminal"
                         "\nq - quit the simulation")
         if Id == wx.ID_OPEN:
-            if 'win' in platform.lower(): # windows
-                with wx.FileDialog(self, "Open New Source File",
-                                wildcard="TXT files (*.txt)|*.txt",
-                                style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as file_dialog:
+            with wx.FileDialog(self, "Open New Source File",
+                            wildcard="TXT files (*.txt)|*.txt",
+                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as file_dialog:
 
-                    if file_dialog.ShowModal() == wx.ID_CANCEL:
-                        return
+                if file_dialog.ShowModal() == wx.ID_CANCEL:
+                    return
 
-                    pathname = file_dialog.GetPath()
-            else:
-                pass # TEMPORARY!!!!! DO LINUX/MACOS stuff here
-                
+                pathname = file_dialog.GetPath()
+                # Copy the contents of the file
+                self.current_text = open(pathname, 'r')
             
                 try:
                     # Reinitialize the names, devices, network, and monitors
@@ -1074,6 +1082,11 @@ class Gui(wx.Frame):
         text = "Reset view button pressed"
         self.canvas.render(text)
         self.canvas.reset_view()
+
+    def on_editor_close(self, event):
+        """Handle the event when the text editor is closed."""
+        self.editor.Destroy()
+        self.editor = None
 
     def on_text_box(self, event):
         """Handle the event when the user enters text."""
