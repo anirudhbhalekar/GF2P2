@@ -7,6 +7,7 @@ Classes
 Network - builds and executes the network.
 """
 
+#NB no translation needed - no strings outputs
 
 class Network:
 

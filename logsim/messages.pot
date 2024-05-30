@@ -3,12 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#: userint.py:270
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 23:53+0100\n"
+"POT-Creation-Date: 2024-05-31 00:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -62,4 +63,243 @@ msgstr ""
 
 #: names.py:123
 msgid "Integer must be greater than or equal to 0"
+msgstr ""
+
+#: parse.py:74
+msgid ""
+"Error code {error_code} at line {line_number}, character {character}: "
+"{error_message}"
+msgstr ""
+
+#: parse.py:75
+msgid ""
+"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}, String: {self."
+"names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner."
+"NAME or self.symbol.type == self.scanner.KEYWORD else ''}"
+msgstr ""
+
+#: parse.py:85
+msgid "Expected a name"
+msgstr ""
+
+#: parse.py:86
+msgid "Invalid character in name"
+msgstr ""
+
+#: parse.py:87
+msgid "CONNECT list cannot have null devices"
+msgstr ""
+
+#: parse.py:88
+msgid "CONNECT list must have individual connections delimited by ','"
+msgstr ""
+
+#: parse.py:89
+msgid "Double punctuation marks are invalid"
+msgstr ""
+
+#: parse.py:90
+msgid "Semi-colons are required at the end of each line"
+msgstr ""
+
+#: parse.py:91
+msgid "Invalid keyword, could be missing or misspelled"
+msgstr ""
+
+#: parse.py:92
+msgid "Comments starting or terminating with the wrong symbol"
+msgstr ""
+
+#: parse.py:93
+msgid "Invalid order of DEFINE, CONNECT, and MONITOR blocks"
+msgstr ""
+
+#: parse.py:94
+msgid "No END statement after MONITOR clause"
+msgstr ""
+
+#: parse.py:95
+msgid "Expected a number"
+msgstr ""
+
+#: parse.py:96
+msgid "Expected a punctuation mark"
+msgstr ""
+
+#: parse.py:97
+msgid "Invalid pin reference"
+msgstr ""
+
+#: parse.py:98
+msgid "Expected an equals sign"
+msgstr ""
+
+#: parse.py:99
+msgid "Expected a DEFINE statement"
+msgstr ""
+
+#: parse.py:100
+msgid "Expected a CONNECT statement"
+msgstr ""
+
+#: parse.py:101
+msgid "Expected a MONITOR statement"
+msgstr ""
+
+#: parse.py:102
+msgid "Expected an END statement"
+msgstr ""
+
+#: parse.py:104
+msgid "Device absent"
+msgstr ""
+
+#: parse.py:105
+msgid "Input is already connected"
+msgstr ""
+
+#: parse.py:106
+msgid "Cannot connect an input to another input"
+msgstr ""
+
+#: parse.py:107
+msgid "Port absent"
+msgstr ""
+
+#: parse.py:108
+msgid "Cannot connect an output to another output"
+msgstr ""
+
+#: parse.py:110
+msgid "Device already present"
+msgstr ""
+
+#: parse.py:111
+msgid "Qualifier is missing"
+msgstr ""
+
+#: parse.py:112
+msgid "Invalid qualifier"
+msgstr ""
+
+#: parse.py:113
+msgid "Qualifier should not be present"
+msgstr ""
+
+#: parse.py:114
+msgid "Invalid device type"
+msgstr ""
+
+#: parse.py:116
+msgid "Device output not found"
+msgstr ""
+
+#: parse.py:117
+msgid "Monitor already present"
+msgstr ""
+
+#: parse.py:119
+msgid "Unknown error"
+msgstr ""
+
+#: parse.py:129
+msgid "Total Error Count:{self.error_count}"
+msgstr ""
+
+#: parse.py:132
+msgid "Syntax Error: {e}"
+msgstr ""
+
+#: userint.py:87
+msgid ""
+"Logic Simulator: interactive command line user interface.\n"
+"Enter 'h' for help."
+msgstr ""
+
+#: userint.py:105
+msgid "Invalid command. Enter 'h' for help."
+msgstr ""
+
+#: userint.py:140
+msgid "Error! Expected a name."
+msgstr ""
+
+#: userint.py:158
+msgid "Error! Unknown name."
+msgstr ""
+
+#: userint.py:186
+msgid "Error! Expected a number."
+msgstr ""
+
+#: userint.py:195 userint.py:200
+msgid "Number out of range."
+msgstr ""
+
+#: userint.py:207
+msgid "User commands:"
+msgstr ""
+
+#: userint.py:208
+msgid "r N       - run the simulation for N cycles"
+msgstr ""
+
+#: userint.py:209
+msgid "c N       - continue the simulation for N cycles"
+msgstr ""
+
+#: userint.py:210
+msgid "s X N     - set switch X to N (0 or 1)"
+msgstr ""
+
+#: userint.py:211
+msgid "m X       - set a monitor on signal X"
+msgstr ""
+
+#: userint.py:212
+msgid "z X       - zap the monitor on signal X"
+msgstr ""
+
+#: userint.py:213
+msgid "h         - help (this command)"
+msgstr ""
+
+#: userint.py:214
+msgid "q         - quit the program"
+msgstr ""
+
+#: userint.py:223
+msgid "Successfully set switch."
+msgstr ""
+
+#: userint.py:225
+msgid "Error! Invalid switch."
+msgstr ""
+
+#: userint.py:235
+msgid "Successfully made monitor."
+msgstr ""
+
+#: userint.py:237
+msgid "Error! Could not make monitor."
+msgstr ""
+
+#: userint.py:245
+msgid "Successfully zapped monitor"
+msgstr ""
+
+#: userint.py:247
+msgid "Error! Could not zap monitor."
+msgstr ""
+
+#: userint.py:258
+msgid "Error! Network oscillating."
+msgstr ""
+
+#: userint.py:280
+msgid "Error! Nothing to continue. Run first."
+msgstr ""
+
+#: userint.py:283
+msgid " "
 msgstr ""
