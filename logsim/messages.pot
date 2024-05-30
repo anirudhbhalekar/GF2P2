@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 23:41+0100\n"
+"POT-Creation-Date: 2024-05-30 23:53+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,4 +34,32 @@ msgstr ""
 
 #: logsim.py:69
 msgid "Logic Simulator"
+msgstr ""
+
+#: names.py:58
+msgid "Expected num_error_codes to be an integer."
+msgstr ""
+
+#: names.py:72
+msgid "Need String argument"
+msgstr ""
+
+#: names.py:75
+msgid "Null Strings are not accepted"
+msgstr ""
+
+#: names.py:94
+msgid "Name list argument must be a list"
+msgstr ""
+
+#: names.py:99
+msgid "Names must be strings"
+msgstr ""
+
+#: names.py:120
+msgid "Name ID must be an integer"
+msgstr ""
+
+#: names.py:123
+msgid "Integer must be greater than or equal to 0"
 msgstr ""
