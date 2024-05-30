@@ -166,6 +166,12 @@ class Scanner:
         
         return number_string
     
+    def get_current_line(self):
+        """Returns the current line in the file"""
+        self.file.seek(self.total_char_count)
+        line = self.file.readline()
+        return line
+    
     def get_symbol(self):
         """Translate the next sequence of characters into a symbol."""
 

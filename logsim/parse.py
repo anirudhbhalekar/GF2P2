@@ -61,6 +61,7 @@ class Parser:
         line_number = self.symbol.line_number
         character = self.symbol.character
         error_message = self.get_error_message(error_code)
+        print(self.scanner.get_current_line())
         print(f"Error code {error_code} at line {line_number}, character {character}: {error_message}")
         print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}, String: {self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME or self.symbol.type == self.scanner.KEYWORD else ''}")
         while (self.symbol.type not in stopping_symbols and self.symbol.type != self.scanner.EOF):
@@ -136,9 +137,9 @@ class Parser:
                 self.def_list(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
             if self.symbol.type == self.scanner.SEMICOLON:
                 self.symbol = self.scanner.get_symbol()
-                # While the symbol is not CONNECT, keep search for next symbol - this ignores any extra definitions after the first SEMICOLON
-                while self.symbol.type != self.scanner.EOF and self.symbol.id != self.scanner.CONNECT_ID:
-                    self.symbol = self.scanner.get_symbol()
+                # # While the symbol is not CONNECT, keep search for next symbol - this ignores any extra definitions after the first SEMICOLON
+                # while self.symbol.type != self.scanner.EOF and self.symbol.id != self.scanner.CONNECT_ID:
+                #     self.symbol = self.scanner.get_symbol()
             else:
                 self.error(self.MISSING_SEMICOLON, stopping_symbols)
 
@@ -184,7 +185,6 @@ class Parser:
                         self.symbol = self.scanner.get_symbol()
                         device_property = self.set_param(stopping_symbols)
                     else:
-                        print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}, String: {self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME or self.symbol.type == self.scanner.KEYWORD else ''}")
                         device_property = None
                 else:
                     self.error(self.MISSING_SEMICOLON, stopping_symbols)
@@ -193,7 +193,6 @@ class Parser:
                     error_type = self.devices.make_device(device_id, device_kind, device_property)
                     if error_type != self.devices.NO_ERROR:
                         self.error(error_type, stopping_symbols)
-            print("exit while")
 
         else:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
@@ -232,7 +231,6 @@ class Parser:
         """Implements rule connection = "CONNECT", [con_list], ";";"""
         if self.symbol.type == self.scanner.EOF:
             self.error(self.UNEXPECTED_EOF, stopping_symbols)
-        print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}, String: {self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME or self.symbol.type == self.scanner.KEYWORD else ''}")
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.CONNECT_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
@@ -355,7 +353,6 @@ class Parser:
 
     def monitor(self, stopping_symbols):
         """Implements rule monitor = "MONITOR", [output_con, {",", output_con}], ";";"""
-        print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}, String: {self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME or self.symbol.type == self.scanner.KEYWORD else ''}")
         if self.symbol.type == self.scanner.EOF:
             self.error(self.UNEXPECTED_EOF, stopping_symbols)
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.MONITOR_ID:
