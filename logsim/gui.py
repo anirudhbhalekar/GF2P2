@@ -856,7 +856,7 @@ class Gui(wx.Frame):
                         main_sizer.Layout()
 
                         # Print the name of the file opened to the terminal (text box) window
-                        self.text_box.AppendText(f" Opened file: {pathname}\n>")
+                        wx.MessageBox(f" Opened file: {pathname}")
                     else: 
                         #print(self.parser.parse_network())
                         num_errors = self.parser.error_count + 1
