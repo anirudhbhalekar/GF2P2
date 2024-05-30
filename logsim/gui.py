@@ -1072,7 +1072,12 @@ class Gui(wx.Frame):
         lines = text.split('\n')
         #print(lines)
         # Get the most recent line of input, excluding the > at the bottom, hence index is -2 not -1
-        current_line = lines[-2].strip()  
+        if len(lines) == 1:
+            current_line = lines[0].strip()
+        else:
+            current_line = lines[-1].strip()  
+        print(lines)
+        print(current_line)
         if current_line[0] == '>':
             current_line = current_line[1:].strip()
         text = current_line # should be without the initial >
