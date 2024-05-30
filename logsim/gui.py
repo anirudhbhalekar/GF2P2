@@ -808,19 +808,17 @@ class Gui(wx.Frame):
                         "\nh - print a list of available commands on the terminal"
                         "\nq - quit the simulation")
         if Id == wx.ID_OPEN:
-            with wx.FileDialog(self, "Open Circuit file", wildcard="Circuit files (*.txt)|*.txt",
-                       style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
-        
-                if fileDialog.ShowModal() == wx.ID_CANCEL:
-                    return  # the user changed their mind
+            if 'win' in platform.lower(): # windows
+                with wx.FileDialog(self, "Open New Source File",
+                                wildcard="TXT files (*.txt)|*.txt",
+                                style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as file_dialog:
 
-                pathname = fileDialog.GetPath()
-                try:
-                    with open(pathname, 'r') as file:
-                        self.circuit_description = file.read()
-                        self.load_circuit(self.circuit_description)
-                except IOError:
-                    wx.LogError(f"Cannot open file '{pathname}'.")
+                    if file_dialog.ShowModal() == wx.ID_CANCEL:
+                        return
+
+                    pathname = file_dialog.GetPath()
+            else:
+                pass # TEMPORARY!!!!! DO LINUX/MACOS stuff here
             
                 try:
                     # Reinitialize the names, devices, network, and monitors
