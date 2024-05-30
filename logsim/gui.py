@@ -19,6 +19,8 @@ simulation.
 
 RunApp - Initializes and runs the application.
 """
+
+'''
 import wx
 import wx.grid as gridlib 
 import wx.glcanvas as wxcanvas
@@ -814,11 +816,11 @@ class Gui(wx.Frame):
             else:
                 # Otherwise, open and create the editor
                 self.open_text_editor()
-            '''
-                self.editor = TextEditor(self, "Text Editor")
-                self.editor.Bind(wx.EVT_CLOSE, self.on_editor_close)
-                self.editor.Show()
-            '''
+            
+                #self.editor = TextEditor(self, "Text Editor")
+                #self.editor.Bind(wx.EVT_CLOSE, self.on_editor_close)
+                #self.editor.Show()
+            
         if Id == wx.ID_HELP_COMMANDS:
             wx.MessageBox("List of user commands: "
                         "\nr N - run the simulation for N cycles"
@@ -1253,3 +1255,4 @@ class RunApp(wx.App):
     def __init__(self):
         wx.App.__init__(self, redirect=False)
 
+'''

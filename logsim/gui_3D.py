@@ -157,7 +157,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
         # Draw a sample signal trace, make sure its centre of gravity
         # is at the scene origin
-        GL.glColor3f(1.0, 0.7, 0.5)  # signal trace is beige
+        GL.glColor3f(1.0, 1.0, 1.0)  # signal trace is beige
         for i in range(-10, 10):
             z = i * 20
             if i % 2 == 0:
