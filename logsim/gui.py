@@ -694,8 +694,9 @@ class Gui(wx.Frame):
         self.clear_button.Bind(wx.EVT_BUTTON, self.on_clear_button)
         self.reset_view_button.Bind(wx.EVT_BUTTON, self.on_reset_view_button)
         self.text_box.Bind(wx.EVT_TEXT_ENTER, self.on_text_box)
-        self.zap_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_zap_button) # TEMPORARY!!!!!!!!!!!!!!!!!!!!
-        self.add_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_add_button) # TEMPORARY!!!!!!!!!!!!!!!!!!!!
+        self.zap_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_zap_button)
+        self.add_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_add_button)
+
         # Configure sizers for layout
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)
         canvas_plot_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -800,14 +801,17 @@ class Gui(wx.Frame):
                         "\nh - print a list of available commands on the terminal"
                         "\nq - quit the simulation")
         if Id == wx.ID_OPEN:
-            with wx.FileDialog(self, "Open New Source File",
-                            wildcard="TXT files (*.txt)|*.txt",
-                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as file_dialog:
+            if 'win' in platform.lower(): # windows
+                with wx.FileDialog(self, "Open New Source File",
+                                wildcard="TXT files (*.txt)|*.txt",
+                                style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as file_dialog:
 
-                if file_dialog.ShowModal() == wx.ID_CANCEL:
-                    return
+                    if file_dialog.ShowModal() == wx.ID_CANCEL:
+                        return
 
-                pathname = file_dialog.GetPath()
+                    pathname = file_dialog.GetPath()
+            else:
+                pass # TEMPORARY!!!!! DO LINUX/MACOS stuff here
 
                 try:
                     # Reinitialize the names, devices, network, and monitors
@@ -1074,7 +1078,7 @@ class Gui(wx.Frame):
         if len(lines) == 1:
             current_line = lines[0].strip()
         else:
-            if platform == 'linux' or platform == 'linux2':
+            if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                 current_line = lines[-1].strip()
             else:
                 current_line = lines[-2].strip()
