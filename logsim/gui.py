@@ -34,6 +34,7 @@ matplotlib.use('WXAgg')
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg as NavigationToolbar2Wx
+from sys import platform
 
 from names import Names
 from devices import Devices
@@ -393,15 +394,13 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
             text = "".join(["Mouse button pressed at: ", str(event.GetX()),
                             ", ", str(event.GetY())])
-            
-            if self.parent.is_zap_monitor or self.parent.is_add_monitor: 
-                # We draw a circle around the cursor
-                port_tuple = self.return_closest_output_id((ox, oy))
 
-                if self.parent.is_zap_monitor: 
-                    self.do_zap_monitor(port_tuple)
-                elif self.parent.is_add_monitor:
-                    self.do_add_monitor(port_tuple)
+            if self.parent.is_zap_monitor: 
+                port_tuple = self.return_closest_output_id((ox, oy))
+                self.do_zap_monitor(port_tuple)
+            elif self.parent.is_add_monitor:
+                port_tuple = self.return_closest_output_id((ox, oy))
+                self.do_add_monitor(port_tuple)
             
             else: 
                 switch_id = self.return_switch_id((ox, oy))
@@ -695,8 +694,9 @@ class Gui(wx.Frame):
         self.clear_button.Bind(wx.EVT_BUTTON, self.on_clear_button)
         self.reset_view_button.Bind(wx.EVT_BUTTON, self.on_reset_view_button)
         self.text_box.Bind(wx.EVT_TEXT_ENTER, self.on_text_box)
-        self.zap_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_zap_button) # TEMPORARY!!!!!!!!!!!!!!!!!!!!
-        self.add_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_add_button) # TEMPORARY!!!!!!!!!!!!!!!!!!!!
+        self.zap_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_zap_button)
+        self.add_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_add_button)
+
         # Configure sizers for layout
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)
         canvas_plot_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -801,14 +801,17 @@ class Gui(wx.Frame):
                         "\nh - print a list of available commands on the terminal"
                         "\nq - quit the simulation")
         if Id == wx.ID_OPEN:
-            with wx.FileDialog(self, "Open New Source File",
-                            wildcard="TXT files (*.txt)|*.txt",
-                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as file_dialog:
+            if 'win' in platform.lower(): # windows
+                with wx.FileDialog(self, "Open New Source File",
+                                wildcard="TXT files (*.txt)|*.txt",
+                                style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as file_dialog:
 
-                if file_dialog.ShowModal() == wx.ID_CANCEL:
-                    return
+                    if file_dialog.ShowModal() == wx.ID_CANCEL:
+                        return
 
-                pathname = file_dialog.GetPath()
+                    pathname = file_dialog.GetPath()
+            else:
+                pass # TEMPORARY!!!!! DO LINUX/MACOS stuff here
 
                 try:
                     # Reinitialize the names, devices, network, and monitors
@@ -1071,11 +1074,14 @@ class Gui(wx.Frame):
         text = self.text_box.GetValue().strip()
         lines = text.split('\n')
         #print(lines)
-        # Get the most recent line of input, excluding the > at the bottom, hence index is -2 not -1
+        # Get the most recent line of input, excluding the > at the bottom, hence index is -2 in win and -1 else
         if len(lines) == 1:
             current_line = lines[0].strip()
         else:
-            current_line = lines[-1].strip()  
+            if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
+                current_line = lines[-1].strip()
+            else:
+                current_line = lines[-2].strip()
         print(lines)
         print(current_line)
         if current_line[0] == '>':
