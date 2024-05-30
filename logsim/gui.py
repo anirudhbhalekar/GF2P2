@@ -361,7 +361,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             (dev_id, port_id) = port_tuple
             remove_mon = self.monitors.remove_monitor(dev_id, port_id)
             if remove_mon: 
-                self.parent.text_box.AppendText("Monitor Removed\n")
+                wx.MessageBox("Monitor Removed\n")
             else: 
                 wx.LogError("Error! Monitor not found!")
         else: 
@@ -373,7 +373,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             (dev_id, port_id) = port_tuple
             add_mon = self.monitors.make_monitor(dev_id, port_id)
             if add_mon: 
-                self.parent.text_box.AppendText("Monitor Added\n")
+                wx.MessageBox("Monitor Added\n")
             else: 
                 wx.LogError("Error! Monitor already added!")
         else: 
@@ -398,7 +398,6 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             if self.parent.is_zap_monitor: 
                 GL.glFlush()
                 port_tuple = self.return_closest_output_id((ox, oy))
-                print(port_tuple)
                 self.do_zap_monitor(port_tuple)
             elif self.parent.is_add_monitor:
                 GL.glFlush()
