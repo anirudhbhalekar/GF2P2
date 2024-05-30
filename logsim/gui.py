@@ -398,6 +398,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             if self.parent.is_zap_monitor: 
                 GL.glFlush()
                 port_tuple = self.return_closest_output_id((ox, oy))
+                print(port_tuple)
                 self.do_zap_monitor(port_tuple)
             elif self.parent.is_add_monitor:
                 GL.glFlush()
@@ -764,13 +765,18 @@ class Gui(wx.Frame):
 
         if self.execute_circuit(cycles): 
             self.cycles_completed += cycles
+            return True
+        return False 
     
     def continue_circuit(self, cycles):
         """Continues the simulation for N cycles"""
         if self.cycles_completed == 0: 
             wx.LogError("Nothing to continue - run the simulation first")
+            return False 
         elif self.execute_circuit(cycles): 
             self.cycles_completed += cycles
+            return True 
+        return False
 
     def on_menu(self, event):
         """Handle the event when the user selects a menu item."""
@@ -1117,16 +1123,22 @@ class Gui(wx.Frame):
             # Continue the simulation for N cycles
             try:
                 N = int(text[2:].strip())
-                self.continue_circuit(N)
-                try: 
-                    self.monitor_plot()
-                except Exception: 
-                    self.on_reset_plot_button(None)
-                    wx.LogError("Run failed - cannot plot monitors")
+                bool_cont = self.continue_circuit(N)
+                # If True (continuing circuit doesn't give error)
+                if bool_cont:
+                    try: 
+                        self.monitor_plot()
+                    except Exception: 
+                        self.on_reset_plot_button(None)
+                        wx.LogError("Run failed - cannot plot monitors")
 
-                if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
-                    self.text_box.AppendText("\n")
-                self.text_box.AppendText(f"Continuing simulation for {N} cycles.\n")
+                    if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
+                        self.text_box.AppendText("\n")
+                    self.text_box.AppendText(f"Continuing simulation for {N} cycles.\n")
+                else:
+                    if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
+                        self.text_box.AppendText("\n")
+                    self.text_box.AppendText(f"Nothing to continue - run the simulation first.\n")
             except ValueError:
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                     self.text_box.AppendText("\n")
@@ -1158,7 +1170,6 @@ class Gui(wx.Frame):
             signal = text[2:].strip()
 
             bool_add_mon = self.add_monitor_with_name(signal) 
-
             if bool_add_mon:
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                     self.text_box.AppendText("\n")
