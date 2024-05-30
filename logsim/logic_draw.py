@@ -3,6 +3,7 @@ from OpenGL.GL import GL_LINE_STRIP, GL_LINE_LOOP, GL_POLYGON, GL_ENABLE_BIT, GL
 from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, glPushAttrib, glLineStipple, glPopAttrib, glEnable
 from OpenGL import GL, GLUT
 
+# NB No translation needed here, only drawing shapes.
 
 """
 LogicDrawer: A class for rendering various logic gates and components on a canvas using OpenGL.
