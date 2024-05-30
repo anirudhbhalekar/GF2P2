@@ -753,7 +753,6 @@ class Gui(wx.Frame):
             else:
                 wx.LogError("Error! Network oscillating.")
                 return False
-        self.monitors.display_signals()
         return True
     
     def run_circuit(self, cycles): 
