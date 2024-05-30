@@ -166,11 +166,19 @@ class Scanner:
         
         return number_string
     
-    def get_current_line(self):
-        """Returns the current line in the file"""
-        self.file.seek(self.total_char_count)
+    def get_line(self, line_number):
+        """Returns the line of the file at the given line number"""
+        self.file.seek(0)
+        line_count = 1
+        line = ""
+        while line_count != line_number: 
+            line = self.file.readline()
+            line_count += 1
         line = self.file.readline()
+        # strip the newline
+        line = line.strip()
         return line
+        
     
     def get_symbol(self):
         """Translate the next sequence of characters into a symbol."""
@@ -190,7 +198,6 @@ class Scanner:
             # This is a name
             name_string = self.get_name()
             if name_string in self.keywords_list: 
-                print(name_string)
                 symbol.type = self.KEYWORD
             
             elif name_string in self.param_list: 
