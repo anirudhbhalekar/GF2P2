@@ -45,12 +45,7 @@ class ConnectDrawer:
         (start_x, start_y) = inp_obj.input_dict[(inp_dev_id, inp_port_id)]
         (end_x, end_y) = out_obj.output_dict[(out_dev_id, out_port_id)]
 
-        """glColor3f(0.0,0.0,0.0) 
-        glBegin(GL_LINE_STRIP)
-        glVertex2f(start_x, start_y)
-        glVertex2f(end_x, end_y)
-        glEnd()
-"""
+
         # First determine for inputs how we 'jut out' (i.e. which corner of bbox to go to)
 
         if np.abs(start_x - inp_min_x) < np.abs(start_x - inp_max_x): 
@@ -76,7 +71,16 @@ class ConnectDrawer:
 
         # Similarily choose which corner of bbox we should aim to get to of the output
 
-        glColor3f(0.0, 0.0, 0.0)
+        # randomize color
+        
+        if self.fraction <= 0.42: index = 0 
+        elif self.fraction <= 0.59: index = 1
+        else: index = 2
+
+        color_arr = [self.fraction/4, self.fraction/4, self.fraction/4]
+        color_arr[index] = self.fraction/2
+       
+        glColor3f(color_arr[0], color_arr[1], color_arr[2])
         glBegin(GL_LINE_STRIP)
         glVertex2f(start_x, start_y)
         glVertex2f(curr_coord[0], start_y)
@@ -114,7 +118,6 @@ class ConnectDrawer:
                 next_seed_y = max_y + self.padding * 2
 
             # Draw line between points: curr coord -> closes x value coord of next intersecting box -> down or up to corners with padding -> reset to curr coords
-            glColor3f(0.0, 0.0, 0.0)
             glBegin(GL_LINE_STRIP)
             glVertex2f(curr_coord[0], curr_coord[1])
             glVertex2f(curr_coord[0], next_y_coord)
@@ -130,11 +133,9 @@ class ConnectDrawer:
             
         # At this point we are at one of the corners of the bounding box of the output obj itself so we just need two updates
     
-        glColor3f(0.0, 0.0, 0.0)
         glBegin(GL_LINE_STRIP)
         glVertex2f(curr_coord[0], curr_coord[1])
         glVertex2f(end_x + self.padding, curr_coord[1])
-        glVertex2f(end_x + self.padding, end_y)
         glVertex2f(end_x, end_y)
         glEnd()
 

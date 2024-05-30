@@ -165,8 +165,15 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 
                 # Call from dict
                 clk_render = self.draw_obj_dict[device.device_id]
+                
                 clk_render.draw_clock(xs, ys)
                 self.domain_dict[clk_render] = clk_render.domain
+
+                # building output_dicts 
+                monitor_dict = clk_render.output_dict
+                # Now we get the (dev_id, port_id) -> coord dictionary
+                for key, value in monitor_dict.items(): 
+                    self.output_dicts[key] = value
 
         pos_x, pos_y = xs + 150, y_start
         
@@ -177,6 +184,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 continue
             
             device_render = self.draw_obj_dict[acc_device.device_id]
+
             num_inputs = len(acc_device.inputs.keys())
             d_kind = self.names.get_name_string(acc_device.device_kind)
             d_name = self.names.get_name_string(acc_device.device_id)
@@ -197,6 +205,13 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             # Call from dict
             device_render.draw_with_string(d_kind, pos_x, pos_y)
             self.domain_dict[device_render] = device_render.domain
+            
+            # building output_dicts 
+            monitor_dict = device_render.output_dict
+            # Now we get the (dev_id, port_id) -> coord dictionary
+            for key, value in monitor_dict.items(): 
+                self.output_dicts[key] = value
+
             pos_y -= dist_y
    
        
@@ -220,16 +235,10 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 output_port_id = con_tup[1]
 
                 output_obj = self.draw_obj_dict[output_dev_id]
-                monitor_dict = output_obj.output_dict
-
                 con_draw = ConnectDrawer((input_obj, input_port_id, output_obj, output_port_id), 
                                             self.domain_dict, random_perturb, random_frac)
                 # Don't put padding too high - will break code 
                 con_draw.draw_connection()
-
-                # Now we get the (dev_id, port_id) -> coord dictionary
-                for key, value in monitor_dict.items(): 
-                    self.output_dicts[key] = value
         
 
     def assemble_monitors(self): 
@@ -305,39 +314,53 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
         return np.sqrt((x1-x2)**2 + (y1-y2)**2)
     
-    def draw_circle(self, ox, oy): 
-        """Draw a circle around mouse - used for hover action"""
-        radius = 10
-        GL.glRasterPos2f(ox, oy)
-
-        glColor3f(0.0, 0.0, 0.0)
-        glBegin(GL_LINE_LOOP)    
-        glVertex2f(ox, oy + radius)
-        glVertex2f(ox + radius, oy)
-        glVertex2f(ox, oy - radius)
-        glVertex2f(ox - radius, oy)
-        glVertex2f(ox, oy + radius)
-        glEnd()
-
-        GL.glFlush()
-        self.SwapBuffers()
 
     def return_closest_output_id(self, mouse_coords, tol = 20): 
-        """Return """
+        """Return output id within tolerance of mouse click"""
         for port_tuple, coords in self.output_dicts.items():
             this_dist = self.calc_distance(coords, mouse_coords)
             if this_dist < tol: 
                 return port_tuple
 
         return None
+
+    def return_switch_id(self, mouse_coords, tol =40):
+        """Returns closest switch id (in tolerance) to mouse coords"""
+        for device in self.devices.devices_list: 
+            if device.device_kind != self.devices.SWITCH: 
+                continue
+            dev_id = device.device_id
+            draw_obj = self.draw_obj_dict[dev_id]
+            d_x, d_y = draw_obj.x, draw_obj.y
+
+            dist = self.calc_distance((d_x, d_y), mouse_coords)
+            if dist < tol: 
+                return dev_id
+
+        return None
     
+    def flip_switch(self, switch_id): 
+        """Flips switch"""
+
+        if switch_id is not None: 
+            try: 
+                switch_device = self.devices.get_device(switch_id) 
+                curr_state = switch_device.switch_state
+                self.devices.set_switch(switch_id, int(abs(curr_state - 1)))
+            except: 
+                return False
+        
+            return True
+        else: 
+            return False
+
     def do_zap_monitor(self, port_tuple): 
         """Remove a monitor when the user clicks on a monitor point after selecting 'Zap'."""
         if port_tuple is not None: 
             (dev_id, port_id) = port_tuple
             remove_mon = self.monitors.remove_monitor(dev_id, port_id)
             if remove_mon: 
-                wx.LogMessage("Monitor removed successfully!")
+                self.parent.text_box.AppendText("Monitor Removed\n")
             else: 
                 wx.LogError("Error! Monitor not found!")
         else: 
@@ -349,7 +372,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             (dev_id, port_id) = port_tuple
             add_mon = self.monitors.make_monitor(dev_id, port_id)
             if add_mon: 
-                wx.LogMessage("Monitor added successfully!")
+                self.parent.text_box.AppendText("Monitor Added\n")
             else: 
                 wx.LogError("Error! Monitor already added!")
         else: 
@@ -373,14 +396,16 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             
             if self.parent.is_zap_monitor or self.parent.is_add_monitor: 
                 # We draw a circle around the cursor
-                print(ox, oy)
-                self.draw_circle(ox, oy)
                 port_tuple = self.return_closest_output_id((ox, oy))
 
                 if self.parent.is_zap_monitor: 
                     self.do_zap_monitor(port_tuple)
                 elif self.parent.is_add_monitor:
                     self.do_add_monitor(port_tuple)
+            
+            else: 
+                switch_id = self.return_switch_id((ox, oy))
+                self.flip_switch(switch_id)
 
         if event.ButtonUp():
             text = "".join(["Mouse button released at: ", str(event.GetX()),
@@ -683,6 +708,7 @@ class Gui(wx.Frame):
         # Initialise some empty matplotlib figure
         self.configure_matplotlib_canvas()
         self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
+        self.legend = None
 
         # Arrange sizers, all stemming from main sizer
         canvas_plot_sizer.Add(self.canvas, 2, wx.EXPAND | wx.ALL, 1)
@@ -717,7 +743,7 @@ class Gui(wx.Frame):
         self.figure = Figure(figsize=(5,2))
         self.axes = self.figure.add_subplot(111)
         self.axes.set_title("Monitor Plots", **hfont)
-        self.axes.tick_params(axis = 'both', left = False, right = False, labelright = False, labelleft = False, labelbottom = False)
+        self.axes.tick_params(axis = 'both', bottom = False, left = False, right = False, labelright = False, labelleft = False, labelbottom = False)
 
     def execute_circuit(self, cycles): 
         """Simulates the circuit for N cycles"""
@@ -862,6 +888,10 @@ class Gui(wx.Frame):
         
         self.axes.clear()
         self.axes.set_title("Monitor Plots", **hfont)
+        
+        try: self.legend.remove()
+        except: pass
+
         self.matplotlib_canvas.draw()
         self.plot_array = []
         self.name_array = []
@@ -870,14 +900,20 @@ class Gui(wx.Frame):
 
     def on_zap_button(self, event): 
         """Starts zap procedure"""
-        self.is_zap_monitor = not self.is_zap_monitor
-        print(self.is_zap_monitor)
+        if self.add_monitor_button.GetValue(): 
+            self.add_monitor_button.SetValue(False) 
+
+        self.is_add_monitor = self.add_monitor_button.GetValue()
+        self.is_zap_monitor = self.zap_monitor_button.GetValue()
+
 
     def on_add_button(self, event): 
         """Start add procedure"""
-        self.is_add_monitor = not self.is_add_monitor
-        print(self.is_add_monitor)
+        if self.zap_monitor_button.GetValue(): 
+            self.zap_monitor_button.SetValue(False)
 
+        self.is_add_monitor = self.add_monitor_button.GetValue()
+        self.is_zap_monitor = self.zap_monitor_button.GetValue()
     def on_continue_button(self, event): 
         """Handle continue button event"""
       
@@ -896,11 +932,74 @@ class Gui(wx.Frame):
             self.on_reset_plot_button(None)
             wx.LogError("Run failed - cannot plot monitors")
     
+    def change_switch_state(self, switch_name, switch_id, value): 
+        
+        bool_switch = False
+        if switch_id is None: 
+            # literally the first time I've ever used query from names -_-
+            switch_id = self.names.query(switch_name)
+        switch_device = self.devices.get_device(switch_id)
+        
+        if switch_device is not None and switch_device.device_kind == self.devices.SWITCH: 
+            bool_switch = self.devices.set_switch(switch_id, value)
+            self.Refresh()
+        else: 
+            wx.LogError("Invalid Device Type")
+        
+        if not bool_switch: 
+            wx.LogError("Invalid Device Type")
+
+        return bool_switch
+    
+    def add_monitor_with_name(self, m_string: str):
+        
+        bool_add_mon = False
+        string_array = m_string.split('.')
+
+        dev_name = string_array[0]
+        dev_id = self.names.query(dev_name)
+
+        port_id = None
+
+        if len(string_array) > 1: 
+            port_name = string_array[1]
+            port_id = self.names.query(port_name)
+        
+        try: 
+            bool_add_mon = self.monitors.make_monitor(dev_id, port_id, self.cycles_completed)
+            self.Refresh()
+        except: 
+            wx.LogError("Monitor addition error")
+        
+        return bool_add_mon
+    
+    def del_monitor_with_name(self, m_string: str):
+        string_array = m_string.split('.')
+
+        dev_name = string_array[0]
+        dev_id = self.names.query(dev_name)
+
+        port_id = None
+
+        if len(string_array) > 1: 
+            port_name = string_array[1]
+            port_id = self.names.query(port_name)
+        
+        try: 
+            bool_del_mon = self.monitors.remove_monitor(dev_id, port_id)
+            self.Refresh()
+        except: 
+            wx.LogError("Monitor addition error")
+        
+        return bool_del_mon
+
     def monitor_plot(self):
         
         hfont = {'fontname':'Consolas'}
         self.axes.clear()
         self.axes.set_title("Monitor Plots", **hfont)
+        try: self.legend.remove()
+        except: pass
         self.matplotlib_canvas.draw()
         
         self.plot_array = []
@@ -933,9 +1032,16 @@ class Gui(wx.Frame):
             self.name_array.append(monitor_name)
         
         for i, int_signal in enumerate(self.plot_array): 
-            
+
             name = self.name_array[i]
             int_signal = np.array(int_signal) + 2*i
+
+            if len(int_signal) < self.cycles_completed:
+                temp_signal = np.empty(self.cycles_completed)
+                temp_signal[:] = np.nan
+                temp_signal[self.cycles_completed - len(int_signal):] = int_signal
+                int_signal = temp_signal
+            
             zero_signal = np.zeros_like(int_signal) + 2*i
             self.axes.plot(int_signal, label = name)
             self.axes.plot(zero_signal, color = 'black', linestyle = "dashed") 
@@ -943,7 +1049,7 @@ class Gui(wx.Frame):
         self.axes.set_ylim(0, 2*i + 2)
         self.axes.set_xlim(0, self.cycles_completed - 1)
         prop={'family':'Consolas', 'size':8}
-        self.figure.legend(fontsize="8", loc ="upper left", prop = prop)
+        self.legend = self.figure.legend(fontsize="8", loc ="upper left", prop = prop)
 
         self.matplotlib_canvas.draw()
 
@@ -979,8 +1085,14 @@ class Gui(wx.Frame):
             # Run simulation for N cycles
             try:
                 N = int(text[2:].strip())
-                # Execute run command here!
-                #UserInterface.run_command(N)
+                self.run_circuit(N)
+                
+                try: 
+                    self.monitor_plot()
+                except Exception: 
+                    self.on_reset_plot_button(None)
+                    wx.LogError("Run failed - cannot plot monitors")
+    
                 self.text_box.AppendText(f"Running simulation for {N} cycles.\n")
             except ValueError:
                 self.text_box.AppendText("Invalid command. Please provide a valid number of cycles.\n")
@@ -988,37 +1100,55 @@ class Gui(wx.Frame):
             # Continue the simulation for N cycles
             try:
                 N = int(text[2:].strip())
-                # Execute continue command here! 
-                #UserInterface.continue_command(N)
+                self.continue_circuit(N)
+                try: 
+                    self.monitor_plot()
+                except Exception: 
+                    self.on_reset_plot_button(None)
+                    wx.LogError("Run failed - cannot plot monitors")
+
                 self.text_box.AppendText(f"Continuing simulation for {N} cycles.\n")
             except ValueError:
                 self.text_box.AppendText("Invalid command. Please provide a valid number of cycles.\n")
         elif text.startswith('s '):
             # Set switch X to N (0 or 1)
             try:
-                switch_id, value = text[2:].strip().split()
-                switch_id = int(switch_id)
+                switch_name, value = text[2:].strip().split()
                 value = int(value)
+                
                 if type(value) != int or value not in [0, 1]:
                     self.text_box.AppendText("Switch value must be 0 or 1")
                     raise ValueError("Switch value must be 0 or 1")
+                
+                bool_switch = self.change_switch_state(switch_name, None, value)
+                if not bool_switch: 
+                    wx.LogError("Switch set failed")
                 # Excecute switch command here!
                 #UserInterface.switch_command(switch_id, value)
-                self.text_box.AppendText(f"Setting switch {switch_id} to {value}.\n")
+                self.text_box.AppendText(f"Setting switch {switch_name} to {value}.\n")
             except ValueError:
                 self.text_box.AppendText("Invalid command format. Please provide switch ID and value.\n")
         elif text.startswith('m '):
             # Add a monitor on signal X
             signal = text[2:].strip()
-            # Do zap monitor from canvas with correct port tuple
-            #self.canvas.do_zap_monitor(port_tuple)
-            self.text_box.AppendText(f"Adding monitor on signal {signal}.\n")
+
+            bool_add_mon = self.add_monitor_with_name(signal) 
+
+            if bool_add_mon:
+                self.text_box.AppendText(f"Adding monitor on signal {signal}.\n")
+            else: 
+                self.text_box.AppendText(f"Monitor addition failed for {signal}.\n")
+
         elif text.startswith('z '):
             # Zap the monitor on signal X
             signal = text[2:].strip()
-            # Do zap monitor from canvas with correct port tuple
-            #self.canvas.do_zap_monitor(port_tuple)
-            self.text_box.AppendText(f"Zapping monitor on signal {signal}.\n")
+
+            bool_del_mon = self.del_monitor_with_name(signal) 
+
+            if bool_del_mon:
+                self.text_box.AppendText(f"Zapping monitor on signal {signal}.\n")
+            else: 
+                self.text_box.AppendText(f"Monitor zap failed for {signal}.\n")
         elif text == 'h':
             # Print a list of available commands to console
             self.text_box.AppendText(
