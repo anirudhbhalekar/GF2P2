@@ -68,9 +68,9 @@ class Parser:
         character = self.symbol.character
         error_message = self.get_error_message(error_code)
         error_line = self.scanner.get_line(line_number)
-        print(_(error_line)) # no translation needed for this
+        print(error_line) # no translation needed for this
         # print spaces and then a ^ under the character
-        print(_(" " * (character - 1) + "^"))
+        print(" " * (character - 1) + "^")
         print(_("Error code {error_code} at line {line_number}, character {character}: {error_message}").format(
         error_code=error_code, line_number=line_number, character=character, error_message=error_message))
         # had to reformat these for translation
