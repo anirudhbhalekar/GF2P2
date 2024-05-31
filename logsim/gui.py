@@ -177,6 +177,7 @@ class Gui(wx.Frame):
         self.text_box.Bind(wx.EVT_TEXT_ENTER, self.on_text_box)
         self.zap_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_zap_button)
         self.add_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_add_button)
+        self.switch_to_3D_button.Bind(wx.EVT_BUTTON, self.draw_canvas_to_3D)
 
         # Bind language selection events
         self.Bind(wx.EVT_MENU, self.on_language_selected, id=101)
@@ -209,6 +210,7 @@ class Gui(wx.Frame):
         side_sizer.Add(button_sizer0, 1, wx.EXPAND | wx.ALL, 5)
         side_sizer.Add(self.text_box, 15, wx.EXPAND | wx.ALL, 5) # expanding text box
         side_sizer.Add(self.clear_button, 1, wx.EXPAND | wx.ALL, 5)
+        side_sizer.Add(self.switch_to_3D_button, 1, wx.EXPAND | wx.ALL, 5)
         side_sizer.Add(self.message_display, 1, wx.EXPAND | wx.ALL, 5)
 
         button_sizer0.Add(self.zap_monitor_button, 1, wx.ALL, 1) 
@@ -222,9 +224,8 @@ class Gui(wx.Frame):
         self.SetSizeHints(600, 600)
         self.SetSizer(main_sizer)
     
-    def draw_canvas_to_3D(self): 
-        self.canvas = MyGLCanvas3D(Gui, self.devices, self.monitors)
-
+    def draw_canvas_to_3D(self, event): 
+        pass
     def on_language_selected(self, event):
         language_id = event.GetId()
         if language_id == 101:  # English

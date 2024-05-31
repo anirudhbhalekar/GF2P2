@@ -173,7 +173,7 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
             else:
                 self.draw_cuboid(0, z, 5, 10, 11)
 
-        GL.glColor3f(1.0, 1.0, 1.0)  # text is white
+        GL.glColor3f(0.7, 0.5, 0.1)  # text is white
         self.render_text("D1.QBAR", 0, 0, 210)
 
         # We have been drawing to the back buffer, flush the graphics pipeline
@@ -223,7 +223,7 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         '''
 
         and_test = LogicDrawer3D(None, None, self.monitors, None, 20)
-        and_test.draw_mesh(0,100)
+        and_test.draw_mesh(0,0)
 
     def on_paint(self, event):
         """Handle the paint event."""

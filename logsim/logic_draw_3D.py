@@ -53,103 +53,20 @@ class LogicDrawer3D:
 
         # We only need 3 points to define a plane, define them going counter clockwise 
 
-
-    def draw_cuboid(self, x_pos, z_pos, half_width, half_depth, height):
-
-        GL.glBegin(GL.GL_QUADS)
-        GL.glNormal3f(0, -1, 0)
-        GL.glVertex3f(x_pos - half_width, self.y_plane_coord, z_pos - half_depth)
-        GL.glVertex3f(x_pos + half_width, self.y_plane_coord, z_pos - half_depth)
-        GL.glVertex3f(x_pos + half_width, self.y_plane_coord, z_pos + half_depth)
-        GL.glVertex3f(x_pos - half_width, self.y_plane_coord, z_pos + half_depth)
-        GL.glNormal3f(0, 1, 0)
-        GL.glVertex3f(x_pos + half_width, self.y_plane_coord + height, z_pos - half_depth)
-        GL.glVertex3f(x_pos - half_width, self.y_plane_coord + height, z_pos - half_depth)
-        GL.glVertex3f(x_pos - half_width, self.y_plane_coord + height, z_pos + half_depth)
-        GL.glVertex3f(x_pos + half_width, self.y_plane_coord + height, z_pos + half_depth)
-        GL.glNormal3f(-1, 0, 0)
-        GL.glVertex3f(x_pos - half_width, self.y_plane_coord + height, z_pos - half_depth)
-        GL.glVertex3f(x_pos - half_width, self.y_plane_coord, z_pos - half_depth)
-        GL.glVertex3f(x_pos - half_width, self.y_plane_coord, z_pos + half_depth)
-        GL.glVertex3f(x_pos - half_width, self.y_plane_coord + height, z_pos + half_depth)
-        GL.glNormal3f(1, 0, 0)
-        GL.glVertex3f(x_pos + half_width, self.y_plane_coord, z_pos - half_depth)
-        GL.glVertex3f(x_pos + half_width, self.y_plane_coord + height, z_pos - half_depth)
-        GL.glVertex3f(x_pos + half_width, self.y_plane_coord + height, z_pos + half_depth)
-        GL.glVertex3f(x_pos + half_width, self.y_plane_coord, z_pos + half_depth)
-        GL.glNormal3f(0, 0, -1)
-        GL.glVertex3f(x_pos - half_width, self.y_plane_coord, z_pos - half_depth)
-        GL.glVertex3f(x_pos - half_width, self.y_plane_coord + height, z_pos - half_depth)
-        GL.glVertex3f(x_pos + half_width, self.y_plane_coord + height, z_pos - half_depth)
-        GL.glVertex3f(x_pos + half_width, self.y_plane_coord, z_pos - half_depth)
-        GL.glNormal3f(0, 0, 1)
-        GL.glVertex3f(x_pos - half_width, self.y_plane_coord + height, z_pos + half_depth)
-        GL.glVertex3f(x_pos - half_width, self.y_plane_coord, z_pos + half_depth)
-        GL.glVertex3f(x_pos + half_width, self.y_plane_coord, z_pos + half_depth)
-        GL.glVertex3f(x_pos + half_width, self.y_plane_coord + height, z_pos + half_depth)
-        GL.glEnd()
-    
-    def draw_cylinder(self, center_x, center_z, radius, height, num_slices):
-        r = radius
-        h = height + 1
-        n = float(num_slices)
-
-        y = self.y_plane_coord -1
-
-        circle_pts = []
-        for i in range(int(n) + 1):
-            angle = 2 * math.pi * (i/n)
-            x = r * math.cos(angle) + center_x
-            z = r * math.sin(angle) + center_z
-            pt = (x, z)
-            circle_pts.append(pt)
-
-        glBegin(GL.GL_TRIANGLE_FAN)#drawing the back circle
-        
-        GL.glVertex(center_x, y, center_z)
-        for (x, z) in circle_pts:
-            GL.glVertex(x, y, z)
-        glEnd()
-
-        glBegin(GL.GL_TRIANGLE_STRIP)#draw the tube
-        for (x, z) in circle_pts:
-            GL.glVertex(x, y + height, z)
-            GL.glVertex(x, y, z)
-        glEnd()
-
-        glBegin(GL.GL_TRIANGLE_FAN)#drawing the front circle
-        GL.glVertex(center_x, y + height, center_z)
-        for (x, z) in circle_pts:
-            GL.glVertex(x, y + height, z)
-        glEnd()
-
-
-    def draw_and_gate(self, x_pos, z_pos): 
-        # ALL DEVICES WILL BE DRAWN ON THE SAME Y = -6 plane
-
-        self.x, self.z = x_pos, z_pos
-        self.width = 40 
-        self.height = 20
-
-        half_depth = self.operator_height / 2
-        half_width = self.width / 2
-
-        self.draw_cuboid(self.x, self.z, half_width, half_depth, self.height)
-        self.draw_cylinder(self.x + half_width,  self.z, half_depth, self.height, 25)
-
-    def draw_mesh(self, x, z): 
+    def draw_mesh(self, x, y): 
 
         file_name = "C:/Users/Bhalekar's/Desktop/Part 2A/PROJECTS/DEVICES OBJ/AND.obj"
-        mesh = Mesh(filename=file_name, pos_x=x, pos_z=z)
+        mesh = Mesh(filename=file_name, pos_x=x, pos_y=y)
 
 """ MESH CLASS TO IMPORT OBJ FILES AND """
 
 class Mesh: 
 
-    def __init__(self, filename, pos_x, pos_z) -> None:
-
+    def __init__(self, filename, pos_x, pos_y) -> None:
+        
+        self.scale = 10
         self.x = pos_x
-        self.z = pos_z
+        self.y = pos_y
         self.filename = filename
 
         vertices = self.load_mesh()
@@ -157,6 +74,7 @@ class Mesh:
         vertices = np.array(vertices, dtype=np.float32)
 
         self.vao = GL.glGenVertexArrays(1)
+        GL.glColor3f(0.7, 0.5, 0.1)
         GL.glBindVertexArray(self.vao)
 
         #Vertices
@@ -200,9 +118,9 @@ class Mesh:
     def read_vertex_data(self, words : list[str]) -> list[float]: 
 
         return [
-                100 * float(float(words[1]) + self.x), 
-                100 * float(words[2]), 
-                100 * float(float(words[3]) + self.z)
+                self.scale * float(float(words[1]) + self.x), 
+                self.scale * float(float(words[2]) + self.y), 
+                self.scale * float(float(words[3]))
         ]
 
     def read_texcoord_data(self, words: list[str]) -> list[float]: 
@@ -260,3 +178,4 @@ class Mesh:
     def draw(self) -> None:
 
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.vertex_count)
+        

@@ -11,7 +11,7 @@ from monitors import Monitors
 from scanner import Scanner
 from parse import Parser
 from userint import UserInterface
-from gui import Gui
+from gui_3D import Gui
 
 # Initialize gettext translation
 gettext.install('logsim', localedir='locales')
