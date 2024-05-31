@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-31 01:31+0100\n"
+"POT-Creation-Date: 2024-05-31 01:43+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -178,7 +178,7 @@ msgid "{num_errors} errors caught"
 msgstr ""
 
 #: gui.py:371
-msgid "Cannot open file: {ex}"
+msgid "Cannot open file: {exception}"
 msgstr ""
 
 #: gui.py:379
@@ -186,7 +186,7 @@ msgid "New spin control value: "
 msgstr ""
 
 #: gui.py:385
-msgid "Run button pressed, {self.cycle_count} cycles."
+msgid "Run button pressed, {cycle_count} cycles."
 msgstr ""
 
 #: gui.py:393 gui.py:444 gui.py:624 gui.py:645
@@ -202,7 +202,7 @@ msgid "Reset plot button pressed."
 msgstr ""
 
 #: gui.py:433
-msgid "Continue button pressed, {self.cycle_count} cycles."
+msgid "Continue button pressed, {cycle_count} cycles."
 msgstr ""
 
 #: gui.py:438
@@ -226,7 +226,7 @@ msgid "Reset view button pressed"
 msgstr ""
 
 #: gui.py:628
-msgid "Running simulation for {N} cycles.\n"
+msgid "Running simulation for {cycles} cycles.\n"
 msgstr ""
 
 #: gui.py:633 gui.py:657
@@ -234,7 +234,7 @@ msgid "Invalid command. Please provide a valid number of cycles.\n"
 msgstr ""
 
 #: gui.py:649
-msgid "Continuing simulation for {N} cycles.\n"
+msgid "Continuing simulation for {cycles} cycles.\n"
 msgstr ""
 
 #: gui.py:653
@@ -266,7 +266,7 @@ msgid "Adding monitor on signal {signal}.\n"
 msgstr ""
 
 #: gui.py:692
-msgid "Monitor addition failed for {signal}.\n"
+msgid "Monitor addition failed for signal {signal}.\n"
 msgstr ""
 
 #: gui.py:703
@@ -274,7 +274,7 @@ msgid "Zapping monitor on signal {signal}.\n"
 msgstr ""
 
 #: gui.py:707
-msgid "Monitor zap failed for {signal}.\n"
+msgid "Monitor zap failed for signal {signal}.\n"
 msgstr ""
 
 #: gui.py:713
@@ -479,11 +479,11 @@ msgid "Unknown error"
 msgstr ""
 
 #: parse.py:134
-msgid "Total Error Count:{self.error_count}"
+msgid "Total Error Count: {error_count}"
 msgstr ""
 
 #: parse.py:137
-msgid "Syntax Error: {e}"
+msgid "Syntax Error: {error}"
 msgstr ""
 
 #: textctrl.py:155
@@ -582,8 +582,4 @@ msgstr ""
 
 #: userint.py:280
 msgid "Error! Nothing to continue. Run first."
-msgstr ""
-
-#: userint.py:283
-msgid " "
 msgstr ""

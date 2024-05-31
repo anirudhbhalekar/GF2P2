@@ -280,5 +280,5 @@ class UserInterface:
                 print(_("Error! Nothing to continue. Run first."))
             elif self.run_network(cycles):
                 self.cycles_completed += cycles
-                print(_(" ".join(["Continuing for", str(cycles), "cycles.",
-                                "Total:", str(self.cycles_completed)])))
+                print(" ".join(["Continuing for", str(cycles), "cycles.",
+                                "Total:", str(self.cycles_completed)]))

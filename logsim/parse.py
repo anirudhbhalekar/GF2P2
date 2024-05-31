@@ -71,8 +71,13 @@ class Parser:
         print(error_line) # no translation needed for this
         # print spaces and then a ^ under the character
         print(" " * (character - 1) + "^")
-        print(_(f"Error code {error_code} at line {line_number}, character {character}: {error_message}"))
-        print(_(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}, String: {self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME or self.symbol.type == self.scanner.KEYWORD else ''}"))
+        print(_("Error code {error_code} at line {line_number}, character {character}: {error_message}").format(
+        error_code=error_code, line_number=line_number, character=character, error_message=error_message))
+        # had to reformat these for translation
+        print(_("Symbol type: {symbol_type}, Symbol id: {symbol_id}, String: {name_string}").format(
+        symbol_type=self.symbol.type, symbol_id=self.symbol.id, 
+        name_string=self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME or self.symbol.type == self.scanner.KEYWORD else ''))
+
         while (self.symbol.type not in stopping_symbols and self.symbol.type != self.scanner.EOF):
             self.symbol = self.scanner.get_symbol()
         if self.symbol.type == self.scanner.EOF:
@@ -126,10 +131,10 @@ class Parser:
             if self.symbol.type == self.scanner.EOF:
                 return False
             self.spec_file()
-            print(_(f"Total Error Count:{self.error_count}"))
+            print(_("Total Error Count: {error_count}").format(error_count=self.error_count))
             return self.error_count == 0
         except SyntaxError as e:
-            print(_(f"Syntax Error: {e}"))
+            print(_("Syntax Error: {error}").format(error=e))
             return False
         
 

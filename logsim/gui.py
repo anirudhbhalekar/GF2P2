@@ -89,6 +89,9 @@ class Gui(wx.Frame):
         """Initialise main window, widgets and layout."""
         super().__init__(parent=None, title=title, size=(800, 600))
 
+        self.language_code = 'en'  # Default to English on startup
+        self.change_language(self.language_code)
+
         # Configure the file menu
         menuBar = wx.MenuBar()
 
@@ -96,7 +99,8 @@ class Gui(wx.Frame):
         fileMenu = wx.Menu()
         sourceMenu = wx.Menu()
         commandMenu = wx.Menu()
-        
+        languageMenu = wx.Menu()  # New menu for language selection
+
         try: 
             font = wx.Font(wx.FontInfo(9).FaceName("Consolas"))
             self.SetFont(font)
@@ -112,11 +116,15 @@ class Gui(wx.Frame):
         sourceMenu.Append(wx.ID_OPEN, _("&Open"))
         sourceMenu.Append(wx.ID_EDIT, _("&Edit"))
         commandMenu.Append(wx.ID_HELP_COMMANDS, _("&Commands"))
-        
+        # Add language options
+        languageMenu.Append(101, "English")
+        languageMenu.Append(102, "Ελληνικά")  # Greek in Greek
+
         # Populate the menu bar
         menuBar.Append(fileMenu, _("&File"))
         menuBar.Append(sourceMenu, _("&Source")) # for source/definition file being parsed
         menuBar.Append(commandMenu, _("&Command")) # list of user commands
+        menuBar.Append(languageMenu, ("&ABC/ΠΣΩ"))  # Language selection menu
 
         self.SetMenuBar(menuBar)
 
@@ -165,6 +173,10 @@ class Gui(wx.Frame):
         self.zap_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_zap_button)
         self.add_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_add_button)
 
+        # Bind language selection events
+        self.Bind(wx.EVT_MENU, self.on_language_selected, id=101)
+        self.Bind(wx.EVT_MENU, self.on_language_selected, id=102)
+
         # Configure sizers for layout
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)
         canvas_plot_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -204,6 +216,25 @@ class Gui(wx.Frame):
         # Set minimum window size and make main_sizer parent sizer
         self.SetSizeHints(600, 600)
         self.SetSizer(main_sizer)
+    
+    def on_language_selected(self, event):
+        print("Language selected event triggered")  
+        language_id = event.GetId()
+        if language_id == 101:  # English
+            print("English")
+            self.change_language('en')
+        elif language_id == 102:  # Greek
+            print("Greek")
+            self.change_language('el')  # Change 'el' to the appropriate language code for Greek
+        self.RefreshUI()
+
+    def change_language(self, language_code):
+        gettext.translation('logsim', localedir='locales', languages=[language_code], fallback=True).install()
+
+    def RefreshUI(self):
+        """Re-translate all translatable strings"""
+        self.SetMenuBar(self.GetMenuBar())  # Refresh menu bar
+        self.Layout()  # Refresh layout
     
     def configure_matplotlib_canvas(self): 
         """ Sets the config params of the matplotlib canvas"""
@@ -333,11 +364,11 @@ class Gui(wx.Frame):
                         #print(self.parser.parse_network())
                         num_errors = self.parser.error_count + 1
 
-                        wx.MessageBox(_(f"Error! Faulty definition file!") + "\n\n" +
-                            _(f"{num_errors} errors caught"))
+                        wx.MessageBox(_("Error! Faulty definition file!") + "\n\n" +
+                        _("{num_errors} errors caught").format(num_errors=num_errors))
 
                 except Exception as ex:
-                    wx.LogError(_(f"Cannot open file: {ex}"))
+                    wx.LogError(_("Cannot open file: {exception}").format(exception=ex))
 
 
     def on_spin(self, event):
@@ -351,7 +382,7 @@ class Gui(wx.Frame):
     def on_run_button(self, event):
         """Handle the event when the user clicks the run button."""
 
-        text = _(f"Run button pressed, {self.cycle_count} cycles.")
+        text = _("Run button pressed, {cycle_count} cycles.").format(cycle_count=self.cycle_count)
         self.run_circuit(self.cycle_count)
         self.canvas.render(text)
 
@@ -399,7 +430,7 @@ class Gui(wx.Frame):
         self.is_zap_monitor = self.zap_monitor_button.GetValue()
     def on_continue_button(self, event): 
         """Handle continue button event"""
-        text = _(f"Continue button pressed, {self.cycle_count} cycles.")
+        text = _("Continue button pressed, {cycle_count} cycles.").format(cycle_count=self.cycle_count)
         self.continue_circuit(self.cycle_count)
         self.canvas.render(text)
 
@@ -594,7 +625,7 @@ class Gui(wx.Frame):
                 
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                     self.text_box.AppendText("\n")
-                self.text_box.AppendText(_(f"Running simulation for {N} cycles.\n"))
+                self.text_box.AppendText(_("Running simulation for {cycles} cycles.\n").format(cycles=N))
                 
             except ValueError:
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
@@ -615,7 +646,7 @@ class Gui(wx.Frame):
 
                     if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                         self.text_box.AppendText("\n")
-                    self.text_box.AppendText(_(f"Continuing simulation for {N} cycles.\n"))
+                    self.text_box.AppendText(_("Continuing simulation for {cycles} cycles.\n").format(cycles=N))
                 else:
                     if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                         self.text_box.AppendText("\n")
@@ -641,7 +672,7 @@ class Gui(wx.Frame):
                     wx.LogError(_("Switch set failed"))
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                         self.text_box.AppendText("\n")
-                self.text_box.AppendText(_(f"Setting switch {switch_name} to {value}.\n"))
+                self.text_box.AppendText(_("Setting switch {switch_name} to {value}.\n").format(switch_name=switch_name, value=value))
             except ValueError:
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                         self.text_box.AppendText("\n")
@@ -654,11 +685,11 @@ class Gui(wx.Frame):
             if bool_add_mon:
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                     self.text_box.AppendText("\n")
-                self.text_box.AppendText(_(f"Adding monitor on signal {signal}.\n"))
+                self.text_box.AppendText(_("Adding monitor on signal {signal}.\n").format(signal=signal))
             else: 
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                     self.text_box.AppendText("\n")
-                self.text_box.AppendText(_(f"Monitor addition failed for {signal}.\n"))
+                self.text_box.AppendText(_("Monitor addition failed for signal {signal}.\n").format(signal=signal))
 
         elif text.startswith('z ') or text.startswith('zap '):
             # Zap the monitor on signal X
@@ -669,11 +700,11 @@ class Gui(wx.Frame):
             if bool_del_mon:
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                     self.text_box.AppendText("\n")
-                self.text_box.AppendText(_(f"Zapping monitor on signal {signal}.\n"))
+                self.text_box.AppendText(_("Zapping monitor on signal {signal}.\n").format(signal=signal))
             else: 
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                     self.text_box.AppendText("\n")
-                self.text_box.AppendText(_(f"Monitor zap failed for {signal}.\n"))
+                self.text_box.AppendText(_("Monitor zap failed for signal {signal}.\n").format(signal=signal))
         elif text == 'h' or text == 'help':
             # Print a list of available commands to console
             if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
@@ -695,7 +726,7 @@ class Gui(wx.Frame):
             # Invalid command
             if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                 self.text_box.AppendText("\n")
-            self.text_box.AppendText(_(f"<{text}> is an invalid command. A list of available commands can be obtained by entering 'h', or navigating to 'Commands' in the Menu.\n"))
+            self.text_box.AppendText(_("<{text}> is an invalid command. A list of available commands can be obtained by entering 'h', or navigating to 'Commands' in the Menu.\n").format(text=text))
 
 class RunApp(wx.App): 
     """Combines Canvas onto App with Matplotlib"""
