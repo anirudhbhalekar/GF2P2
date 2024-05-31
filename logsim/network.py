@@ -54,6 +54,8 @@ class Network:
     execute_clock(self, device_id): Simulates a clock and updates its output
                                     signal value.
 
+    execute_rc(self, device_id): Simulates an RC device and updates its output
+
     update_clocks(self): If it is time to do so, sets clock signals to RISING
                          or FALLING.
 
@@ -70,6 +72,7 @@ class Network:
          self.INPUT_CONNECTED, self.PORT_ABSENT,
          self.DEVICE_ABSENT] = self.names.unique_error_codes(6)
         self.steady_state = True  # for checking if signals have settled
+        self.cycle_count = 0 # Counting the number of cycles
 
     def get_connected_output(self, device_id, input_id):
         """Return the output connected to the given input.
@@ -303,6 +306,27 @@ class Network:
         device.outputs[self.devices.QBAR_ID] = new_QBAR
 
         return True
+    
+    def execute_rc(self, device_id):
+        """Simulate an RC device and update its output signal value.
+
+        Return True if successful.
+        """
+        device = self.devices.get_device(device_id)
+        if device is None:
+            return False
+        # Check if the RC device has cycled enough times to change its state
+        # We are counting based off number of simulation cycles, not iterations
+        if device.cycle_counter <= device.rc_cycles:
+            pass
+        else:
+            signal = self.get_output_signal(device_id, output_id=None)
+            updated_signal = self.update_signal(signal, self.devices.LOW)
+            if updated_signal is None:
+                return False
+            device.outputs[None] = updated_signal
+        
+        return True
 
     def execute_clock(self, device_id):
         """Simulate a clock and update its output signal value.
@@ -347,6 +371,14 @@ class Network:
                     device.outputs[None] = self.devices.RISING
             device.clock_counter += 1
 
+
+    def update_cycles(self):
+        """Update the cycle count for the network."""
+        rc_devices = self.devices.find_devices(self.devices.RC)
+        for device_id in rc_devices:
+            device = self.devices.get_device(device_id)
+            device.cycle_counter += 1
+
     def execute_network(self):
         """Execute all the devices in the network for one simulation cycle.
 
@@ -354,6 +386,7 @@ class Network:
         """
         clock_devices = self.devices.find_devices(self.devices.CLOCK)
         switch_devices = self.devices.find_devices(self.devices.SWITCH)
+        rc_devices = self.devices.find_devices(self.devices.RC)
         d_type_devices = self.devices.find_devices(self.devices.D_TYPE)
         and_devices = self.devices.find_devices(self.devices.AND)
         or_devices = self.devices.find_devices(self.devices.OR)
@@ -361,9 +394,9 @@ class Network:
         nor_devices = self.devices.find_devices(self.devices.NOR)
         xor_devices = self.devices.find_devices(self.devices.XOR)
 
-
         # This sets clock signals to RISING or FALLING, where necessary
         self.update_clocks()
+        self.update_cycles()
 
         # Number of iterations to wait for the signals to settle before
         # declaring the network unstable
@@ -373,9 +406,13 @@ class Network:
         while iterations < iteration_limit:
             iterations += 1
             self.steady_state = True
-
             for device_id in switch_devices:  # execute switch devices
                 if not self.execute_switch(device_id):
+                    return False
+                
+            # Execute RC devices first
+            for device_id in rc_devices:  # execute RC devices
+                if not self.execute_rc(device_id):
                     return False
             # Execute D-type devices before clocks to catch the rising edge of
             # the clock
@@ -385,6 +422,8 @@ class Network:
             for device_id in clock_devices:  # complete clock executions
                 if not self.execute_clock(device_id):
                     return False
+                
+
             for device_id in and_devices:  # execute AND gate devices
                 if not self.execute_gate(device_id, self.devices.HIGH,
                                          self.devices.HIGH):
