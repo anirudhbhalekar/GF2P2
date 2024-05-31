@@ -42,6 +42,8 @@ class Device:
         self.clock_counter = None
         self.switch_state = None
         self.dtype_memory = None
+        self.cycle_counter = 0
+        self.rc_cycles = None
 
 
 class Devices:
@@ -106,7 +108,7 @@ class Devices:
         self.devices_list = []
 
         self.gate_strings = ["AND", "OR", "NAND", "NOR", "XOR"]
-        self.device_strings = ["CLOCK", "SWITCH", "DTYPE"]
+        self.device_strings = ["CLOCK", "SWITCH", "DTYPE", "RC"]
         self.dtype_inputs = ["CLK", "SET", "CLEAR", "DATA"]
         self.dtype_outputs = ["Q", "QBAR"]
 
@@ -119,7 +121,7 @@ class Devices:
         self.gate_types = [self.AND, self.OR, self.NAND, self.NOR,
                            self.XOR] = self.names.lookup(self.gate_strings)
         self.device_types = [self.CLOCK, self.SWITCH,
-                             self.D_TYPE] = self.names.lookup(self.device_strings)
+                             self.D_TYPE, self.RC] = self.names.lookup(self.device_strings)
         self.dtype_input_ids = [self.CLK_ID, self.SET_ID, self.CLEAR_ID,
                                 self.DATA_ID] = self.names.lookup(self.dtype_inputs)
         self.dtype_output_ids = [
@@ -153,6 +155,7 @@ class Devices:
         new_device = Device(device_id)
         new_device.device_kind = device_kind
         self.devices_list.append(new_device)
+
 
     def add_input(self, device_id, input_id):
         """Add the specified input to the specified device.
@@ -225,11 +228,24 @@ class Devices:
             device.switch_state = signal
             return True
 
+
     def make_switch(self, device_id, initial_state):
         """Make a switch device and set its initial state."""
         self.add_device(device_id, self.SWITCH)
         self.add_output(device_id, output_id=None)
         self.set_switch(device_id, initial_state)
+
+
+    def make_rc(self, device_id, n):
+        """Make an RC device 
+        
+        On power-up, output starts high but falls low after n simulation
+        cycles, where n is specified in the definition file.."""
+        self.add_device(device_id, self.RC)
+        device = self.get_device(device_id)
+        device.rc_cycles = n
+        self.add_output(device_id, output_id=None, signal=self.HIGH)
+
 
     def make_clock(self, device_id, clock_half_period):
         """Make a clock device with the specified half period.
@@ -241,6 +257,7 @@ class Devices:
         device = self.get_device(device_id)
         device.clock_half_period = clock_half_period
         self.cold_startup()  # clock initialised to a random point in its cycle
+
 
     def make_gate(self, device_id, device_kind, no_of_inputs):
         """Make logic gates with the specified number of inputs."""
@@ -267,6 +284,8 @@ class Devices:
 
         Set the memory of the D-types to a random state and make the clocks
         begin from a random point in their cycles.
+
+        Also resets RC devices to high output state.
         """
         for device in self.devices_list:
             if device.device_kind == self.D_TYPE:
@@ -279,6 +298,11 @@ class Devices:
                 # Initialise it to a random point in its cycle.
                 device.clock_counter = \
                     random.randrange(device.clock_half_period)
+                
+            elif device.device_kind == self.RC:
+                # Reset to high and set cycle counter to 0
+                self.add_output(device.device_id, output_id=None, signal=self.HIGH)
+                device.cycle_counter = 0
 
     def make_device(self, device_id, device_kind, device_property=None):
         """Create the specified device.
@@ -306,6 +330,15 @@ class Devices:
                 error_type = self.INVALID_QUALIFIER
             else:
                 self.make_clock(device_id, device_property)
+                error_type = self.NO_ERROR
+        
+        elif device_kind == self.RC:
+            if device_property is None:
+                error_type = self.NO_QUALIFIER
+            elif device_property <= 0:
+                error_type = self.INVALID_QUALIFIER
+            else:
+                self.make_rc(device_id, device_property)
                 error_type = self.NO_ERROR
 
         elif device_kind in self.gate_types:

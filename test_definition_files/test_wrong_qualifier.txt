@@ -1,0 +1,10 @@
+DEFINE     
+    abs AS NAND WITH cycle_rep = 2, 
+    tgf AS AND WITH inputs = 3;
+
+CONNECT 
+    tgf.I1 = abs;
+
+MONITOR abs; 
+
+END;

@@ -1,0 +1,18 @@
+DEFINE
+    rc1 AS RC WITH rc_cycles = 5,
+    dtype1 AS DTYPE,
+    clk1 AS CLOCK WITH cycle_rep = 2,
+    switch1 AS SWITCH WITH initial = 0,
+    switch2 AS SWITCH WITH initial = 0;
+
+CONNECT
+    dtype1.DATA = rc1,
+    dtype1.CLK = clk1,
+    dtype1.SET = switch1,
+    dtype1.CLEAR = rc1;
+
+MONITOR
+    dtype1.Q,
+    rc1;
+
+END;
