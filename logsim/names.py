@@ -8,6 +8,11 @@ Classes
 Names - maps variable names and string names to unique integers.
 """
 
+import gettext
+
+# Initialize gettext translation
+gettext.install('logsim', localedir='locales')
+_ = gettext.gettext
 
 class Names:
 
@@ -50,7 +55,7 @@ class Names:
     def unique_error_codes(self, num_error_codes):
         """Return a list of unique integer error codes."""
         if not isinstance(num_error_codes, int):
-            raise TypeError("Expected num_error_codes to be an integer.")
+            raise TypeError(_("Expected num_error_codes to be an integer."))
         self.error_code_count += num_error_codes
         return range(self.error_code_count - num_error_codes,
                      self.error_code_count)
@@ -64,10 +69,10 @@ class Names:
         # same as in prelim exercise - if name_string in the table, return position, else None
         
         if not isinstance(name_string, str): 
-            raise TypeError('Need String argument')
+            raise TypeError(_('Need String argument'))
         
         if name_string == "": 
-            raise ValueError('Null Strings are not accepted')
+            raise ValueError(_('Null Strings are not accepted'))
         curr_list = self.name_table
 
         if name_string in curr_list: 
@@ -86,12 +91,12 @@ class Names:
 
         id_arr = []
         if not isinstance(name_string_list, list): 
-            raise TypeError("Name list argument must be a list") 
+            raise TypeError(_("Name list argument must be a list")) 
         
         for name in name_string_list: 
 
             if not isinstance(name, str): 
-                raise TypeError("Names must be strings")
+                raise TypeError(_("Names must be strings"))
             
             id = self.query(name)
             if id is None: 
@@ -112,10 +117,10 @@ class Names:
         """
         # return string from name table
         if not isinstance(name_id, int): 
-            raise TypeError('Name ID must be an integer')
+            raise TypeError(_('Name ID must be an integer'))
         
         if not name_id >= 0: 
-            raise ValueError("Integer must be greater than or equal to 0")
+            raise ValueError(_("Integer must be greater than or equal to 0"))
         curr_list = self.name_table
 
         if name_id < len(curr_list): 

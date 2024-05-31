@@ -7,8 +7,8 @@ import numpy as np
 """ Basic Premis of ConnectDrawer is to take a dictionary of connections and 
     draw out all the connections as poly-lines 
 
-
 """
+# NB no translation needed here.
 
 class ConnectDrawer:
     """Handle all Connections drawings."""

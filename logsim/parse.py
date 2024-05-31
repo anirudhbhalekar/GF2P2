@@ -14,6 +14,11 @@ from devices import Devices
 from monitors import Monitors
 from network import Network
 
+import gettext
+# Initialize gettext translation
+gettext.install('logsim', localedir='locales')
+_ = gettext.gettext
+
 class Parser:
 
     """Parse the definition file and build the logic network.
@@ -63,11 +68,16 @@ class Parser:
         character = self.symbol.character
         error_message = self.get_error_message(error_code)
         error_line = self.scanner.get_line(line_number)
-        print(error_line)
+        print(error_line) # no translation needed for this
         # print spaces and then a ^ under the character
         print(" " * (character - 1) + "^")
-        print(f"Error code {error_code} at line {line_number}, character {character}: {error_message}")
-        print(f"Symbol type: {self.symbol.type}, Symbol id: {self.symbol.id}, String: {self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME or self.symbol.type == self.scanner.KEYWORD else ''}")
+        print(_("Error code {error_code} at line {line_number}, character {character}: {error_message}").format(
+        error_code=error_code, line_number=line_number, character=character, error_message=error_message))
+        # had to reformat these for translation
+        print(_("Symbol type: {symbol_type}, Symbol id: {symbol_id}, String: {name_string}").format(
+        symbol_type=self.symbol.type, symbol_id=self.symbol.id, 
+        name_string=self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME or self.symbol.type == self.scanner.KEYWORD else ''))
+
         while (self.symbol.type not in stopping_symbols and self.symbol.type != self.scanner.EOF):
             self.symbol = self.scanner.get_symbol()
         if self.symbol.type == self.scanner.EOF:
@@ -77,43 +87,44 @@ class Parser:
     def get_error_message(self, error_code):
         """Return the error message corresponding to the error code."""
         error_messages = {
-            self.EXPECTED_NAME: "Expected a name",
-            self.INVALID_CHAR_IN_NAME: "Invalid character in name",
-            self.NULL_DEVICE_IN_CONNECT: "CONNECT list cannot have null devices",
-            self.INVALID_CONNECT_DELIMITER: "CONNECT list must have individual connections delimited by ','",
-            self.DOUBLE_PUNCTUATION: "Double punctuation marks are invalid",
-            self.MISSING_SEMICOLON: "Semi-colons are required at the end of each line",
-            self.INVALID_KEYWORD: "Invalid keyword, could be missing or misspelled",
-            self.INVALID_COMMENT_SYMBOL: "Comments starting or terminating with the wrong symbol",
-            self.INVALID_BLOCK_ORDER: "Invalid order of DEFINE, CONNECT, and MONITOR blocks",
-            self.MISSING_END_STATEMENT: "No END statement after MONITOR clause",
-            self.EXPECTED_NUMBER: "Expected a number",
-            self.EXPECTED_PUNCTUATION: "Expected a punctuation mark",
-            self.INVALID_PIN_REF: "Invalid pin reference",
-            self.EXPECTED_EQUALS: "Expected an equals sign",
-            self.EXPECTED_DEFINE: "Expected a DEFINE statement",
-            self.EXPECTED_CONNECT: "Expected a CONNECT statement",
-            self.EXPECTED_MONITOR: "Expected a MONITOR statement",
-            self.EXPECTED_END: "Expected an END statement",
-            self.INVALID_PARAM: "Invalid parameter for device",
-            self.MISSING_DTYPE_INPUTS: "DTYPE device must have 4 inputs",
+
+            self.EXPECTED_NAME: _("Expected a name"),
+            self.INVALID_CHAR_IN_NAME: _("Invalid character in name"),
+            self.NULL_DEVICE_IN_CONNECT: _("CONNECT list cannot have null devices"),
+            self.INVALID_CONNECT_DELIMITER: _("CONNECT list must have individual connections delimited by ','"),
+            self.DOUBLE_PUNCTUATION: _("Double punctuation marks are invalid"),
+            self.MISSING_SEMICOLON: _("Semi-colons are required at the end of each line"),
+            self.INVALID_KEYWORD: _("Invalid keyword, could be missing or misspelled"),
+            self.INVALID_COMMENT_SYMBOL: _("Comments starting or terminating with the wrong symbol"),
+            self.INVALID_BLOCK_ORDER: _("Invalid order of DEFINE, CONNECT, and MONITOR blocks"),
+            self.MISSING_END_STATEMENT: _("No END statement after MONITOR clause"),
+            self.EXPECTED_NUMBER: _("Expected a number"),
+            self.EXPECTED_PUNCTUATION: _("Expected a punctuation mark"),
+            self.INVALID_PIN_REF: _("Invalid pin reference"),
+            self.EXPECTED_EQUALS: _("Expected an equals sign"),
+            self.EXPECTED_DEFINE: _("Expected a DEFINE statement"),
+            self.EXPECTED_CONNECT: _("Expected a CONNECT statement"),
+            self.EXPECTED_MONITOR: _("Expected a MONITOR statement"),
+            self.EXPECTED_END: _("Expected an END statement"),
+            self.INVALID_PARAM: _("Invalid parameter for device"),
+            self.MISSING_DTYPE_INPUTS: _("DTYPE device must have 4 inputs"),
             # Network errors
-            self.network.DEVICE_ABSENT: "Device absent",
-            self.network.INPUT_CONNECTED: "Input is already connected",
-            self.network.INPUT_TO_INPUT: "Cannot connect an input to another input",
-            self.network.PORT_ABSENT: "Port absent",
-            self.network.OUTPUT_TO_OUTPUT: "Cannot connect an output to another output",
+            self.network.DEVICE_ABSENT: _("Device absent"),
+            self.network.INPUT_CONNECTED: _("Input is already connected"),
+            self.network.INPUT_TO_INPUT: _("Cannot connect an input to another input"),
+            self.network.PORT_ABSENT: _("Port absent"),
+            self.network.OUTPUT_TO_OUTPUT: _("Cannot connect an output to another output"),
             # Device errors
-            self.devices.DEVICE_PRESENT: "Device already present",
-            self.devices.NO_QUALIFIER: "Qualifier is missing",
-            self.devices.INVALID_QUALIFIER: "Invalid qualifier",
-            self.devices.QUALIFIER_PRESENT: "Qualifier should not be present",
-            self.devices.BAD_DEVICE: "Invalid device type",
+            self.devices.DEVICE_PRESENT: _("Device already present"),
+            self.devices.NO_QUALIFIER: _("Qualifier is missing"),
+            self.devices.INVALID_QUALIFIER: _("Invalid qualifier"),
+            self.devices.QUALIFIER_PRESENT: _("Qualifier should not be present"),
+            self.devices.BAD_DEVICE: _("Invalid device type"),
             # Monitor errors
-            self.monitors.NOT_OUTPUT: "Device output not found",
-            self.monitors.MONITOR_PRESENT: "Monitor already present"
-            }
-        return error_messages.get(error_code, "Unknown error")
+            self.monitors.NOT_OUTPUT: _("Device output not found"),
+            self.monitors.MONITOR_PRESENT: _("Monitor already present")
+        }
+        return error_messages.get(error_code, _("Unknown error"))
 
 
     def parse_network(self):
@@ -123,10 +134,10 @@ class Parser:
             if self.symbol.type == self.scanner.EOF:
                 return False
             self.spec_file()
-            print(f"Total Error Count:{self.error_count}")
+            print(_("Total Error Count: {error_count}").format(error_count=self.error_count))
             return self.error_count == 0
         except SyntaxError as e:
-            print(f"Syntax Error: {e}")
+            print(_("Syntax Error: {error}").format(error=e))
             return False
         
 
