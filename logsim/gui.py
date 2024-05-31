@@ -37,6 +37,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg as NavigationToolbar2Wx
 from sys import platform
+import os
 
 from names import Names
 from devices import Devices
@@ -218,21 +219,21 @@ class Gui(wx.Frame):
         self.SetSizer(main_sizer)
     
     def on_language_selected(self, event):
-        print("Language selected event triggered")  
         language_id = event.GetId()
         if language_id == 101:  # English
-            print("English")
             self.change_language('en')
         elif language_id == 102:  # Greek
-            print("Greek")
             self.change_language('el')  # Change 'el' to the appropriate language code for Greek
-        self.RefreshUI()
 
     def change_language(self, language_code):
-        gettext.translation('logsim', localedir='locales', languages=[language_code], fallback=True).install()
-
+        '''Load translations from the compiled .mo file in the current directory'''
+        print("Changing language,", language_code)
+        gettext.translation('logsim', localedir=os.getcwd(), languages=[language_code], fallback=True).install()
+        self.RefreshUI()
+        
     def RefreshUI(self):
         """Re-translate all translatable strings"""
+        print("refreshui called")
         self.SetMenuBar(self.GetMenuBar())  # Refresh menu bar
         self.Layout()  # Refresh layout
     
