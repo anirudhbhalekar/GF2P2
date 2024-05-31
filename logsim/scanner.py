@@ -13,6 +13,8 @@ from devices import Devices
 from names import Names
 import fileinput
 
+#NB no translation needed here -- no user output strings
+
 class Symbol:
 
     """Encapsulate a symbol and store its properties.
