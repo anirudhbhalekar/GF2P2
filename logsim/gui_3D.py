@@ -21,8 +21,9 @@ from monitors import Monitors
 from scanner import Scanner
 from parse import Parser
 
+from logic_draw_3D import LogicDrawer3D
 
-class MyGLCanvas(wxcanvas.GLCanvas):
+class MyGLCanvas3D(wxcanvas.GLCanvas):
     """Handle all drawing operations.
 
     This class contains functions for drawing onto the canvas. It
@@ -59,6 +60,13 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         GLUT.glutInit()
         self.init = False
         self.context = wxcanvas.GLContext(self)
+
+        self.parent = parent
+
+        #self.names = parent.Name
+        #self.network = parent.network
+        self.monitors = monitors
+        self.devices = devices
 
         # Constants for OpenGL materials and lights
         self.mat_diffuse = [0.0, 0.0, 0.0, 1.0]
@@ -158,7 +166,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         # Draw a sample signal trace, make sure its centre of gravity
         # is at the scene origin
         GL.glColor3f(1.0, 1.0, 1.0)  # signal trace is beige
-        for i in range(-10, 10):
+        for i in range(0, 10):
             z = i * 20
             if i % 2 == 0:
                 self.draw_cuboid(0, z, 5, 10, 1)
@@ -179,6 +187,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         Draw a cuboid at the specified position, with the specified
         dimensions.
         """
+        '''
         GL.glBegin(GL.GL_QUADS)
         GL.glNormal3f(0, -1, 0)
         GL.glVertex3f(x_pos - half_width, -6, z_pos - half_depth)
@@ -211,6 +220,10 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         GL.glVertex3f(x_pos + half_width, -6, z_pos + half_depth)
         GL.glVertex3f(x_pos + half_width, -6 + height, z_pos + half_depth)
         GL.glEnd()
+        '''
+
+        and_test = LogicDrawer3D(None, None, self.monitors, None, 20)
+        and_test.draw_mesh(0,100)
 
     def on_paint(self, event):
         """Handle the paint event."""
@@ -321,7 +334,13 @@ class Gui(wx.Frame):
         self.SetMenuBar(menuBar)
 
         # Canvas for drawing signals
-        self.canvas = MyGLCanvas(self, devices, monitors)
+        self.canvas = MyGLCanvas3D(self, devices, monitors)
+
+        self.path = path 
+        self.names = names
+        self.network = network
+        self.monitors = monitors
+        self.devices = devices 
 
         # Configure the widgets
         self.text = wx.StaticText(self, wx.ID_ANY, "Cycles")

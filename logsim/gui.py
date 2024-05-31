@@ -47,6 +47,7 @@ from parse import Parser
 from logic_draw import LogicDrawer
 from connect_draw import ConnectDrawer
 from userint import UserInterface 
+from gui_3D import MyGLCanvas3D
 
 class MyGLCanvas(wxcanvas.GLCanvas):
     """MyGLCanvas(wxcanvas.GLCanvas) - Handle all drawing operations.
@@ -704,6 +705,9 @@ class Gui(wx.Frame):
         self.reset_view_button = wx.Button(self, wx.ID_ANY, "Reset View")
         self.text_box = PromptedTextCtrl(self, wx.ID_ANY, style=wx.TE_PROCESS_ENTER)
         self.clear_button = wx.Button(self, wx.ID_ANY, "Clear terminal") # button for clearing terminal output
+        self.switch_to_3D_button = wx.Button(self, wx.ID_ANY, "3D Mode") # button to switch canvases out
+
+
 
         # Bind events to widgets
         self.Bind(wx.EVT_MENU, self.on_menu)
@@ -757,6 +761,9 @@ class Gui(wx.Frame):
         self.SetSizeHints(600, 600)
         self.SetSizer(main_sizer)
     
+    def draw_canvas_to_3D(self): 
+        self.canvas = MyGLCanvas3D(Gui, self.devices, self.monitors)
+
     def configure_matplotlib_canvas(self): 
         """ Sets the config params of the matplotlib canvas"""
         hfont = {'fontname':'Consolas'}
@@ -844,7 +851,6 @@ class Gui(wx.Frame):
                 pathname = file_dialog.GetPath()
 
                 try:
-                    print(pathname)
                     # Reinitialize the names, devices, network, and monitors
                     self.names = Names()
                     self.devices = Devices(self.names)
@@ -859,8 +865,8 @@ class Gui(wx.Frame):
                     if self.parser.parse_network(): 
 
                         # Reinitialize the canvas with the new devices and monitors
+                        self.on_reset_plot_button(None)
                         self.canvas.Destroy()  # Destroy the old canvas
-                        self.matplotlib_canvas.Destroy() # destroy plot canvas
                         self.canvas = MyGLCanvas(self, self.devices, self.monitors, self.message_display)
 
                         # Update the layout to replace the old canvas with the new one
@@ -868,7 +874,6 @@ class Gui(wx.Frame):
                         canvas_plot_sizer = main_sizer.GetChildren()[0].GetSizer()
 
                         # Clear matplotlib canvas
-                        self.configure_matplotlib_canvas()
                         self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
 
                         # Remove the old canvas and add the new one
