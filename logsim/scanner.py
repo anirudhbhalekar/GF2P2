@@ -88,12 +88,12 @@ class Scanner:
                                 self.DTYPE_INPUT, self.DTYPE_OUTPUT, self.EOF] = symbol_type_list
         
         self.keywords_list = ["DEFINE", "AS", "WITH", "CONNECT", "MONITOR", "END"]
-        self.param_list = ["inputs", "initial", "cycle_rep"]
+        self.param_list = ["inputs", "initial", "cycle_rep", "rc_cycles"]
         
         [self.DEFINE_ID, self.AS_ID, self.WITH_ID, self.CONNECT_ID, self.MONITOR_ID,
             self.END_ID] = self.names.lookup(self.keywords_list)   
 
-        [self.input_ID, self.initial_ID, self.cycle_rep_ID] = self.names.lookup(self.param_list)
+        [self.inputs_ID, self.initial_ID, self.cycle_rep_ID, self.rc_cycles_ID] = self.names.lookup(self.param_list)
 
         self.file.seek(0)
         self.current_character = ""

@@ -51,7 +51,7 @@ class Parser:
          self.INVALID_KEYWORD, self.INVALID_COMMENT_SYMBOL, self.INVALID_BLOCK_ORDER, 
          self.MISSING_END_STATEMENT, self.EXPECTED_NUMBER, self.EXPECTED_PUNCTUATION, 
          self.INVALID_PIN_REF, self.EXPECTED_EQUALS, self.EXPECTED_DEFINE, self.EXPECTED_CONNECT, 
-         self.EXPECTED_MONITOR, self.EXPECTED_END] = self.names.unique_error_codes(18)
+         self.EXPECTED_MONITOR, self.EXPECTED_END, self.INVALID_PARAM, self.MISSING_DTYPE_INPUTS] = self.names.unique_error_codes(20)
         self.devices = devices
         self.network = network
         self.monitors = monitors
@@ -87,6 +87,7 @@ class Parser:
     def get_error_message(self, error_code):
         """Return the error message corresponding to the error code."""
         error_messages = {
+
             self.EXPECTED_NAME: _("Expected a name"),
             self.INVALID_CHAR_IN_NAME: _("Invalid character in name"),
             self.NULL_DEVICE_IN_CONNECT: _("CONNECT list cannot have null devices"),
@@ -105,6 +106,8 @@ class Parser:
             self.EXPECTED_CONNECT: _("Expected a CONNECT statement"),
             self.EXPECTED_MONITOR: _("Expected a MONITOR statement"),
             self.EXPECTED_END: _("Expected an END statement"),
+            self.INVALID_PARAM: _("Invalid parameter for device"),
+            self.MISSING_DTYPE_INPUTS: _("DTYPE device must have 4 inputs"),
             # Network errors
             self.network.DEVICE_ABSENT: _("Device absent"),
             self.network.INPUT_CONNECTED: _("Input is already connected"),
@@ -175,7 +178,7 @@ class Parser:
                     self.error(self.INVALID_KEYWORD, stopping_symbols)
                 if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                     self.symbol = self.scanner.get_symbol()
-                    device_property = self.set_param(stopping_symbols)
+                    device_property = self.set_param(device_kind, stopping_symbols)
                 else:
                     device_property = None
             else:
@@ -199,7 +202,7 @@ class Parser:
                         self.error(self.INVALID_KEYWORD, stopping_symbols)
                     if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                         self.symbol = self.scanner.get_symbol()
-                        device_property = self.set_param(stopping_symbols)
+                        device_property = self.set_param(device_kind, stopping_symbols)
                     else:
                         device_property = None
                 else:
@@ -214,10 +217,10 @@ class Parser:
             self.error(self.INVALID_KEYWORD, stopping_symbols)
 
 
-    def set_param(self, stopping_symbols):
+    def set_param(self, device_kind, stopping_symbols):
         """Implements rule set_param = param, "=", value;"""
         # Only one param for different devices, so just return the param value
-        if self.param(stopping_symbols):
+        if self.param(device_kind, stopping_symbols):
             if self.symbol.type == self.scanner.EQUALS:
                 self.symbol = self.scanner.get_symbol()
                 device_property = self.value(stopping_symbols)
@@ -225,15 +228,34 @@ class Parser:
             else:
                 self.error(self.EXPECTED_EQUALS, stopping_symbols)
                 return None
-
-
-    def param(self, stopping_symbols):
-        """Implements rule param = "inputs" | "initial" | "cycle_rep";"""
-        if self.symbol.type == self.scanner.PARAM:
-            self.symbol = self.scanner.get_symbol()
-            return True
         else:
-            self.error(self.INVALID_KEYWORD, stopping_symbols)
+            if self.error_count == 0:
+                self.error(self.INVALID_PARAM, stopping_symbols)
+            return None
+
+
+    def param(self, device_kind, stopping_symbols):
+        """Implements rule param = "inputs" | "initial" | "cycle_rep" | rc_cycles;"""
+        if self.symbol.type == self.scanner.PARAM:
+            # The scanner module does 
+            device_string = self.names.get_name_string(device_kind)
+            if device_string in self.devices.gate_strings and self.symbol.id == self.scanner.inputs_ID:
+                self.symbol = self.scanner.get_symbol()
+                return True
+            elif device_string == "SWITCH" and self.symbol.id == self.scanner.initial_ID:
+                self.symbol = self.scanner.get_symbol()
+                return True
+            elif device_string == "CLOCK" and self.symbol.id == self.scanner.cycle_rep_ID:
+                self.symbol = self.scanner.get_symbol()
+                return True
+            elif device_string == "RC" and self.symbol.id == self.scanner.rc_cycles_ID:
+                self.symbol = self.scanner.get_symbol()
+                return True
+            else:
+                self.error(self.INVALID_PARAM, stopping_symbols)
+                return False
+        else:
+            self.error(self.INVALID_PARAM, stopping_symbols)
             return False
 
     def value(self, stopping_symbols):
@@ -290,6 +312,13 @@ class Parser:
                     error_type = self.network.make_connection(in_device_id, in_port_id, out_device_id, out_port_id)
                     if error_type != self.network.NO_ERROR:
                         self.error(error_type, stopping_symbols)
+
+        # If DTYPE exists, check it has all 4 inputs: we enforce all 4
+        d_type_devices = self.devices.find_devices(self.devices.D_TYPE)
+        for device_id in d_type_devices:
+            device = self.devices.get_device(device_id)
+            if any(value is None for value in device.inputs.values()):
+                self.error(self.MISSING_DTYPE_INPUTS, stopping_symbols)
 
 
     def input_con(self, stopping_symbols):
@@ -415,7 +444,7 @@ class Parser:
 
 
     def device(self, stopping_symbols):
-        """Implements rule device = "CLOCK" | "SWITCH" | "DTYPE";"""
+        """Implements rule device = "CLOCK" | "SWITCH" | "DTYPE" | "RC";"""
         if self.symbol.type == self.scanner.DEVICE:
             device_kind = self.symbol.id
             self.symbol = self.scanner.get_symbol()
