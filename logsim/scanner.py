@@ -34,6 +34,7 @@ class Symbol:
         self.id = None  
         self.line_number = None
         self.character = None
+        self.length = None
 
     # Set symbol properties above
     # Define what types of symbols - names (keywords and names), numbers, punctuation, EOF
@@ -77,6 +78,7 @@ class Scanner:
         self.line_count = 1
         self.total_char_count = 0
         self.line_char_count = 0
+        self.symbol_char_count = 0
 
         symbol_type_list = ["COMMA", "SEMICOLON", "EQUALS", "KEYWORD", "NUMBER", "NAME"
                             ,"DOT", "DEVICE", "GATE", "PARAM", "DTYPE_INPUT", "DTYPE_OUTPUT"
@@ -107,6 +109,7 @@ class Scanner:
         next_char = self.file.read(1)
         self.total_char_count += 1
         self.line_char_count  += 1
+        self.symbol_char_count += 1
 
         if self.current_character == "\n": 
             self.line_count += 1
@@ -178,7 +181,7 @@ class Scanner:
             line_count += 1
         line = self.file.readline()
         # strip the newline
-        line = line.strip()
+        line = line[:-1]
         return line
         
     
@@ -254,6 +257,9 @@ class Scanner:
 
         symbol.line_number = self.line_count
         symbol.character = self.line_char_count
+        symbol.length = self.symbol_char_count
+
+        self.symbol_char_count = 0
 
         return symbol 
     

@@ -49,7 +49,7 @@ class Parser:
         [self.EXPECTED_NAME, self.INVALID_CHAR_IN_NAME, self.NULL_DEVICE_IN_CONNECT, 
          self.INVALID_CONNECT_DELIMITER, self.DOUBLE_PUNCTUATION, self.MISSING_SEMICOLON, 
          self.INVALID_KEYWORD, self.INVALID_COMMENT_SYMBOL, self.INVALID_BLOCK_ORDER, 
-         self.MISSING_END_STATEMENT, self.EXPECTED_NUMBER, self.EXPECTED_PUNCTUATION, 
+         self.MISSING_END_STATEMENT, self.EXPECTED_NUMBER, self.EXPECTED_DOT, 
          self.INVALID_PIN_REF, self.EXPECTED_EQUALS, self.EXPECTED_DEFINE, self.EXPECTED_CONNECT, 
          self.EXPECTED_MONITOR, self.EXPECTED_END, self.INVALID_PARAM, self.MISSING_DTYPE_INPUTS] = self.names.unique_error_codes(20)
         self.devices = devices
@@ -66,11 +66,12 @@ class Parser:
         self.error_count += 1
         line_number = self.symbol.line_number
         character = self.symbol.character
+        symbol_length = self.symbol.length
         error_message = self.get_error_message(error_code)
         error_line = self.scanner.get_line(line_number)
         print(error_line) # no translation needed for this
         # print spaces and then a ^ under the character
-        print(" " * (character - 1) + "^")
+        print(" " * (character - symbol_length - 1) + "^")
         print(_("Error code {error_code} at line {line_number}, character {character}: {error_message}").format(
         error_code=error_code, line_number=line_number, character=character, error_message=error_message))
         # had to reformat these for translation
@@ -99,7 +100,7 @@ class Parser:
             self.INVALID_BLOCK_ORDER: _("Invalid order of DEFINE, CONNECT, and MONITOR blocks"),
             self.MISSING_END_STATEMENT: _("No END statement after MONITOR clause"),
             self.EXPECTED_NUMBER: _("Expected a number"),
-            self.EXPECTED_PUNCTUATION: _("Expected a punctuation mark"),
+            self.EXPECTED_DOT: _("Expected a dot"),
             self.INVALID_PIN_REF: _("Invalid pin reference"),
             self.EXPECTED_EQUALS: _("Expected an equals sign"),
             self.EXPECTED_DEFINE: _("Expected a DEFINE statement"),
@@ -330,8 +331,11 @@ class Parser:
                 in_port_id = self.input_notation(stopping_symbols)
                 return in_device_id, in_port_id
             else:
-                self.error(self.EXPECTED_PUNCTUATION, stopping_symbols)
+                self.error(self.EXPECTED_DOT, stopping_symbols)
                 return None, None
+        else:
+            self.error(self.EXPECTED_NAME, stopping_symbols)
+            return None, None
         
     
     def output_con(self, stopping_symbols):
@@ -347,10 +351,12 @@ class Parser:
             elif self.symbol.type == self.scanner.SEMICOLON:
                 out_port_id = None
             else:
-                self.error(self.EXPECTED_PUNCTUATION, stopping_symbols)
+                self.error(self.EXPECTED_DOT, stopping_symbols)
                 return None, None
             return out_device_id, out_port_id
-        return None, None
+        else:
+            self.error(self.EXPECTED_NAME, stopping_symbols)
+            return None, None
 
 
     def input_notation(self, stopping_symbols):

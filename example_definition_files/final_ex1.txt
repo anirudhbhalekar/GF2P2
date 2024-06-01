@@ -1,0 +1,22 @@
+DEFINE
+    clk AS CLOCK WITH cycle_rep=5,
+    sw AS SWITCH WITH initial=0,
+    rc AS RC WITH rc_cycles=10,
+    dtype AS DTYPE,
+    and1 AS AND WITH inputs=2
+;
+
+CONNECT
+    dtype.SET = rc,
+    dtype.CLEAR = sw,
+    dtype.CLK = clk,
+    dtype.DATA = clk,
+    and1.I1 = clk,
+    and1.I2 = dtype.Q
+;
+
+MONITOR
+    dtype.Q, dtype.QBAR;
+
+
+END;
