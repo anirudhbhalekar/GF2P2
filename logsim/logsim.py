@@ -11,8 +11,7 @@ from monitors import Monitors
 from scanner import Scanner
 from parse import Parser
 from userint import UserInterface
-#from gui_3D import Gui3D
-from gui import Gui
+from gui_3D import Gui3D
 
 # Initialize gettext translation
 gettext.install('logsim', localedir='locales')
@@ -67,10 +66,8 @@ Graphical user interface: logsim.py <file path>""")
         assert parser.parse_network()
         # Initialise an instance of the gui.Gui() class
         app = wx.App()
-        # gui = Gui3D(_("Logic Simulator"), path, names, devices, network,
-        #             monitors)
-        gui = Gui(_("Logic Simulator"), path, names, devices, network,
-            monitors)
+        gui = Gui3D(_("Logic Simulator"), path, names, devices, network,
+                    monitors)
         gui.Show(True)
         app.MainLoop()
 
