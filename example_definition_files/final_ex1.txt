@@ -12,12 +12,11 @@ CONNECT
     dtype.CLK = clk,
     dtype.DATA = clk,
     and1.I1 = clk,
-    and1.I2 = dtype.Q,
-    and1 = dtype.Q
+    and1.I2 = dtype.Q
 ;
 
 MONITOR
     dtype.Q, dtype.QBAR;
-;
+
 
 END;
