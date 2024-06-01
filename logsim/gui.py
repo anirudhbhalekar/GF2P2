@@ -164,7 +164,7 @@ class Gui(wx.Frame):
         self.clear_button = wx.Button(self, wx.ID_ANY, "Clear terminal") # button for clearing terminal output
         self.switch_to_3D_button = wx.ToggleButton(self, wx.ID_ANY, "3D Mode") # button to switch canvases out
 
-
+        self.is3D = False
 
         # Bind events to widgets
         self.Bind(wx.EVT_MENU, self.on_menu)
@@ -225,9 +225,13 @@ class Gui(wx.Frame):
         self.SetSizer(main_sizer)
     
     def draw_canvas_to_3D(self, event): 
-        bool_is_3D = self.switch_to_3D_button.GetValue()
-        if bool_is_3D: 
+        self.is3D = self.switch_to_3D_button.GetValue()
         
+        if self.is3D: 
+            
+            self.zap_monitor_button.Disable()
+            self.add_monitor_button.Disable()
+
             self.canvas.Destroy()
             self.canvas = MyGLCanvas3D(self, self.devices, self.monitors)
 
@@ -242,6 +246,9 @@ class Gui(wx.Frame):
             main_sizer.Layout()
 
         else: 
+            self.zap_monitor_button.Enable()
+            self.add_monitor_button.Enable()
+
             self.canvas.Destroy()
             self.canvas = MyGLCanvas(self, self.devices, self.monitors, self.message_display)
             main_sizer = self.GetSizer()

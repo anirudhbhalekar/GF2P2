@@ -70,10 +70,12 @@ class LogicDrawer3D:
         
         if device_kind in ["AND", "NAND", "OR", "XOR", "NOR"]:
             glColor3f(0.8, 0.5, 0.1) 
-        elif device_kind in ["SWICTH", "CLOCK"]: 
+        elif device_kind in ["SWITCH", "CLOCK"]: 
             glColor3f(0.1, 0.8, 0.5)
-        else: 
+        elif device_kind == "DTYPE": 
             glColor3f(0.1, 0.5, 0.9)
+        else:
+            glColor3f(0.9, 0.1, 0.3)
         
         if device_kind == "DTYPE":
             glColor3f(0.8, 0.4, 0.1)

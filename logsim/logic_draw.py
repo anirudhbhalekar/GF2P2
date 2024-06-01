@@ -116,29 +116,11 @@ class LogicDrawer:
             self.draw_dtype(self.x, self.y)
         elif op_string == "SWITCH": 
             self.draw_switch(self.x, self.y)
-        else: 
+        elif op_string == "RC":
+            self.draw_RC(self.x, self.y)
+        else:  
             pass
 
-    def bound_y(self): 
-        """Return the y coordinate padding bound of a device."""
-        if self.device.device_kind == self.devices.AND: 
-            return self.height + 20 
-        elif self.device.device_kind == self.devices.NAND: 
-            return self.height + 20 
-        elif self.device.device_kind == self.devices.OR: 
-            return self.height + 30
-        elif self.device.device_kind == self.devices.NOR: 
-            return self.height + 30 
-        elif self.device.device_kind == self.devices.XOR: 
-            return self.height + 44
-        elif self.device.device_kind == self.devices.SWITCH: 
-            return self.height + 10
-        elif self.device.device_kind == self.devices.CLOCK: 
-            return self.height + 10 
-        elif self.device.device_kind == self.devices.D_TYPE: 
-            return self.height + 40
-        else: 
-            pass 
 
     def make_circle(self, x, y): 
         """Draw a dot at posiition (x, y) to symbolise a connection point."""
@@ -699,6 +681,51 @@ class LogicDrawer:
                 GL.glRasterPos2f(x_pos, y_pos)
             else:
                 GLUT.glutBitmapCharacter(font, ord(character))
+    def draw_RC(self, x, y): 
+
+        self.x = x
+        self.y = y 
+        self.height = 40
+        self.length = 40
+
+        half_length = self.length / 2
+        half_height = self.height / 2
+
+        glColor3f(1.0, 0.0, 0.0)  # Blue color
+        glBegin(GL_LINE_STRIP)
+        glVertex2f(self.x - half_length, self.y)
+        glVertex2f(self.x - half_length, self.y + half_height)
+        glVertex2f(self.x + half_length, self.y)
+        glVertex2f(self.x - half_length, self.y - half_height)
+        glVertex2f(self.x - half_length, self.y)
+        glEnd()
+
+
+        inp_space = self.height - 2 * self.inc_height
+        div_space = inp_space/(self.n_inputs + 1)
+
+        input_ids = self.device_inputs.keys()
+        output_ids = self.device_outputs.keys()
+        
+        # Render clock label
+        d_name = self.names.get_name_string(self.id)
+        self.render_text(d_name, self.x + self.length/2 - 5, self.y + self.height/2, color="black")
+
+        for i, i_id in enumerate(input_ids): 
+            y_coord = self.y + self.inc_height + (i+1)*div_space
+            x_coord = self.x
+
+            self.input_dict[(self.id, i_id)] = (x_coord, y_coord)
+            self.make_circle(x_coord, y_coord)
+
+        for o, o_id in enumerate(output_ids): 
+            y_coord = self.y
+            x_coord = self.x + (self.length / 2)
+
+            self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
+            self.make_circle(x_coord, y_coord)
+
+        self.domain =  [(self.x - half_length - 10, self.y - half_height - 10), (self.x + half_length + 10, self.y + half_height + 10)]
 
     def draw_monitor(self, x, y, m_name: str):
         """Render and draw a Monitor"""
