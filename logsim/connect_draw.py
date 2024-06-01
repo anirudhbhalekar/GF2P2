@@ -135,7 +135,8 @@ class ConnectDrawer:
     
         glBegin(GL_LINE_STRIP)
         glVertex2f(curr_coord[0], curr_coord[1])
-        glVertex2f(end_x + self.padding, curr_coord[1])
+        glVertex2f(end_x + 20, curr_coord[1])
+        glVertex2f(end_x + 20, end_y)
         glVertex2f(end_x, end_y)
         glEnd()
 

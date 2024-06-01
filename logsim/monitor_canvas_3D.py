@@ -11,7 +11,7 @@ from monitors import Monitors
 from scanner import Scanner
 from parse import Parser
 
-class MyGLCanvas3D(wxcanvas.GLCanvas):
+class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
     """Handle all drawing operations.
 
     This class contains functions for drawing onto the canvas. It
@@ -146,6 +146,8 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
 
         x_dist = 2.5 
 
+        
+
     def render(self):
         """Handle all drawing operations."""
         self.SetCurrent(self.context)
@@ -160,7 +162,6 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         # Draw a sample signal trace, make sure its centre of gravity
         # is at the scene origin
         GL.glColor3f(1.0, 1.0, 1.0)  # signal trace is beige
-        self.assemble_devices()
         GL.glColor3f(0.7, 0.5, 0.1)  # text is white
         self.render_text("D1.QBAR", 0, 0, 210)
 
