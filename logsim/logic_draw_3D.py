@@ -9,7 +9,7 @@ class LogicDrawer3D:
     
     def __init__(self, names, devices, monitors, vertex_loader) -> None:
         
-        self.scale = 10
+        self.scale = 1
         self.names = names
         self.devices = devices
         self.monitors = monitors
@@ -65,7 +65,7 @@ class LogicDrawer3D:
         obj_file_path = self.master_obj_folder + str(device_kind) + ".obj"
         frame_file_path =  self.master_obj_folder + str(device_kind) + "_frame.obj"
         
-        if not os.path.exists(obj_file_path) and not os.path.exists(frame_file_path): 
+        if not os.path.exists(obj_file_path) or not os.path.exists(frame_file_path): 
             raise FileNotFoundError
         
         if device_kind in ["AND", "NAND", "OR", "XOR", "NOR"]:
@@ -75,15 +75,43 @@ class LogicDrawer3D:
         else: 
             glColor3f(0.1, 0.5, 0.9)
         
-        
+        if device_kind == "DTYPE":
+            glColor3f(0.8, 0.4, 0.1)
+            self.render_text("Q", (x + 3), (y + 2), 2)
+            self.render_text("QBAR", (x + 3), (y - 2), 2)
+            self.render_text("DATA", (x - 3), (y + 2), 2)
+            self.render_text("SET", (x), (y + 5), 2)
+            self.render_text("RESET", (x), (y - 5), 2)
+            self.render_text("CLK", (x - 3), (y - 2), 2)
+            glColor3f(0.1, 0.5, 0.9)
+            self.render_text(device_name, (x + 5), (y + 5), 3)
+        else: 
+            self.render_text(device_name, (x + 2), (y + 2), 3)
         self.draw_mesh(x, y, obj_file_path, device_id)
-        self.render_text(device_name, self.scale * x, self.scale * y, 30)
+        
         glColor3f(0.1, 0.1, 0.1)
         self.draw_mesh(x, y, frame_file_path, str(str(device_id) + "_frame"))
 
+    def draw_monitor(self, x, y, dev_id, port_id): 
+        
+        obj_file_path = self.master_obj_folder + "MONITOR.obj"
+        frame_file_path =  self.master_obj_folder + "MONITOR_frame.obj"
+
+        if not os.path.exists(obj_file_path) or not os.path.exists(frame_file_path): 
+            raise FileNotFoundError
+        
+        glColor3f(0.8,0.3,0.8)
+
+        unique_id = str(dev_id) + "_" + str(port_id)
+
+        self.draw_mesh(x, y, obj_file_path, unique_id)
+        
+
+
     def draw_mesh(self, x, y, file_name, device_id): 
         mesh = Mesh(file_name, device_id, x, y, self.names, self.devices, self.monitors, self.vertex_loader)
-    
+        
+
     def return_io_list(self, device_id, x, y): 
         """IO list of the object"""
 
@@ -109,7 +137,6 @@ class LogicDrawer3D:
             for input_id in this_device_inputs.keys(): 
                 coord = self.gate_coord_list.pop()
                 self.inputs_dict[(device_id, input_id)] = coord
-                print(coord)
             for output_id in this_device_outputs.keys(): 
                 coord = (4 + x, y, 0)
                 self.outputs_dict[(device_id, output_id)] = coord

@@ -22,6 +22,7 @@ from scanner import Scanner
 from parse import Parser
 
 from logic_draw_3D import LogicDrawer3D
+from connect_draw_3D import ConnectDrawer3D
 
 class MyGLCanvas3D(wxcanvas.GLCanvas):
     """Handle all drawing operations.
@@ -87,7 +88,7 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         self.scene_rotate = np.identity(4, 'f')
 
         # Initialise variables for zooming
-        self.zoom = 1
+        self.zoom = 20
 
         self.names = parent.names
         self.network = parent.network
@@ -101,10 +102,13 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
 
         self.devices_list = self.devices.devices_list
         self.obj_vertex_loader = {} # This will store the vertex data for all the objects!
-        self.tube_vertex_loader = {}
+        self.tube_vertices_list = []
 
         self.scene_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.obj_vertex_loader)
+        
         self.initialise_device_render()
+        
+
         # Bind events to the canvas
         self.Bind(wx.EVT_PAINT, self.on_paint)
         self.Bind(wx.EVT_SIZE, self.on_size)
@@ -177,6 +181,14 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
                 curr_y = y_start
                 curr_x += x_space
 
+        self.inputs_dict = self.scene_renderer.inputs_dict
+        self.outputs_dict= self.scene_renderer.outputs_dict
+
+        self.connect_render = ConnectDrawer3D(self.names, self.devices, self.monitors, self.network, 
+                                              self.inputs_dict, self.outputs_dict)
+
+        self.tube_vertices_list = self.connect_render.make_all_connections()
+
     def assemble_devices(self): 
 
         x_start, y_start = 0, 30
@@ -194,6 +206,21 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
                 curr_y = y_start
                 curr_x += x_space
 
+    def assemble_connections(self): 
+        self.connect_render.draw_connections(self.tube_vertices_list)
+
+    def assemble_monitors(self): 
+        monitors_dict = self.monitors.monitors_dictionary
+
+        for key in monitors_dict.keys(): 
+            dev_id = key[0]
+            port_id = key[1]
+
+            m_coord = self.outputs_dict[(dev_id, port_id)]
+
+            self.scene_renderer.draw_monitor(m_coord[0], m_coord[1], dev_id=dev_id, port_id=port_id)
+
+
     def render(self):
         """Handle all drawing operations."""
         self.SetCurrent(self.context)
@@ -209,7 +236,9 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         # is at the scene origin
         GL.glColor3f(1.0, 1.0, 1.0)  # signal trace is beige
         self.assemble_devices()
-
+        self.assemble_connections()
+        self.assemble_monitors()
+        #self.draw_cuboid(None, None, None, None, None)
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front
         GL.glFlush()
@@ -275,14 +304,37 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         and_test.draw_with_id(test3_id, 20, 20)
         '''
 
-        
+        """con_draw_obj = ConnectDrawer3D(self.names, self.devices, self.monitors, self.network, {})
+        test_vertices = con_draw_obj.return_tube_vertices((0, 0, 0), (0, 0, 30))
+
+        new_test_vertices = con_draw_obj.return_tube_vertices((0,0,30), (0,30,30))
+        newnew_v = con_draw_obj.return_tube_vertices((0,4,0),(0,10,0))
+
+        test_vertices += new_test_vertices + newnew_v
+
+        test_vertices = np.array(test_vertices, dtype=np.float32)
+        self.vertex_count = len(test_vertices) // 8
+
+        self.vbo = GL.glGenBuffers(1)
+        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
+        GL.glBufferData(GL.GL_ARRAY_BUFFER, test_vertices.nbytes, test_vertices, GL.GL_STATIC_DRAW)
+        #position
+        GL.glEnableVertexAttribArray(0)
+        GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(0))
+        #texture
+        GL.glEnableVertexAttribArray(1)
+        GL.glVertexAttribPointer(1, 2, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(12))
+
+        GL.glColor3f(0.7, 0.6, 0.1)
+        GL.glDrawArrays(GL.GL_QUADS, 0, self.vertex_count)
+       """
     def on_paint(self, event):
         """Handle the paint event."""
         self.SetCurrent(self.context)
         if not self.init:
             # Configure the OpenGL rendering context
             self.init_gl()
-            self.init = True
+            self.init = True    
 
         size = self.GetClientSize()
         text = "".join(["Canvas redrawn on paint event, size is ",

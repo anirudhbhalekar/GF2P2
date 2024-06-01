@@ -162,7 +162,7 @@ class Gui(wx.Frame):
         self.reset_view_button = wx.Button(self, wx.ID_ANY, _("Reset View"))
         self.text_box = PromptedTextCtrl(self, wx.ID_ANY, style=wx.TE_PROCESS_ENTER)
         self.clear_button = wx.Button(self, wx.ID_ANY, "Clear terminal") # button for clearing terminal output
-        self.switch_to_3D_button = wx.Button(self, wx.ID_ANY, "3D Mode") # button to switch canvases out
+        self.switch_to_3D_button = wx.ToggleButton(self, wx.ID_ANY, "3D Mode") # button to switch canvases out
 
 
 
@@ -177,7 +177,7 @@ class Gui(wx.Frame):
         self.text_box.Bind(wx.EVT_TEXT_ENTER, self.on_text_box)
         self.zap_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_zap_button)
         self.add_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_add_button)
-        self.switch_to_3D_button.Bind(wx.EVT_BUTTON, self.draw_canvas_to_3D)
+        self.switch_to_3D_button.Bind(wx.EVT_TOGGLEBUTTON, self.draw_canvas_to_3D)
 
         # Bind language selection events
         self.Bind(wx.EVT_MENU, self.on_language_selected, id=101)
@@ -225,7 +225,35 @@ class Gui(wx.Frame):
         self.SetSizer(main_sizer)
     
     def draw_canvas_to_3D(self, event): 
-        pass
+        bool_is_3D = self.switch_to_3D_button.GetValue()
+        if bool_is_3D: 
+        
+            self.canvas.Destroy()
+            self.canvas = MyGLCanvas3D(self, self.devices, self.monitors)
+
+            main_sizer = self.GetSizer()
+            canvas_plot_sizer = main_sizer.GetChildren()[0].GetSizer()
+
+            canvas_plot_sizer.Clear(delete_windows=False)
+            canvas_plot_sizer.Add(self.canvas, 2, wx.EXPAND | wx.ALL, 1)
+            canvas_plot_sizer.Add(self.matplotlib_canvas, 1, wx.EXPAND | wx.ALL, 1)
+
+            # Refresh the layout
+            main_sizer.Layout()
+
+        else: 
+            self.canvas.Destroy()
+            self.canvas = MyGLCanvas(self, self.devices, self.monitors, self.message_display)
+            main_sizer = self.GetSizer()
+            canvas_plot_sizer = main_sizer.GetChildren()[0].GetSizer()
+
+            canvas_plot_sizer.Clear(delete_windows=False)
+            canvas_plot_sizer.Add(self.canvas, 2, wx.EXPAND | wx.ALL, 1)
+            canvas_plot_sizer.Add(self.matplotlib_canvas, 1, wx.EXPAND | wx.ALL, 1)
+
+            # Refresh the layout
+            main_sizer.Layout()
+
     def on_language_selected(self, event):
         language_id = event.GetId()
         if language_id == 101:  # English
