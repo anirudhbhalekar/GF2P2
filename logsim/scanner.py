@@ -142,12 +142,15 @@ class Scanner:
 
     def skip_spaces(self): 
         """ Skips spaces to next symbol and sets file pointer"""
-        
+        space_count = 0
         if self.current_character.isspace() or self.current_character == "\n":
             self.advance() 
+            space_count += 1
 
             while self.current_character.isspace(): 
                 self.advance()
+                space_count += 1
+        return space_count
 
     def get_name(self): 
         """Gets name (if first char is alphabet - reads until non alnum char is reached)"""
@@ -197,7 +200,7 @@ class Scanner:
         devices = Devices(self.names)
 
         # Find first non-space char
-        self.skip_spaces()
+        space_count = self.skip_spaces()
         
         if self.current_character.isalpha(): 
             # This is a name
@@ -257,7 +260,7 @@ class Scanner:
 
         symbol.line_number = self.line_count
         symbol.character = self.line_char_count
-        symbol.length = self.symbol_char_count
+        symbol.length = self.symbol_char_count - space_count
 
         self.symbol_char_count = 0
 
