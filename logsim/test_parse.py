@@ -60,14 +60,13 @@ def test_error_definition_files(error_file_path):
 
     # Error codes are hardcoded in the error files
     if 'interim1_ex0_error.txt' in error_file_path:
-        assert parser.error_count == 1
+        assert parser.error_count == 3
     
     elif 'interim1_ex1_error.txt' in error_file_path:
         assert parser.error_count == 1
     
     elif 'interim1_ex2_error.txt' in error_file_path:
         assert parser.error_count == 3
-
 
 
 

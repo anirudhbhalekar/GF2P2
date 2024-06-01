@@ -49,9 +49,10 @@ class Parser:
         [self.EXPECTED_NAME, self.INVALID_CHAR_IN_NAME, self.NULL_DEVICE_IN_CONNECT, 
          self.INVALID_CONNECT_DELIMITER, self.DOUBLE_PUNCTUATION, self.MISSING_SEMICOLON, 
          self.INVALID_KEYWORD, self.INVALID_COMMENT_SYMBOL, self.INVALID_BLOCK_ORDER, 
-         self.MISSING_END_STATEMENT, self.EXPECTED_NUMBER, self.EXPECTED_PUNCTUATION, 
+         self.MISSING_END_STATEMENT, self.EXPECTED_NUMBER, self.EXPECTED_DOT, 
          self.INVALID_PIN_REF, self.EXPECTED_EQUALS, self.EXPECTED_DEFINE, self.EXPECTED_CONNECT, 
-         self.EXPECTED_MONITOR, self.EXPECTED_END, self.INVALID_PARAM, self.MISSING_DTYPE_INPUTS] = self.names.unique_error_codes(20)
+         self.EXPECTED_MONITOR, self.EXPECTED_END, self.INVALID_PARAM, self.MISSING_DTYPE_INPUTS, 
+         self.PASSED_KEYWORD, self.PASSED_DEVICE, self.PASSED_GATE] = self.names.unique_error_codes(23)
         self.devices = devices
         self.network = network
         self.monitors = monitors
@@ -66,11 +67,12 @@ class Parser:
         self.error_count += 1
         line_number = self.symbol.line_number
         character = self.symbol.character
+        symbol_length = self.symbol.length
         error_message = self.get_error_message(error_code)
         error_line = self.scanner.get_line(line_number)
         print(error_line) # no translation needed for this
         # print spaces and then a ^ under the character
-        print(" " * (character - 1) + "^")
+        print(" " * (character - symbol_length) + "^")
         print(_("Error code {error_code} at line {line_number}, character {character}: {error_message}").format(
         error_code=error_code, line_number=line_number, character=character, error_message=error_message))
         # had to reformat these for translation
@@ -99,7 +101,7 @@ class Parser:
             self.INVALID_BLOCK_ORDER: _("Invalid order of DEFINE, CONNECT, and MONITOR blocks"),
             self.MISSING_END_STATEMENT: _("No END statement after MONITOR clause"),
             self.EXPECTED_NUMBER: _("Expected a number"),
-            self.EXPECTED_PUNCTUATION: _("Expected a punctuation mark"),
+            self.EXPECTED_DOT: _("Expected a dot"),
             self.INVALID_PIN_REF: _("Invalid pin reference"),
             self.EXPECTED_EQUALS: _("Expected an equals sign"),
             self.EXPECTED_DEFINE: _("Expected a DEFINE statement"),
@@ -108,6 +110,9 @@ class Parser:
             self.EXPECTED_END: _("Expected an END statement"),
             self.INVALID_PARAM: _("Invalid parameter for device"),
             self.MISSING_DTYPE_INPUTS: _("DTYPE device must have 4 inputs"),
+            self.PASSED_KEYWORD: _("Passed a keyword when a name was expected"),
+            self.PASSED_DEVICE: _("Passed a device when a name was expected"),
+            self.PASSED_GATE: _("Passed a gate when a name was expected"),
             # Network errors
             self.network.DEVICE_ABSENT: _("Device absent"),
             self.network.INPUT_CONNECTED: _("Input is already connected"),
@@ -154,7 +159,7 @@ class Parser:
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.DEFINE_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
-                self.def_list(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
+                self.def_list(stopping_symbols | {self.scanner.COMMA})
             if self.symbol.type == self.scanner.SEMICOLON:
                 self.symbol = self.scanner.get_symbol()
             else:
@@ -165,8 +170,8 @@ class Parser:
 
     def def_list(self, stopping_symbols):
         """Implements rule def_list = name, "AS", (device | gate), ["WITH", set_param], {",", name, "AS", (device | gate), ["WITH", set_param]};"""
-        device_id = self.name(stopping_symbols | {self.scanner.COMMA})
-        # If invalid keyword, skip to next definition
+        device_id = self.name(stopping_symbols)
+        # If invalid keyword, skip to while loop for definition
         if device_id is not None:
             if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS_ID:
                 self.symbol = self.scanner.get_symbol()
@@ -189,32 +194,29 @@ class Parser:
                 if error_type != self.devices.NO_ERROR:
                     self.error(error_type, stopping_symbols)
 
-            while self.symbol.type == self.scanner.COMMA:
+        while self.symbol.type == self.scanner.COMMA:
+            self.symbol = self.scanner.get_symbol()
+            device_id = self.name(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
+            if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS_ID:
                 self.symbol = self.scanner.get_symbol()
-                device_id = self.name(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
-                if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS_ID:
-                    self.symbol = self.scanner.get_symbol()
-                    if self.symbol.type == self.scanner.DEVICE:
-                        device_kind = self.device(stopping_symbols)
-                    elif self.symbol.type == self.scanner.GATE:
-                        device_kind = self.gate(stopping_symbols)
-                    else:
-                        self.error(self.INVALID_KEYWORD, stopping_symbols)
-                    if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
-                        self.symbol = self.scanner.get_symbol()
-                        device_property = self.set_param(device_kind, stopping_symbols)
-                    else:
-                        device_property = None
+                if self.symbol.type == self.scanner.DEVICE:
+                    device_kind = self.device(stopping_symbols)
+                elif self.symbol.type == self.scanner.GATE:
+                    device_kind = self.gate(stopping_symbols)
                 else:
-                    self.error(self.MISSING_SEMICOLON, stopping_symbols)
-                # Make device
-                if self.error_count == 0:
-                    error_type = self.devices.make_device(device_id, device_kind, device_property)
-                    if error_type != self.devices.NO_ERROR:
-                        self.error(error_type, stopping_symbols)
-
-        else:
-            self.error(self.INVALID_KEYWORD, stopping_symbols)
+                    self.error(self.INVALID_KEYWORD, stopping_symbols)
+                if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
+                    self.symbol = self.scanner.get_symbol()
+                    device_property = self.set_param(device_kind, stopping_symbols)
+                else:
+                    device_property = None
+            else:
+                self.error(self.MISSING_SEMICOLON, stopping_symbols)
+            # Make device
+            if self.error_count == 0:
+                error_type = self.devices.make_device(device_id, device_kind, device_property)
+                if error_type != self.devices.NO_ERROR:
+                    self.error(error_type, stopping_symbols)
 
 
     def set_param(self, device_kind, stopping_symbols):
@@ -330,8 +332,11 @@ class Parser:
                 in_port_id = self.input_notation(stopping_symbols)
                 return in_device_id, in_port_id
             else:
-                self.error(self.EXPECTED_PUNCTUATION, stopping_symbols)
+                self.error(self.EXPECTED_DOT, stopping_symbols)
                 return None, None
+        else:
+            self.error(self.EXPECTED_NAME, stopping_symbols)
+            return None, None
         
     
     def output_con(self, stopping_symbols):
@@ -347,10 +352,12 @@ class Parser:
             elif self.symbol.type == self.scanner.SEMICOLON:
                 out_port_id = None
             else:
-                self.error(self.EXPECTED_PUNCTUATION, stopping_symbols)
+                self.error(self.EXPECTED_DOT, stopping_symbols)
                 return None, None
             return out_device_id, out_port_id
-        return None, None
+        else:
+            self.error(self.EXPECTED_NAME, stopping_symbols)
+            return None, None
 
 
     def input_notation(self, stopping_symbols):
@@ -388,6 +395,15 @@ class Parser:
         if self.symbol.type == self.scanner.NAME:
             name = self.symbol.id
             self.symbol = self.scanner.get_symbol()
+        elif self.symbol.type == self.scanner.KEYWORD:
+            self.error(self.PASSED_KEYWORD, stopping_symbols)
+            return None
+        elif self.symbol.type == self.scanner.DEVICE:
+            self.error(self.PASSED_DEVICE, stopping_symbols)
+            return None
+        elif self.symbol.type == self.scanner.GATE:
+            self.error(self.PASSED_GATE, stopping_symbols)
+            return None
         else:
             self.error(self.EXPECTED_NAME, stopping_symbols)
             return None
