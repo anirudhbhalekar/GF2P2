@@ -99,6 +99,12 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         # Offset between viewpoint and origin of the scene
         self.depth_offset = 1000
 
+        self.devices_list = self.devices.devices_list
+        self.obj_vertex_loader = {} # This will store the vertex data for all the objects!
+        self.tube_vertex_loader = {}
+
+        self.scene_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.obj_vertex_loader)
+        self.initialise_device_render()
         # Bind events to the canvas
         self.Bind(wx.EVT_PAINT, self.on_paint)
         self.Bind(wx.EVT_SIZE, self.on_size)
@@ -152,30 +158,41 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         GL.glTranslatef(self.pan_x, self.pan_y, 0.0)
         GL.glMultMatrixf(self.scene_rotate)
         GL.glScalef(self.zoom, self.zoom, self.zoom)
+    
+    def initialise_device_render(self): 
+
+        """ The exact same as assemble devices - but its called only once 
+            to initialise the input_output coords list"""
+        x_start, y_start = 0, 30
+        x_space, y_space = 20, 15
+
+        curr_x, curr_y = x_start, y_start
+        for device in self.devices_list: 
+            # We render any object as it comes 
+            device_id = device.device_id
+            self.scene_renderer.return_io_list(device_id, curr_x, curr_y)
+            curr_y -= y_space
+
+            if curr_y < 0: 
+                curr_y = y_start
+                curr_x += x_space
 
     def assemble_devices(self): 
 
-        devices_list = self.devices.devices_list
-
-        scene_renderer = LogicDrawer3D(self.names, self.devices, self.monitors)
-
-        x_start, y_start = 0, 50
-        x_space, y_space = 20, 30
+        x_start, y_start = 0, 30
+        x_space, y_space = 20, 15
 
         curr_x, curr_y = x_start, y_start
-        for device in devices_list: 
+        for device in self.devices_list: 
             # We render any object as it comes 
             device_id = device.device_id
-            scene_renderer.draw_with_id(device_id, curr_x, curr_y)
+            self.scene_renderer.draw_with_id(device_id, curr_x, curr_y)
 
             curr_y -= y_space
 
             if curr_y < 0: 
                 curr_y = y_start
                 curr_x += x_space
-        
-
-
 
     def render(self):
         """Handle all drawing operations."""
@@ -192,8 +209,6 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         # is at the scene origin
         GL.glColor3f(1.0, 1.0, 1.0)  # signal trace is beige
         self.assemble_devices()
-        GL.glColor3f(0.7, 0.5, 0.1)  # text is white
-        self.render_text("D1.QBAR", 0, 0, 210)
 
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front
@@ -403,7 +418,7 @@ class Gui3D(wx.Frame):
 
         draw_sizer.Add(self.canvas, 3, wx.EXPAND | wx.ALL, 5)
         draw_sizer.Add(self.monitor_canvas, 2, wx.EXPAND | wx.ALL, 5)
-        
+
         side_sizer.Add(self.text, 1, wx.TOP, 10)
         side_sizer.Add(self.spin, 1, wx.ALL, 5)
         side_sizer.Add(self.run_button, 1, wx.ALL, 5)
