@@ -8,11 +8,7 @@ Classes
 -------
 Parser - parses the definition file and builds the logic network.
 """
-from scanner import Symbol, Scanner
-from names import Names
-from devices import Devices
-from monitors import Monitors
-from network import Network
+from scanner import Symbol
 
 import gettext
 # Initialize gettext translation
@@ -85,7 +81,6 @@ class Parser:
 
         while (self.symbol.type not in stopping_symbols and self.symbol.type != self.scanner.EOF):
             self.symbol = self.scanner.get_symbol()
-
 
 
     def get_error_message(self, error_code):
