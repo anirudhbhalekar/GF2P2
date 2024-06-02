@@ -1,11 +1,10 @@
-% Turn switch on an off to suppress NOR %
 DEFINE
     clk AS CLOCK WITH cycle_rep=5,
     sw AS SWITCH WITH initial=0,
     rc AS RC WITH rc_cycles=10,
     dtype AS DTYPE,
     and1 AS AND WITH inputs=2,
-    nor1 AS NOR WITH inputs=2
+    nor1 AS NOR WITH inputs=2,
 ;
 
 CONNECT
@@ -16,11 +15,11 @@ CONNECT
     and1.I1 = clk,
     and1.I2 = dtype.Q,
     nor1.I1 = clk,
-    nor1.I2 = dtype.QBAR
+    nor1.I2 = dtype.QBAR,
 ;
 
 MONITOR
-    dtype.Q, dtype.QBAR, nor1;
+    dtype.Q, dtype.QBAR;
 
 
 END;

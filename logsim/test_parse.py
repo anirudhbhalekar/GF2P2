@@ -59,14 +59,24 @@ def test_error_definition_files(error_file_path):
     assert not bool_parse
 
     # Error codes are hardcoded in the error files
-    if 'interim1_ex0_error.txt' in error_file_path:
-        assert parser.error_count == 3
+    error_count_map = {
+        'interim1_ex0_error.txt': 3,
+        'interim1_ex1_error.txt': 1,
+        'interim1_ex2_error.txt': 3,
+        'empty_file.txt': 1,
+        'missing_section': 3,
+        'extra_semicolon': 2,
+        'two_define': 1,
+        'extra_commas': 2,
+    }
+
+    for error_file, expected_count in error_count_map.items():
+        if error_file in error_file_path:
+            assert parser.error_count == expected_count
+            break
+
     
-    elif 'interim1_ex1_error.txt' in error_file_path:
-        assert parser.error_count == 1
-    
-    elif 'interim1_ex2_error.txt' in error_file_path:
-        assert parser.error_count == 3
+
 
 
 

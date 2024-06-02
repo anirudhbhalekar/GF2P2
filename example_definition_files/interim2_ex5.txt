@@ -1,21 +1,21 @@
-% Different XOR based on switch and DTYPE%
+
 DEFINE
     clock1 AS CLOCK WITH cycle_rep=5,
     switch1 AS SWITCH WITH initial=1,
     switch_set AS SWITCH WITH initial=0,
     switch_clear AS SWITCH WITH initial=0,
     dff1 AS DTYPE,
-    xor1 AS XOR;
+    nor1 AS NOR WITH inputs=2;
 
 CONNECT
     dff1.CLK = clock1,
     dff1.DATA = switch1,
     dff1.SET = switch_set,
     dff1.CLEAR = switch_clear,
-    xor1.I1 = dff1.Q,
-    xor1.I2 = switch1;
+    nor1.I1 = dff1.Q,
+    nor1.I2 = switch1;
 
 MONITOR
-    clock1, dff1.Q, xor1, switch1;
+    clock1, dff1.Q, nor1, switch1;
 
 END;
