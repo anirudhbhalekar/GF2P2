@@ -48,7 +48,7 @@ from parse import Parser
 from logic_draw import LogicDrawer
 from connect_draw import ConnectDrawer
 from userint import UserInterface 
-#from gui_3D import MyGLCanvas3D
+from gui_3D import MyGLCanvas3D
 from canvas import MyGLCanvas
 from textctrl import TextEditor, PromptedTextCtrl
 import gettext
