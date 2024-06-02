@@ -44,21 +44,18 @@ class Names:
     """
 
     
-
     def __init__(self):
         """Initialise names list."""
-
-        self.error_code_count = 0  # how many error codes have been declared
-        names_list = []
-        self.name_table = names_list
+        self.error_code_count = 0
+        self.name_table = []
 
     def unique_error_codes(self, num_error_codes):
         """Return a list of unique integer error codes."""
         if not isinstance(num_error_codes, int):
             raise TypeError(_("Expected num_error_codes to be an integer."))
         self.error_code_count += num_error_codes
-        return range(self.error_code_count - num_error_codes,
-                     self.error_code_count)
+        return list(range(self.error_code_count - num_error_codes,
+                          self.error_code_count))
 
     def query(self, name_string):
         """Return the corresponding name ID for name_string.
@@ -67,18 +64,14 @@ class Names:
         """
 
         # same as in prelim exercise - if name_string in the table, return position, else None
-        
-        if not isinstance(name_string, str): 
+        if not isinstance(name_string, str):
             raise TypeError(_('Need String argument'))
-        
-        if name_string == "": 
+        if name_string == "":
             raise ValueError(_('Null Strings are not accepted'))
-        curr_list = self.name_table
 
-        if name_string in curr_list: 
-            return curr_list.index(name_string)
-        else: 
-            return None
+        if name_string in self.name_table:
+            return self.name_table.index(name_string)
+        return None
 
 
     def lookup(self, name_string_list):
@@ -88,24 +81,19 @@ class Names:
         """
 
         # Call query each time for name in name_string_list, if None - add it and return the length of list (at point)
+        if not isinstance(name_string_list, list):
+            raise TypeError(_("Name list argument must be a list"))
 
         id_arr = []
-        if not isinstance(name_string_list, list): 
-            raise TypeError(_("Name list argument must be a list")) 
-        
-        for name in name_string_list: 
-
-            if not isinstance(name, str): 
+        for name in name_string_list:
+            if not isinstance(name, str):
                 raise TypeError(_("Names must be strings"))
-            
-            id = self.query(name)
-            if id is None: 
-                curr_list = self.name_table
-                id = len(curr_list)
-                curr_list.append(name)
-                self.name_table = curr_list
-                
-            id_arr.append(id) 
+
+            name_id = self.query(name)
+            if name_id is None:
+                name_id = len(self.name_table)
+                self.name_table.append(name)
+            id_arr.append(name_id)
 
         return id_arr
 
@@ -116,15 +104,12 @@ class Names:
         If the name_id is not an index in the names list, return None.
         """
         # return string from name table
-        if not isinstance(name_id, int): 
+        if not isinstance(name_id, int):
             raise TypeError(_('Name ID must be an integer'))
-        
-        if not name_id >= 0: 
+        if name_id < 0:
             raise ValueError(_("Integer must be greater than or equal to 0"))
-        curr_list = self.name_table
 
-        if name_id < len(curr_list): 
-            return curr_list[name_id]
-        else: 
-            return None
+        if name_id < len(self.name_table):
+            return self.name_table[name_id]
+        return None
         
