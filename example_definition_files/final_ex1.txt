@@ -1,3 +1,4 @@
+% Turn switch on an off to suppress NOR %
 DEFINE
     clk AS CLOCK WITH cycle_rep=5,
     sw AS SWITCH WITH initial=0,
@@ -19,7 +20,7 @@ CONNECT
 ;
 
 MONITOR
-    dtype.Q, dtype.QBAR;
+    dtype.Q, dtype.QBAR, nor1;
 
 
 END;
