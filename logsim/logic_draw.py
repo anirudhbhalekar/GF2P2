@@ -75,8 +75,6 @@ class LogicDrawer:
                 self.device_outputs = self.device.outputs
 
                 self.n_inputs = len(self.device_inputs.keys())
-            
-
                 
                 # 5 pixels height increase for each additional input
                 # top and bottom padding 5 px each
@@ -120,7 +118,291 @@ class LogicDrawer:
             self.draw_RC(self.x, self.y)
         else:  
             pass
+    
+    def get_domain(self, x, y): 
 
+        device_kind = self.device.device_kind
+
+
+        if device_kind == self.devices.AND: 
+            
+            self.x, self.y = x, y
+
+            self.x = self.x - self.length / 2
+            self.y = self.y - self.height / 2
+
+            R = (self.height / 2)
+
+            inp_space = self.height - 2 * self.inc_height
+            div_space = inp_space/(self.n_inputs + 1)
+
+            input_ids = self.device_inputs.keys()
+            output_ids = self.device_outputs.keys()
+
+            for i, i_id in enumerate(input_ids): 
+                y_coord = self.y + self.inc_height + (i+1)*div_space
+                x_coord = self.x
+
+                self.input_dict[(self.id, i_id)] = (x_coord, y_coord)
+
+            for o, o_id in enumerate(output_ids): 
+                y_coord = self.y + self.height/2 
+                x_coord = self.x + self.length + self.height/2
+
+                self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
+            
+            self.domain = [(self.x - 10, self.y - 10), (self.x + self.length + R + 10, self.y + self.height + 10)]
+
+        elif device_kind == self.devices.NAND: 
+
+            self.x, self.y = x, y
+
+            self.x = self.x - self.length / 2
+            self.y = self.y - self.height / 2
+
+            R = (self.height / 2)
+            r = 5
+
+            inp_space = self.height - 2 * self.inc_height
+            div_space = inp_space/(self.n_inputs + 1)
+
+            input_ids = self.device_inputs.keys()
+            output_ids = self.device_outputs.keys()
+
+            for i, i_id in enumerate(input_ids): 
+                y_coord = self.y + self.inc_height + (i+1)*div_space
+                x_coord = self.x
+
+                self.input_dict[(self.id, i_id)] = (x_coord, y_coord)    
+
+            for o, o_id in enumerate(output_ids): 
+                y_coord = self.y + self.height/2 
+                x_coord = self.x + self.length + self.height/2 + 2*r
+
+                self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
+            
+            self.domain = [(self.x - 10, self.y - 10), (self.x + self.length + R + 10 + 2*r, self.y + self.height + 10)]
+        
+        elif device_kind == self.devices.OR: 
+            
+            self.x, self.y = x, y
+
+            self.x = self.x - self.length / 2
+            self.y = self.y - self.height / 2
+
+            R = (self.height / 2)
+            r = 5
+
+            inp_space = self.height - 2 * self.inc_height
+            div_space = inp_space/(self.n_inputs + 1)
+
+            input_ids = self.device_inputs.keys()
+            output_ids = self.device_outputs.keys()
+
+            for i, i_id in enumerate(input_ids): 
+                y_coord = self.y + self.inc_height + (i+1)*div_space
+                x_coord = self.x
+
+                self.input_dict[(self.id, i_id)] = (x_coord, y_coord)
+    
+            for o, o_id in enumerate(output_ids): 
+                y_coord = self.y + self.height/2 
+                x_coord = self.x + self.length + self.height/2
+
+                self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
+                
+            self.domain = [(self.x - 15 + 1, self.y - 15 + 1), (self.x + self.length + (self.height / 2) + 15 - 1, self.y + self.height + 15 - 1)]
+
+        elif device_kind == self.devices.NOR: 
+            
+            self.x, self.y = x, y
+
+            self.x = self.x - self.length / 2
+            self.y = self.y - self.height / 2
+
+            R = (self.height / 2)
+            r = 5
+
+            inp_space = self.height - 2 * self.inc_height
+            div_space = inp_space/(self.n_inputs + 1)
+
+            input_ids = self.device_inputs.keys()
+            output_ids = self.device_outputs.keys()
+
+            for i, i_id in enumerate(input_ids): 
+                y_coord = self.y + self.inc_height + (i+1)*div_space
+                x_coord = self.x
+
+                self.input_dict[(self.id, i_id)] = (x_coord, y_coord)
+
+            for o, o_id in enumerate(output_ids): 
+                y_coord = self.y + self.height/2 
+                x_coord = self.x + self.length + self.height/2 + 2*r
+
+                self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
+                
+            self.domain = [(self.x - 15 + 1, self.y - 15 + 1), (self.x + self.length + R + 2*r + 15 - 1, self.y + self.height + 15 - 1)]
+
+        elif device_kind == self.devices.XOR: 
+            # Do XOR 
+            self.x, self.y = x, y
+
+            self.x = self.x - self.length / 2
+            self.y = self.y - self.height / 2 
+
+            R = (self.height / 2)
+            r = 5
+
+            inp_space = self.height - 2 * self.inc_height
+            div_space = inp_space/(self.n_inputs + 1)
+
+            input_ids = self.device_inputs.keys()
+            output_ids = self.device_outputs.keys()
+
+            for i, i_id in enumerate(input_ids): 
+                y_coord = self.y + self.inc_height + (i+1)*div_space
+                x_coord = self.x
+
+                self.input_dict[(self.id, i_id)] = (x_coord, y_coord)
+    
+            for o, o_id in enumerate(output_ids): 
+                y_coord = self.y + self.height/2 
+                x_coord = self.x + self.length + self.height/2
+
+                self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
+                
+            self.domain = [(self.x - 22, self.y - 22), (self.x + self.length + (self.height / 2) + 22, self.y + self.height + 22 )]
+
+        elif device_kind == self.devices.SWITCH: 
+            # Do SWITCH 
+            output_ids = self.device_outputs.keys()
+
+            self.x, self.y = x, y
+            # Radius 20
+            self.height = 40
+            self.width = self.height
+            R = self.height / 2
+
+            for o, o_id in enumerate(output_ids): 
+                y_coord = self.y
+                x_coord = self.x + R
+
+            self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
+        
+            self.domain = [(self.x - R  - 5, self.y - R - 5), (self.x + R + 5, self.y + R + 5)]
+
+        elif device_kind == self.devices.CLOCK: 
+            # Do CLOCK 
+            self.x, self.y = x, y
+
+            self.height = 40
+            self.width = self.height
+            R = self.height / 2
+
+            inp_space = self.height - 2 * self.inc_height
+            div_space = inp_space/(self.n_inputs + 1)
+
+            input_ids = self.device_inputs.keys()
+            output_ids = self.device_outputs.keys()
+            
+            for i, i_id in enumerate(input_ids): 
+                y_coord = self.y + self.inc_height + (i+1)*div_space
+                x_coord = self.x
+
+                self.input_dict[(self.id, i_id)] = (x_coord, y_coord)
+
+            for o, o_id in enumerate(output_ids): 
+                y_coord = self.y
+                x_coord = self.x + (self.width / 2)
+
+                self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
+                
+            self.domain =  [(self.x - R + 1, self.y - R + 1), (self.x + R - 1, self.y + R - 1)]
+
+        elif device_kind == self.devices.D_TYPE: 
+            # Do D_TYPE
+            self.x, self.y = x, y
+            # x, y defined from CENTRE of rectangle
+            # DTYPE has height 100, width 60
+            self.height = 100
+            self.width = 60
+
+            #Introducing top heavy bias
+            self.x = self.x 
+            self.y = self.y - self.height/3
+
+            inp_space = self.height - 2 * self.inc_height
+            div_space = inp_space/(self.n_inputs + 1)
+
+            input_ids = self.device_inputs.keys()
+            output_ids = self.device_outputs.keys()
+
+            temp_input_list = [(self.x - (self.width / 2), self.y + 20), (self.x - (self.width / 2), self.y - 20), 
+                               (self.x, self.y + (self.height / 2)), (self.x, self.y - (self.height / 2))]
+            
+            for i, i_id in enumerate(input_ids): 
+
+                if i_id == self.devices.DATA_ID: 
+                    index = 0
+                elif i_id == self.devices.CLK_ID:
+                    index = 1
+                elif i_id == self.devices.SET_ID: 
+                    index = 2
+                else: 
+                    index = 3   
+
+                y_coord = temp_input_list[index][1]
+                x_coord = temp_input_list[index][0]
+
+                self.input_dict[(self.id, i_id)] = (x_coord, y_coord)
+    
+            temp_output_list = [(self.x + (self.width / 2), self.y + 20), (self.x + (self.width / 2), self.y - 20)]
+            
+            for o, o_id in enumerate(output_ids): 
+
+                if o_id == self.devices.Q_ID: 
+                    index = 0
+                else: 
+                    index = 1
+
+                y_coord = temp_output_list[index][1]
+                x_coord = temp_output_list[index][0]
+
+                self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
+        
+            self.domain = [(self.x - (self.width / 2) - 20, self.y - (self.height / 2) - 20), (self.x + (self.width / 2) + 20, self.y + (self.height / 2) + 20)]
+    
+        else: 
+            # Do RC
+            self.x = x
+            self.y = y 
+            self.height = 40
+            self.length = 40
+
+            half_length = self.length / 2
+            half_height = self.height / 2
+            
+            inp_space = self.height - 2 * self.inc_height
+            div_space = inp_space/(self.n_inputs + 1)
+
+            input_ids = self.device_inputs.keys()
+            output_ids = self.device_outputs.keys()
+            
+            for i, i_id in enumerate(input_ids): 
+                y_coord = self.y + self.inc_height + (i+1)*div_space
+                x_coord = self.x
+                self.input_dict[(self.id, i_id)] = (x_coord, y_coord)
+
+            for o, o_id in enumerate(output_ids): 
+                y_coord = self.y
+                x_coord = self.x + (self.length / 2)
+                self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
+
+            self.domain =  [(self.x - half_length - 10, self.y - half_height - 10), (self.x + half_length + 10, self.y + half_height + 10)]
+
+
+
+        
 
     def make_circle(self, x, y): 
         """Draw a dot at posiition (x, y) to symbolise a connection point."""
@@ -170,27 +452,11 @@ class LogicDrawer:
         d_name = self.names.get_name_string(self.id)
         self.render_text(d_name, self.x + self.length/2, self.y + self.height/2, color="black")
 
-        inp_space = self.height - 2 * self.inc_height
-        div_space = inp_space/(self.n_inputs + 1)
-
-        input_ids = self.device_inputs.keys()
-        output_ids = self.device_outputs.keys()
-
-        for i, i_id in enumerate(input_ids): 
-            y_coord = self.y + self.inc_height + (i+1)*div_space
-            x_coord = self.x
-
-            self.input_dict[(self.id, i_id)] = (x_coord, y_coord)
-            self.make_circle(x_coord, y_coord)
-   
-
-        for o, o_id in enumerate(output_ids): 
-            y_coord = self.y + self.height/2 
-            x_coord = self.x + self.length + self.height/2
-
-            self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
+        for coord_input in list(self.input_dict.values()): 
+            self.make_circle(coord_input[0], coord_input[1])
         
-        self.domain = [(self.x - 10, self.y - 10), (self.x + self.length + R + 10, self.y + self.height + 10)]
+        for coord_output in list(self.output_dict.values()): 
+            self.make_circle(coord_output[0], coord_output[1])
         
     def draw_nand_gate(self, x, y):
         """Render and draw an NAND gate from the LogicDrawer on the canvas,
@@ -222,9 +488,6 @@ class LogicDrawer:
         glVertex2f(self.x, self.y)           
         glEnd()
 
-        d_name = self.names.get_name_string(self.id)
-        self.render_text(d_name, self.x + self.length/2, self.y + self.height/2, color="black")
-
         # Draw the circle for the NOT part, radius 5
         glColor3f(1.0, 0.0, 0.0)  # Red color
         glBegin(GL_LINE_LOOP)
@@ -241,29 +504,14 @@ class LogicDrawer:
         
         glEnd()
 
-        inp_space = self.height - 2 * self.inc_height
-        div_space = inp_space/(self.n_inputs + 1)
+        d_name = self.names.get_name_string(self.id)
+        self.render_text(d_name, self.x + self.length/2, self.y + self.height/2, color="black")
 
-        input_ids = self.device_inputs.keys()
-        output_ids = self.device_outputs.keys()
-
-        for i, i_id in enumerate(input_ids): 
-            y_coord = self.y + self.inc_height + (i+1)*div_space
-            x_coord = self.x
-
-            self.input_dict[(self.id, i_id)] = (x_coord, y_coord)
-            self.make_circle(x_coord, y_coord)
-   
-
-        for o, o_id in enumerate(output_ids): 
-            y_coord = self.y + self.height/2 
-            x_coord = self.x + self.length + self.height/2 + 2*r
-
-            self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
-            self.make_circle(x_coord, y_coord)
+        for coord_input in list(self.input_dict.values()): 
+            self.make_circle(coord_input[0], coord_input[1])
         
-        self.domain = [(self.x - 10, self.y - 10), (self.x + self.length + R + 10 + 2*r, self.y + self.height + 10)]
-    
+        for coord_output in list(self.output_dict.values()): 
+            self.make_circle(coord_output[0], coord_output[1])
     
     def draw_or_gate(self, x, y):
         """Render and draw an OR gate from the LogicDrawer on the canvas,
@@ -295,27 +543,11 @@ class LogicDrawer:
         d_name = self.names.get_name_string(self.id)
         self.render_text(d_name, self.x + self.length/2, self.y + self.height/2, color="black")
 
-        inp_space = self.height - 2 * self.inc_height
-        div_space = inp_space/(self.n_inputs + 1)
-
-        input_ids = self.device_inputs.keys()
-        output_ids = self.device_outputs.keys()
-
-        for i, i_id in enumerate(input_ids): 
-            y_coord = self.y + self.inc_height + (i+1)*div_space
-            x_coord = self.x
-
-            self.input_dict[(self.id, i_id)] = (x_coord, y_coord)
-            self.make_circle(x_coord, y_coord)
-   
-        for o, o_id in enumerate(output_ids): 
-            y_coord = self.y + self.height/2 
-            x_coord = self.x + self.length + self.height/2
-
-            self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
-            self.make_circle(x_coord, y_coord)
-            
-        self.domain = [(self.x - 15 + 1, self.y - 15 + 1), (self.x + self.length + (self.height / 2) + 15 - 1, self.y + self.height + 15 - 1)]
+        for coord_input in list(self.input_dict.values()): 
+            self.make_circle(coord_input[0], coord_input[1])
+        
+        for coord_output in list(self.output_dict.values()): 
+            self.make_circle(coord_output[0], coord_output[1])
 
     def draw_nor_gate(self, x, y):
         """Render and draw an OR gate from the LogicDrawer on the canvas,
@@ -346,8 +578,10 @@ class LogicDrawer:
         glColor3f(1.0, 0.0, 0.0)  # Red color
         # Draw the circle for the NOT part, radius 5
         glBegin(GL_LINE_LOOP)
+        
         r = 5
         R = self.height / 2
+        
         for i in range(self.n_iter + 1):
             angle = 2 * pi * i / float(self.n_iter)            
             # Note self.height / 2 = R as defined in the AND gate
@@ -359,28 +593,12 @@ class LogicDrawer:
         d_name = self.names.get_name_string(self.id)
         self.render_text(d_name, self.x + self.length/2, self.y + self.height/2, color="black")
 
-        inp_space = self.height - 2 * self.inc_height
-        div_space = inp_space/(self.n_inputs + 1)
-
-        input_ids = self.device_inputs.keys()
-        output_ids = self.device_outputs.keys()
-
-        for i, i_id in enumerate(input_ids): 
-            y_coord = self.y + self.inc_height + (i+1)*div_space
-            x_coord = self.x
-
-            self.input_dict[(self.id, i_id)] = (x_coord, y_coord)
-            self.make_circle(x_coord, y_coord)
-
-        for o, o_id in enumerate(output_ids): 
-            y_coord = self.y + self.height/2 
-            x_coord = self.x + self.length + self.height/2 + 2*r
-
-            self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
-            self.make_circle(x_coord, y_coord)
-            
-        self.domain = [(self.x - 15 + 1, self.y - 15 + 1), (self.x + self.length + R + 2*r + 15 - 1, self.y + self.height + 15 - 1)]
-
+        for coord_input in list(self.input_dict.values()): 
+            self.make_circle(coord_input[0], coord_input[1])
+        
+        for coord_output in list(self.output_dict.values()): 
+            self.make_circle(coord_output[0], coord_output[1])
+        
     def draw_xor_gate(self, x, y):
         """Render and draw an OR gate from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
@@ -412,9 +630,6 @@ class LogicDrawer:
         
         glEnd()
 
-        d_name = self.names.get_name_string(self.id)
-        self.render_text(d_name, self.x + self.length/2 - 5, self.y + self.height/2, color="black")
-
         glColor3f(1.0, 0.0, 0.0)  # Red color
         glBegin(GL_LINE_STRIP)
         # x distance 10 to the left of the OR gate
@@ -424,31 +639,19 @@ class LogicDrawer:
         glVertex2f(self.x - 20, self.y + self.height + 10)
         glEnd()
 
-        inp_space = self.height - 2 * self.inc_height
-        div_space = inp_space/(self.n_inputs + 1)
+        d_name = self.names.get_name_string(self.id)
+        self.render_text(d_name, self.x + self.length/2, self.y + self.height/2, color="black")
 
-        input_ids = self.device_inputs.keys()
-        output_ids = self.device_outputs.keys()
-
-        for i, i_id in enumerate(input_ids): 
-            y_coord = self.y + self.inc_height + (i+1)*div_space
-            x_coord = self.x
-
-            self.input_dict[(self.id, i_id)] = (x_coord, y_coord)
-            self.make_circle(x_coord, y_coord)
-   
-        for o, o_id in enumerate(output_ids): 
-            y_coord = self.y + self.height/2 
-            x_coord = self.x + self.length + self.height/2
-
-            self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
-            self.make_circle(x_coord, y_coord)
-            
-        self.domain = [(self.x - 22, self.y - 22), (self.x + self.length + (self.height / 2) + 22, self.y + self.height + 22 )]
+        for coord_input in list(self.input_dict.values()): 
+            self.make_circle(coord_input[0], coord_input[1])
+        
+        for coord_output in list(self.output_dict.values()): 
+            self.make_circle(coord_output[0], coord_output[1])
 
     def draw_switch(self, x, y):
         """Render and draw a switch from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
+        
         self.x, self.y = x, y
         # Radius 20
         self.height = 40
@@ -467,12 +670,12 @@ class LogicDrawer:
 
         # Render the switch name
         d_name = self.names.get_name_string(self.id)
-        self.render_text(d_name, self.x, self.y + self.height, color="black")
+        self.render_text(d_name, self.x + self.length/2, self.y + self.height/2, color="black")
 
-        # Switch has no input
-        inp_space = self.height - 2 * self.inc_height
-        output_ids = self.device_outputs.keys()
-        
+        for coord_output in self.output_dict.values(): 
+            self.make_circle(coord_output[0], coord_output[1])
+
+        # Switch has no input        
         this_device = self.devices.get_device(self.id)
         #print(this_device.device_id)
         if this_device.switch_state == 0:
@@ -505,15 +708,6 @@ class LogicDrawer:
         else: 
             self.render_text("Error: Unknown switch state!", self.x, (self.y - self.height), color="red")
 
-        for o, o_id in enumerate(output_ids): 
-            y_coord = self.y
-            x_coord = self.x + R
-
-            self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
-            self.make_circle(x_coord, y_coord)
-        
-        self.domain = [(self.x - R  - 5, self.y - R - 5), (self.x + R + 5, self.y + R + 5)]
-
     def draw_clock(self, x, y):
         """Render and draw a clock from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
@@ -545,32 +739,15 @@ class LogicDrawer:
         glVertex2f(self.x + self.width / 2 - 1, self.y + self.height / 4)
         glEnd()
 
-        inp_space = self.height - 2 * self.inc_height
-        div_space = inp_space/(self.n_inputs + 1)
-
-        input_ids = self.device_inputs.keys()
-        output_ids = self.device_outputs.keys()
-        
-        # Render clock label
         d_name = self.names.get_name_string(self.id)
-        self.render_text(d_name, self.x + self.width/2 - 5, self.y + self.height/2, color="black")
+        self.render_text(d_name, self.x + self.length/2, self.y + self.height/2, color="black")
 
-        for i, i_id in enumerate(input_ids): 
-            y_coord = self.y + self.inc_height + (i+1)*div_space
-            x_coord = self.x
-
-            self.input_dict[(self.id, i_id)] = (x_coord, y_coord)
-            self.make_circle(x_coord, y_coord)
-
-        for o, o_id in enumerate(output_ids): 
-            y_coord = self.y
-            x_coord = self.x + (self.width / 2)
-
-            self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
-            self.make_circle(x_coord, y_coord)
-            
-        self.domain =  [(self.x - R + 1, self.y - R + 1), (self.x + R - 1, self.y + R - 1)]
-
+        for coord_input in list(self.input_dict.values()): 
+            self.make_circle(coord_input[0], coord_input[1])
+        
+        for coord_output in list(self.output_dict.values()): 
+            self.make_circle(coord_output[0], coord_output[1])
+        
     def draw_dtype(self, x, y):
         """Render and draw a DTYPE from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
@@ -602,58 +779,72 @@ class LogicDrawer:
         glEnd()
 
         d_name = self.names.get_name_string(self.id)
-        self.render_text(d_name, self.x + self.width/2 - 10, self.y - self.height/2 - 15, color="black")
+        self.render_text(d_name, self.x + self.length/2, self.y + self.height/2, color="black")
 
-        inp_space = self.height - 2 * self.inc_height
-        div_space = inp_space/(self.n_inputs + 1)
-
-        input_ids = self.device_inputs.keys()
-        output_ids = self.device_outputs.keys()
-
-        temp_input_list = [(self.x - (self.width / 2), self.y + 20), (self.x - (self.width / 2), self.y - 20), (self.x, self.y + (self.height / 2)), (self.x, self.y - (self.height / 2))]
         inp_labels = ["DATA", "CLK", "SET", "RSET"]
-
-        for i, i_id in enumerate(input_ids): 
-            
-            if i_id == self.devices.DATA_ID: 
-                index = 0
-            elif i_id == self.devices.CLK_ID:
-                index = 1
-            elif i_id == self.devices.SET_ID: 
-                index = 2
-            else: 
-                index = 3   
-
-            y_coord = temp_input_list[index][1]
-            x_coord = temp_input_list[index][0]
-
-            self.input_dict[(self.id, i_id)] = (x_coord, y_coord)
-            self.make_circle(x_coord, y_coord)
-
-            self.render_text(inp_labels[index], x_coord - 15, y_coord + 5)
-   
-        temp_output_list = [(self.x + (self.width / 2), self.y + 20), (self.x + (self.width / 2), self.y - 20)]
         out_labels = ["Q", "QBAR"]
+
+        for coord_input in list(self.input_dict.values()): 
+            self.make_circle(coord_input[0], coord_input[1])
+            self.render_text(inp_labels.pop(0), coord_input[0] - 5, coord_input[1])
         
-        for o, o_id in enumerate(output_ids): 
+        for coord_output in list(self.output_dict.values()): 
+            self.make_circle(coord_output[0], coord_output[1])
+            self.render_text(out_labels.pop(0), coord_output[0] - 5, coord_output[1])
 
-            if o_id == self.devices.Q_ID: 
-                index = 0
-            else: 
-                index = 1
+    def draw_RC(self, x, y): 
 
-            y_coord = temp_output_list[index][1]
-            x_coord = temp_output_list[index][0]
+        self.x = x
+        self.y = y 
+        self.height = 40
+        self.length = 40
 
-            self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
-            self.make_circle(x_coord, y_coord)
+        half_length = self.length / 2
+        half_height = self.height / 2
 
-            self.render_text(out_labels[index], x_coord - 15, y_coord + 5)
+        glColor3f(1.0, 0.0, 0.0)  # Blue color
+        glBegin(GL_LINE_STRIP)
+        glVertex2f(self.x - half_length, self.y)
+        glVertex2f(self.x - half_length, self.y + half_height)
+        glVertex2f(self.x + half_length, self.y)
+        glVertex2f(self.x - half_length, self.y - half_height)
+        glVertex2f(self.x - half_length, self.y)
+        glEnd()
 
-    
-        self.domain = [(self.x - (self.width / 2) - 20, self.y - (self.height / 2) - 20), (self.x + (self.width / 2) + 20, self.y + (self.height / 2) + 20)]
-  
-    
+        d_name = self.names.get_name_string(self.id)
+        self.render_text(d_name, self.x + self.length/2, self.y + self.height/2, color="black")
+
+        for coord_input in list(self.input_dict.values()): 
+            self.make_circle(coord_input[0], coord_input[1])
+        
+        for coord_output in list(self.output_dict.values()): 
+            self.make_circle(coord_output[0], coord_output[1])
+
+
+    def draw_monitor(self, x, y, m_name: str):
+        """Render and draw a Monitor"""
+        
+        self.x, self.y = x, y 
+        # x, y defined from bottom of vertical line below tringle
+        glColor3f(1.0, 0.0, 1.0)  # Purple color
+        glBegin(GL_POLYGON)
+        glVertex2f(self.x, self.y+ 5)
+        #glVertex2f(self.x, self.y + 15)
+        glVertex2f(self.x - 10, self.y + 20)
+        glVertex2f(self.x + 10, self.y + 20)
+        #glVertex2f(self.x, self.y + 15)
+        glVertex2f(self.x, self.y+ 5)
+        glEnd()
+
+        self.render_text(m_name, self.x + 20, self.y, 'purple')
+
+        # Monitor has one input - where it monitors from
+        self.input_list = [(self.x, self.y)]        
+        # monitor has no output points
+        # draw dots for input and output spaces
+        x1, y1 = self.input_list[0][0], self.input_list[0][1]
+        self.make_circle(x1, y1)
+
     def render_text(self, text, x_pos, y_pos, color = 'blue'):
         """Handle text drawing operations."""
 
@@ -681,77 +872,4 @@ class LogicDrawer:
                 GL.glRasterPos2f(x_pos, y_pos)
             else:
                 GLUT.glutBitmapCharacter(font, ord(character))
-    def draw_RC(self, x, y): 
-
-        self.x = x
-        self.y = y 
-        self.height = 40
-        self.length = 40
-
-        half_length = self.length / 2
-        half_height = self.height / 2
-
-        glColor3f(1.0, 0.0, 0.0)  # Blue color
-        glBegin(GL_LINE_STRIP)
-        glVertex2f(self.x - half_length, self.y)
-        glVertex2f(self.x - half_length, self.y + half_height)
-        glVertex2f(self.x + half_length, self.y)
-        glVertex2f(self.x - half_length, self.y - half_height)
-        glVertex2f(self.x - half_length, self.y)
-        glEnd()
-
-
-        inp_space = self.height - 2 * self.inc_height
-        div_space = inp_space/(self.n_inputs + 1)
-
-        input_ids = self.device_inputs.keys()
-        output_ids = self.device_outputs.keys()
-        
-        # Render clock label
-        d_name = self.names.get_name_string(self.id)
-        self.render_text(d_name, self.x + self.length/2 - 5, self.y + self.height/2, color="black")
-
-        for i, i_id in enumerate(input_ids): 
-            y_coord = self.y + self.inc_height + (i+1)*div_space
-            x_coord = self.x
-
-            self.input_dict[(self.id, i_id)] = (x_coord, y_coord)
-            self.make_circle(x_coord, y_coord)
-
-        for o, o_id in enumerate(output_ids): 
-            y_coord = self.y
-            x_coord = self.x + (self.length / 2)
-
-            self.output_dict[(self.id, o_id)] = (x_coord, y_coord)
-            self.make_circle(x_coord, y_coord)
-
-        self.domain =  [(self.x - half_length - 10, self.y - half_height - 10), (self.x + half_length + 10, self.y + half_height + 10)]
-
-    def draw_monitor(self, x, y, m_name: str):
-        """Render and draw a Monitor"""
-        
-        self.x, self.y = x, y 
-        # x, y defined from bottom of vertical line below tringle
-        glColor3f(1.0, 0.0, 1.0)  # Purple color
-        glBegin(GL_POLYGON)
-        glVertex2f(self.x, self.y+ 5)
-        #glVertex2f(self.x, self.y + 15)
-        glVertex2f(self.x - 10, self.y + 20)
-        glVertex2f(self.x + 10, self.y + 20)
-        #glVertex2f(self.x, self.y + 15)
-        glVertex2f(self.x, self.y+ 5)
-        glEnd()
-
-        self.render_text(m_name, self.x + 20, self.y, 'purple')
-
-        # Monitor has one input - where it monitors from
-        self.input_list = [(self.x, self.y)]        
-        # monitor has no output points
-        # List of tuples containing domain (bottom left, top right)
-        # Give padding 1 px
-        self.domain = [(self.x - 10 + 1, self.y + 1), (self.x + 10 - 1, self.y + 40 - 1)]
-
-        # draw dots for input and output spaces
-        x1, y1 = self.input_list[0][0], self.input_list[0][1]
-        self.make_circle(x1, y1)
-
+                

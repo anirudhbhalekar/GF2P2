@@ -13,20 +13,36 @@ import numpy as np
 class ConnectDrawer:
     """Handle all Connections drawings."""
     
-    def __init__(self, connection_def: tuple, domain_dict: dict, padding: float, fraction: float) -> None:
+    def __init__(self, domain_dict, draw_dict, padding, coords_array, devices) -> None:
         
         # We receive connection_list in the form (draw_obj, input_port_id, draw_obj, output_port_id)
-        self.connection = connection_def
         # Stores dict of all min_max coords {LogicDraw obj: (bounding box tuple)} for all operators
         self.domain_dict = domain_dict
         # This is the padding when connection line tries to navigate around another bounding box
         self.padding = padding
-
-        self.fraction = fraction # This is a randomized fraction for each device
+        self.fraction = 0.5 # This is a randomized fraction for each device
+        self.coords_array = coords_array
+        self.devices = devices
+        self.draw_dict = draw_dict
     
-    def draw_connection(self) -> None: 
+    def make_all_connections(self) -> None: 
+
+        for device in self.devices.devices_list: 
+            input_obj = self.draw_dict[device.device_id]
+
+            for input_port_id in device.inputs.keys(): 
+                con_tup = device.inputs[input_port_id]
+                
+                if con_tup is not None: 
+                    output_dev_id = con_tup[0]
+                    output_port_id = con_tup[1]
+
+                    output_obj = self.draw_dict[output_dev_id]
+                    self.make_single_connection((input_obj, input_port_id, output_obj, output_port_id))
+
+    def make_single_connection(self, connection) -> None: 
         
-        connection_def = self.connection
+        connection_def = connection
         
         inp_obj = connection_def[0] 
         out_obj = connection_def[2]
@@ -39,6 +55,7 @@ class ConnectDrawer:
         
         inp_domain = self.domain_dict[inp_obj]
         out_domain = self.domain_dict[out_obj]
+
         inp_min_x, inp_max_x = inp_domain[0][0], inp_domain[1][0]
         inp_min_y, inp_max_y = inp_domain[0][1], inp_domain[1][1]
 
@@ -53,14 +70,12 @@ class ConnectDrawer:
             if np.abs(start_y - inp_min_y) - 5 < np.abs(start_y - inp_max_y): 
                 # We are on the bottom side
                 # We are on the bottom left
-                
                 curr_coord = (inp_min_x - self.padding * (1 - self.fraction), inp_min_y - self.padding * (1 - self.fraction))
             else: 
                 # We are on the top left
                 curr_coord = (inp_min_x - self.padding * (1 - self.fraction), inp_max_y + self.padding * (1 - self.fraction))
         else: 
             # We are on the right side
-
             if np.abs(start_y - inp_min_y) < np.abs(start_y - inp_max_y): 
                 # We are on the bottom side
                 # We are on the bottom right
@@ -79,92 +94,30 @@ class ConnectDrawer:
 
         color_arr = [self.fraction/4, self.fraction/4, self.fraction/4]
         color_arr[index] = self.fraction/2
-       
-        glColor3f(color_arr[0], color_arr[1], color_arr[2])
-        glBegin(GL_LINE_STRIP)
-        glVertex2f(start_x, start_y)
-        glVertex2f(curr_coord[0], start_y)
-        glVertex2f(curr_coord[0], curr_coord[1])
-        glEnd()
 
-        # We are now at one of the bounding box corners
-        # Check if there is any bounding box that intersects the ray y coordinate as it travels to 
-       
-        nav_tup = self.navigate_intersection(curr_coord, (end_x, end_y), self.domain_dict)
-        while nav_tup[0]: 
-            # This is the bounds of the problematic object
-            new_bounds = nav_tup[1]
-            min_x, max_x = new_bounds[0][0], new_bounds[1][0]
-            min_y, max_y = new_bounds[0][1], new_bounds[1][1]
+        l1 = []
+        l1.append((start_x, start_y))
+        l1.append((curr_coord[0], start_y))
+        l1.append((curr_coord[0], curr_coord[1]))
+        
+        self.coords_array.append(l1)
+        
+        le = []
+        le.append((curr_coord[0], curr_coord[1]))
+        le.append((end_x + 20, curr_coord[1]))
+        le.append((end_x + 20, end_y))
+        le.append((end_x, end_y))
 
-            # This is to preserve directionality - aka choose the x bound closest to you
-            # IF WE ARE GOING SIDEWAYS
-            if np.abs(curr_coord[0] - min_x) < np.abs(curr_coord[0] - max_x):
-                # We are heading right
-                # We will travel a random fraction of the distance to min_x
-                next_x_coord = min_x - (min_x - curr_coord[0]) * self.fraction
-                next_y_coord = curr_coord[1]
-            else: 
-                # We are heading left
-                # We will travel a random fraction of the distance to max_x
-                next_x_coord = max_x + (curr_coord[0] - max_x) * self.fraction
-                next_y_coord = curr_coord[1]
-
-            # If we have to go up overall we will choose to travel to the top corner
-
-            if end_y < curr_coord[1]: 
-                next_seed_y = min_y - self.padding * 2
-            else: 
-                next_seed_y = max_y + self.padding * 2
-
-            # Draw line between points: curr coord -> closes x value coord of next intersecting box -> down or up to corners with padding -> reset to curr coords
-            glBegin(GL_LINE_STRIP)
-            glVertex2f(curr_coord[0], curr_coord[1])
-            glVertex2f(curr_coord[0], next_y_coord)
-            glVertex2f(next_x_coord, next_y_coord)
-            glVertex2f(next_x_coord, next_seed_y)
-            glEnd()
-
-            # We now update curr corner
-            curr_coord = (next_x_coord, next_seed_y)
-            
-            # We call the navigation function again
-            nav_tup = self.navigate_intersection(curr_coord, (end_x, end_y), self.domain_dict)
-            
-        # At this point we are at one of the corners of the bounding box of the output obj itself so we just need two updates
-    
-        glBegin(GL_LINE_STRIP)
-        glVertex2f(curr_coord[0], curr_coord[1])
-        glVertex2f(end_x + 20, curr_coord[1])
-        glVertex2f(end_x + 20, end_y)
-        glVertex2f(end_x, end_y)
-        glEnd()
-
+        self.coords_array.append(le)
         # Should have reached destination element now
-    
-    def navigate_intersection(self, curr_coord, dest_coord, domain_dict): 
-        
-        curr_y = curr_coord[1]
-        curr_x = curr_coord[0]
 
-        dest_x = dest_coord[0]
-        dest_y = dest_coord[1]
+    def draw_all_connections(self, this_coords_array): 
 
-        for key in domain_dict.keys(): 
+        for coords_list in this_coords_array: 
+            glBegin(GL_LINE_STRIP)
+            glColor3f(0,0,0)
+            for coords in coords_list: 
+                glVertex2f(coords[0], coords[1])
             
-            min_y = domain_dict[key][0][1]
-            min_x = domain_dict[key][0][0]
-
-            max_y = domain_dict[key][1][1]
-            max_x = domain_dict[key][1][0]
-
-            if min_y <= curr_y and max_y >= curr_y: 
-                # Check if there is an object that intersects this x ray 
-                if min_x <= max(curr_x, dest_x) or max_x >= min(dest_x, curr_x): 
-                    # Check if it lies between the two (src and dest) x values
-                    return (True, domain_dict[key])
-                
-
-        return (False, None)
-
-        
+            glVertex2f(coords[0], coords[1])
+            glEnd()

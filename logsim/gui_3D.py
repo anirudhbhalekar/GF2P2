@@ -221,7 +221,7 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
             self.scene_renderer.draw_monitor(m_coord[0], m_coord[1], dev_id=dev_id, port_id=port_id)
 
 
-    def render(self):
+    def render(self, text = None):
         """Handle all drawing operations."""
         self.SetCurrent(self.context)
         if not self.init:
@@ -244,90 +244,6 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         GL.glFlush()
         self.SwapBuffers()
 
-    def draw_cuboid(self, x_pos, z_pos, half_width, half_depth, height):
-        """Draw a cuboid.
-
-        Draw a cuboid at the specified position, with the specified
-        dimensions.
-        """
-        '''
-        GL.glBegin(GL.GL_QUADS)
-        GL.glNormal3f(0, -1, 0)
-        GL.glVertex3f(x_pos - half_width, -6, z_pos - half_depth)
-        GL.glVertex3f(x_pos + half_width, -6, z_pos - half_depth)
-        GL.glVertex3f(x_pos + half_width, -6, z_pos + half_depth)
-        GL.glVertex3f(x_pos - half_width, -6, z_pos + half_depth)
-        GL.glNormal3f(0, 1, 0)
-        GL.glVertex3f(x_pos + half_width, -6 + height, z_pos - half_depth)
-        GL.glVertex3f(x_pos - half_width, -6 + height, z_pos - half_depth)
-        GL.glVertex3f(x_pos - half_width, -6 + height, z_pos + half_depth)
-        GL.glVertex3f(x_pos + half_width, -6 + height, z_pos + half_depth)
-        GL.glNormal3f(-1, 0, 0)
-        GL.glVertex3f(x_pos - half_width, -6 + height, z_pos - half_depth)
-        GL.glVertex3f(x_pos - half_width, -6, z_pos - half_depth)
-        GL.glVertex3f(x_pos - half_width, -6, z_pos + half_depth)
-        GL.glVertex3f(x_pos - half_width, -6 + height, z_pos + half_depth)
-        GL.glNormal3f(1, 0, 0)
-        GL.glVertex3f(x_pos + half_width, -6, z_pos - half_depth)
-        GL.glVertex3f(x_pos + half_width, -6 + height, z_pos - half_depth)
-        GL.glVertex3f(x_pos + half_width, -6 + height, z_pos + half_depth)
-        GL.glVertex3f(x_pos + half_width, -6, z_pos + half_depth)
-        GL.glNormal3f(0, 0, -1)
-        GL.glVertex3f(x_pos - half_width, -6, z_pos - half_depth)
-        GL.glVertex3f(x_pos - half_width, -6 + height, z_pos - half_depth)
-        GL.glVertex3f(x_pos + half_width, -6 + height, z_pos - half_depth)
-        GL.glVertex3f(x_pos + half_width, -6, z_pos - half_depth)
-        GL.glNormal3f(0, 0, 1)
-        GL.glVertex3f(x_pos - half_width, -6 + height, z_pos + half_depth)
-        GL.glVertex3f(x_pos - half_width, -6, z_pos + half_depth)
-        GL.glVertex3f(x_pos + half_width, -6, z_pos + half_depth)
-        GL.glVertex3f(x_pos + half_width, -6 + height, z_pos + half_depth)
-        GL.glEnd()
-        '''
-        '''
-        test_device = self.devices.devices_list[0]
-        test_id = test_device.device_id
-
-        test_device = self.devices.devices_list[1]
-        test2_id = test_device.device_id
-
-        test_device = self.devices.devices_list[4]
-        test3_id = test_device.device_id
-
-        test_device = self.devices.devices_list[5]
-        test4_id = test_device.device_id
-
-        and_test = LogicDrawer3D(self.names, self.devices, self.monitors, 20)
-        and_test.draw_with_id(test_id, 0, 0)
-        and_test.draw_with_id(test2_id,0, 20)
-        and_test.draw_with_id(test3_id, 20, 0)
-        and_test.draw_with_id(test3_id, 20, 20)
-        '''
-
-        """con_draw_obj = ConnectDrawer3D(self.names, self.devices, self.monitors, self.network, {})
-        test_vertices = con_draw_obj.return_tube_vertices((0, 0, 0), (0, 0, 30))
-
-        new_test_vertices = con_draw_obj.return_tube_vertices((0,0,30), (0,30,30))
-        newnew_v = con_draw_obj.return_tube_vertices((0,4,0),(0,10,0))
-
-        test_vertices += new_test_vertices + newnew_v
-
-        test_vertices = np.array(test_vertices, dtype=np.float32)
-        self.vertex_count = len(test_vertices) // 8
-
-        self.vbo = GL.glGenBuffers(1)
-        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
-        GL.glBufferData(GL.GL_ARRAY_BUFFER, test_vertices.nbytes, test_vertices, GL.GL_STATIC_DRAW)
-        #position
-        GL.glEnableVertexAttribArray(0)
-        GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(0))
-        #texture
-        GL.glEnableVertexAttribArray(1)
-        GL.glVertexAttribPointer(1, 2, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(12))
-
-        GL.glColor3f(0.7, 0.6, 0.1)
-        GL.glDrawArrays(GL.GL_QUADS, 0, self.vertex_count)
-       """
     def on_paint(self, event):
         """Handle the paint event."""
         self.SetCurrent(self.context)

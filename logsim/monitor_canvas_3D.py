@@ -145,7 +145,13 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
     def render_monitor_plots(self): 
 
         x_dist = 2.5 
+        monitors_dict = self.monitors.monitors_dictionary
 
+        for key in monitors_dict: 
+            dev_id = key[0]
+            port_id = key[1]
+
+            
         
 
     def render(self):

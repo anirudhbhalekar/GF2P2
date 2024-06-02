@@ -79,12 +79,14 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
         self.parent = parent
 
+
+        self.device_postions = {} # {dev_id : (x,y)}
         self.draw_obj_dict = {}
         self.domain_dict = {}
-        self.random_pertubation = {} # A random perturbation for each device in the form {device_id: rand_int}
-        self.random_fraction = {} # random fraction for each device
-
-        self.output_dicts = {} # This is a coords -> output_port, dev_id mapping
+        
+        self.coords_array = []
+        
+        
 
         # Bind events to the canvas
         self.Bind(wx.EVT_PAINT, self.on_paint)
@@ -111,26 +113,11 @@ class MyGLCanvas(wxcanvas.GLCanvas):
     def construct_dicts(self): 
         """Construct required dictionaries."""
         devices_list = self.devices.devices_list
-
-        for device in devices_list: 
-            dev_id = device.device_id
-            render_obj = LogicDrawer(self.names, self.devices, self.monitors, dev_id) 
-
-            self.draw_obj_dict[dev_id] = render_obj
-            self.random_pertubation[dev_id] = 1
-            self.random_fraction[dev_id] = np.random.uniform(0.15, 0.85)
-        
-    def render_circuit(self): 
-        """Render all devices, connections, and monitors on screen."""
-        devices_list = self.devices.devices_list
-        
         y_start = 300
-
         xs, ys = 0,y_start
         count = 0
         dist = 100
         min_y = 0
-        max_vertical = 4
 
         # First we find the CLOCK type - we typically want this to be rendered 
         # in the left most part of the canvas
@@ -139,18 +126,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 # Render the CLOCK device at (0,0)
                 ys = ys - count*dist
                 count += 1
-                
-                # Call from dict
-                clk_render = self.draw_obj_dict[device.device_id]
-                
-                clk_render.draw_clock(xs, ys)
-                self.domain_dict[clk_render] = clk_render.domain
-
-                # building output_dicts 
-                monitor_dict = clk_render.output_dict
-                # Now we get the (dev_id, port_id) -> coord dictionary
-                for key, value in monitor_dict.items(): 
-                    self.output_dicts[key] = value
+                self.device_postions[device.device_id] = (xs, ys)
 
         pos_x, pos_y = xs + 150, y_start
         
@@ -160,11 +136,8 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             if acc_device.device_kind == self.devices.CLOCK: 
                 continue
             
-            device_render = self.draw_obj_dict[acc_device.device_id]
-
             num_inputs = len(acc_device.inputs.keys())
             d_kind = self.names.get_name_string(acc_device.device_kind)
-            d_name = self.names.get_name_string(acc_device.device_id)
 
             if d_kind in ["AND", "NAND", "NOR", "OR", "XOR"]: 
                 dist_y = 100 
@@ -179,58 +152,47 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 pos_y = y_start 
                 pos_x += 175
             
-            # Call from dict
-            device_render.draw_with_string(d_kind, pos_x, pos_y)
-            self.domain_dict[device_render] = device_render.domain
-            
-            # building output_dicts 
-            monitor_dict = device_render.output_dict
-            # Now we get the (dev_id, port_id) -> coord dictionary
-            for key, value in monitor_dict.items(): 
-                self.output_dicts[key] = value
+            self.device_postions[acc_device.device_id] = (pos_x, pos_y)
 
             pos_y -= dist_y
-   
+
+        for device in devices_list: 
+            dev_id = device.device_id
+
+            render_obj = LogicDrawer(self.names, self.devices, self.monitors, dev_id) 
+            render_obj.get_domain(self.device_postions[dev_id][0], self.device_postions[dev_id][1])
+            
+            self.draw_obj_dict[dev_id] = render_obj
+            self.domain_dict[render_obj] = render_obj.domain
+        
+        self.con_drawer_class = ConnectDrawer(self.domain_dict, self.draw_obj_dict, 1, self.coords_array, self.devices)
+        self.con_drawer_class.make_all_connections()
+
+    def render_circuit(self): 
+        """Render all devices, connections, and monitors on screen."""
+        devices_list = self.devices.devices_list
+
+        for device in devices_list: 
+            dev_id = device.device_id
+            device_kind = self.names.get_name_string(device.device_kind)
+            coords = self.device_postions[dev_id]
+
+            render_obj = self.draw_obj_dict[dev_id]
+            render_obj.draw_with_string(device_kind, coords[0], coords[1])
        
         # We will add connections here to reduce time complexity
-        for device in devices_list: 
-            self.assemble_connection(device)
-        
+        self.con_drawer_class.draw_all_connections(self.coords_array)
 
-    def assemble_connection(self, input_device): 
-        """Render all wires (connections) on screen."""
-        input_obj = self.draw_obj_dict[input_device.device_id]
-        
-        random_perturb = self.random_pertubation[input_device.device_id]
-        random_frac = self.random_fraction[input_device.device_id]
-
-        for input_port_id in input_device.inputs.keys(): 
-            con_tup = input_device.inputs[input_port_id]
-            
-            if con_tup is not None: 
-                output_dev_id = con_tup[0]
-                output_port_id = con_tup[1]
-
-                output_obj = self.draw_obj_dict[output_dev_id]
-                con_draw = ConnectDrawer((input_obj, input_port_id, output_obj, output_port_id), 
-                                            self.domain_dict, random_perturb, random_frac)
-                # Don't put padding too high - will break code 
-                con_draw.draw_connection()
-        
-
-    def assemble_monitors(self): 
+    def render_monitors(self): 
         """Assemble all monitors on screen."""
         monitors_dict = self.monitors.monitors_dictionary
 
         for key in monitors_dict.keys(): 
             dev_id = key[0]
             port_id = key[1]
-
             render_obj = self.draw_obj_dict[dev_id]
             output_dict = render_obj.output_dict
-
             m_coord = output_dict[(dev_id, port_id)]
-
             device_name = self.names.get_name_string(dev_id)
 
             if port_id is None: 
@@ -252,16 +214,13 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
         # Clear everything
         GL.glClear(GL.GL_COLOR_BUFFER_BIT)
-
         # Draw specified text at position (10, 10)
         self.render_circuit()
-        self.assemble_monitors()
-
+        self.render_monitors()
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front
         GL.glFlush()
         self.SwapBuffers()
-        
          # Update the message display widget
         self.message_display.SetValue(text)
 

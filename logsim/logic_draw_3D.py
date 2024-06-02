@@ -107,8 +107,6 @@ class LogicDrawer3D:
         unique_id = str(dev_id) + "_" + str(port_id)
 
         self.draw_mesh(x, y, obj_file_path, unique_id)
-        
-
 
     def draw_mesh(self, x, y, file_name, device_id): 
         mesh = Mesh(file_name, device_id, x, y, self.names, self.devices, self.monitors, self.vertex_loader)

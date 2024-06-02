@@ -361,11 +361,8 @@ class Gui(wx.Frame):
 
                 if file_dialog.ShowModal() == wx.ID_CANCEL:
                     return
-                if file_dialog.ShowModal() == wx.ID_CANCEL:
-                    return
 
                 pathname = file_dialog.GetPath()
-
                 try:
                     # Reinitialize the names, devices, network, and monitors
                     self.names = Names()
@@ -383,7 +380,11 @@ class Gui(wx.Frame):
                         # Reinitialize the canvas with the new devices and monitors
                         self.on_reset_plot_button(None)
                         self.canvas.Destroy()  # Destroy the old canvas
-                        self.canvas = MyGLCanvas(self, self.devices, self.monitors, self.message_display)
+                        
+                        if self.is3D: 
+                            self.canvas = MyGLCanvas3D(self, self.devices, self.monitors)
+                        else: 
+                            self.canvas = MyGLCanvas(self, self.devices, self.monitors, self.message_display)
 
                         # Update the layout to replace the old canvas with the new one
                         main_sizer = self.GetSizer()

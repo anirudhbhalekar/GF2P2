@@ -1,0 +1,41 @@
+DEFINE 
+	D1 AS DTYPE, 
+	D2 AS DTYPE, 
+	A1 AS AND WITH inputs = 2, 
+	A2 AS AND WITH inputs = 2, 
+	A3 AS AND WITH inputs = 2,
+	A4 AS AND WITH inputs = 2, 
+	O1 AS OR WITH inputs = 2, 
+	O2 AS OR WITH inputs = 2, 
+	S1 AS SWITCH WITH initial = 0, 
+	CLK1 AS CLOCK WITH cycle_rep = 5; 
+
+
+CONNECT
+	D1.CLK = CLK1, 
+	D1.DATA = O1, 
+	D1.SET = S1, 
+	D1.CLEAR = S1, 
+	A1.I1 = D1.Q,
+	A1.I2 = D2.QBAR,
+	A2.I1 = D1.QBAR, 
+	A2.I2 = D2.Q, 
+	O1.I1 = A1, 
+	O1.I2 = A2, 
+	D2.SET = S1, 
+	D2.CLEAR = S1, 
+	D2.CLK = CLK1, 
+	D2.DATA = O2, 
+	A3.I1 = D1.Q, 
+	A3.I2 = D2.QBAR, 
+	A4.I1 = D2.QBAR, 
+	A4.I2 = D1.QBAR, 
+	O2.I1 = A3,
+	O2.I2 = A4;
+
+MONITOR
+	D1.Q, 
+	D2.Q; 
+
+END; 
+
