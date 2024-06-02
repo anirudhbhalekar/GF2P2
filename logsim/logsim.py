@@ -11,7 +11,6 @@ from monitors import Monitors
 from scanner import Scanner
 from parse import Parser
 from userint import UserInterface
-from gui_3D import Gui3D
 from gui import Gui
 
 # Initialize gettext translation

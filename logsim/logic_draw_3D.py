@@ -15,6 +15,7 @@ class LogicDrawer3D:
         self.monitors = monitors
 
         self.master_obj_folder = "device_objs/"
+        self.master_signal_folder = "monitor_objs/"
         self.vertex_folder = "vertices/"
 
 
@@ -108,6 +109,21 @@ class LogicDrawer3D:
 
         self.draw_mesh(x, y, obj_file_path, unique_id)
 
+    def draw_signal(self, x, y, signal_name, signal_color): 
+        # Here signal is either "HIGH", "LOW", "FALLING" or "RISING"
+
+        if signal_name != "BLANK":
+            obj_file = self.master_signal_folder + str(signal_name) + ".obj"
+            if not os.path.exists(obj_file): 
+                raise FileNotFoundError
+            
+            glColor3f(float(signal_color[0]), float(signal_color[1]), float(signal_color[2]))
+            unique_id = str(signal_name) + "_" + str(x) + "_" + str(y)
+
+            self.draw_mesh(x, y, obj_file, unique_id)
+        else: 
+            pass
+
     def draw_mesh(self, x, y, file_name, device_id): 
         mesh = Mesh(file_name, device_id, x, y, self.names, self.devices, self.monitors, self.vertex_loader)
         
@@ -171,8 +187,8 @@ class LogicDrawer3D:
                 self.outputs_dict[(device_id, output_id)] = coord
 
 
-""" MESH CLASS TO IMPORT OBJ FILES AND """
-"""Courtesy of GetIntoGameDev - on YouTube, whose skeleton I used after reading 
+""" MESH CLASS TO IMPORT OBJ FILES """
+""" Courtesy of GetIntoGameDev - on YouTube, whose skeleton I used after reading 
     his tutorial on PyOpenGL and lighting, and made some modifications to"""
 
 class Mesh(LogicDrawer3D): 

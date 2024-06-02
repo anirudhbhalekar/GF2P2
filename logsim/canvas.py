@@ -80,6 +80,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         self.parent = parent
 
 
+        self.output_dicts = {}
         self.device_postions = {} # {dev_id : (x,y)}
         self.draw_obj_dict = {}
         self.domain_dict = {}
@@ -161,6 +162,9 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
             render_obj = LogicDrawer(self.names, self.devices, self.monitors, dev_id) 
             render_obj.get_domain(self.device_postions[dev_id][0], self.device_postions[dev_id][1])
+            
+            for port, coord in render_obj.output_dict.items(): 
+                self.output_dicts[port] = coord
             
             self.draw_obj_dict[dev_id] = render_obj
             self.domain_dict[render_obj] = render_obj.domain

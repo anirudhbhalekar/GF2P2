@@ -48,7 +48,9 @@ from parse import Parser
 from logic_draw import LogicDrawer
 from connect_draw import ConnectDrawer
 from userint import UserInterface 
-from gui_3D import MyGLCanvas3D
+from device_canvas_3D import MyGLCanvas3D
+from monitor_canvas_3D import MyGLCanvasMonitor3D
+
 from canvas import MyGLCanvas
 from textctrl import TextEditor, PromptedTextCtrl
 import gettext
@@ -101,6 +103,7 @@ class Gui(wx.Frame):
         fileMenu = wx.Menu()
         sourceMenu = wx.Menu()
         commandMenu = wx.Menu()
+        view3DMenu = wx.Menu()
         languageMenu = wx.Menu()  # New menu for language selection
 
         try: 
@@ -118,6 +121,7 @@ class Gui(wx.Frame):
         sourceMenu.Append(wx.ID_OPEN, _("&Open"))
         sourceMenu.Append(wx.ID_EDIT, _("&Edit"))
         commandMenu.Append(wx.ID_HELP_COMMANDS, _("&Commands"))
+        view3DMenu.Append(wx.ID_PREFERENCES,_("&Change 3D Signal Max") )
         # Add language options
         languageMenu.Append(101, "English")
         languageMenu.Append(102, "Ελληνικά")  # Greek in Greek
@@ -126,6 +130,7 @@ class Gui(wx.Frame):
         menuBar.Append(fileMenu, _("&File"))
         menuBar.Append(sourceMenu, _("&Source")) # for source/definition file being parsed
         menuBar.Append(commandMenu, _("&Command")) # list of user commands
+        menuBar.Append(view3DMenu, _("&View Options"))
         menuBar.Append(languageMenu, ("&ABC/ΠΣΩ"))  # Language selection menu
 
         self.SetMenuBar(menuBar)
@@ -144,10 +149,8 @@ class Gui(wx.Frame):
 
         # Message display widget
         self.message_display = wx.TextCtrl(self, wx.ID_ANY, "", style=wx.TE_MULTILINE | wx.TE_READONLY)
-
         # Canvas for drawing
         self.canvas = MyGLCanvas(self, devices, monitors, self.message_display)
-
         # Text editor for definition files window
         self.editor = None
 
@@ -165,6 +168,7 @@ class Gui(wx.Frame):
         self.switch_to_3D_button = wx.ToggleButton(self, wx.ID_ANY, "3D Mode") # button to switch canvases out
 
         self.is3D = False
+        self.max_3D_view = 100
 
         # Bind events to widgets
         self.Bind(wx.EVT_MENU, self.on_menu)
@@ -228,12 +232,16 @@ class Gui(wx.Frame):
         self.is3D = self.switch_to_3D_button.GetValue()
         
         if self.is3D: 
-            
+            self.zap_monitor_button.SetValue(False)
+            self.add_monitor_button.SetValue(False)
             self.zap_monitor_button.Disable()
             self.add_monitor_button.Disable()
 
             self.canvas.Destroy()
+            self.matplotlib_canvas.Destroy()
+
             self.canvas = MyGLCanvas3D(self, self.devices, self.monitors)
+            self.matplotlib_canvas = MyGLCanvasMonitor3D(self, self.devices, self.monitors)
 
             main_sizer = self.GetSizer()
             canvas_plot_sizer = main_sizer.GetChildren()[0].GetSizer()
@@ -246,11 +254,15 @@ class Gui(wx.Frame):
             main_sizer.Layout()
 
         else: 
+            self.canvas.Destroy()
+            self.matplotlib_canvas.Destroy()
+
             self.zap_monitor_button.Enable()
             self.add_monitor_button.Enable()
 
-            self.canvas.Destroy()
             self.canvas = MyGLCanvas(self, self.devices, self.monitors, self.message_display)
+            self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
+
             main_sizer = self.GetSizer()
             canvas_plot_sizer = main_sizer.GetChildren()[0].GetSizer()
 
@@ -286,7 +298,7 @@ class Gui(wx.Frame):
         self.figure = Figure(figsize=(5,2))
         self.axes = self.figure.add_subplot(111)
         self.axes.set_title("Monitor Plots", **hfont)
-        self.axes.tick_params(axis = 'both', bottom = False, left = False, right = False, labelright = False, labelleft = False, labelbottom = False)
+        self.axes.tick_params(axis = 'both', bottom = True, left = False, right = False, labelright = False, labelleft = False, labelbottom = False)
 
     def execute_circuit(self, cycles): 
         """Simulates the circuit for N cycles"""
@@ -339,7 +351,6 @@ class Gui(wx.Frame):
             else:
                 # Otherwise, open and create the editor
                 self.open_text_editor()
-            
                 #self.editor = TextEditor(self, "Text Editor")
                 #self.editor.Bind(wx.EVT_CLOSE, self.on_editor_close)
                 #self.editor.Show()
@@ -354,7 +365,6 @@ class Gui(wx.Frame):
                         "\nh - print a list of available commands on the terminal"
                         "\nq - quit the simulation"))
         if Id == wx.ID_OPEN:
-            
             with wx.FileDialog(self,  _("Open New Source File"),
                             wildcard="TXT files (*.txt)|*.txt",
                             style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as file_dialog:
@@ -383,15 +393,14 @@ class Gui(wx.Frame):
                         
                         if self.is3D: 
                             self.canvas = MyGLCanvas3D(self, self.devices, self.monitors)
+                            self.matplotlib_canvas = MyGLCanvasMonitor3D(self, self.devices, self.monitors)
                         else: 
                             self.canvas = MyGLCanvas(self, self.devices, self.monitors, self.message_display)
+                            self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
 
                         # Update the layout to replace the old canvas with the new one
                         main_sizer = self.GetSizer()
                         canvas_plot_sizer = main_sizer.GetChildren()[0].GetSizer()
-
-                        # Clear matplotlib canvas
-                        self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
 
                         # Remove the old canvas and add the new one
                         canvas_plot_sizer.Clear(delete_windows=False)
@@ -412,6 +421,12 @@ class Gui(wx.Frame):
 
                 except Exception as ex:
                     wx.LogError(_("Cannot open file: {exception}").format(exception=ex))
+
+        if Id == wx.ID_PREFERENCES: 
+            with wx.TextEntryDialog(self, "Change Value of 3D max view", value = str(self.max_3D_view)) as text_dialog: 
+                if text_dialog.ShowModal() == wx.ID_OK: 
+                    
+                    self.max_3D_view = int(str(text_dialog.GetValue()))
 
 
     def on_spin(self, event):
@@ -564,7 +579,6 @@ class Gui(wx.Frame):
             one_d_signal = []
             monitor_name = self.devices.get_signal_name(device_id, output_id)
             signal_list = self.monitors.monitors_dictionary[(device_id, output_id)]
-
             for signal in signal_list: 
                 if signal == self.devices.HIGH: 
                     one_d_signal.append(1)
@@ -573,6 +587,7 @@ class Gui(wx.Frame):
                     one_d_signal.append(0)
                     one_d_signal.append(0)
                 if signal == self.devices.RISING: 
+                    print("RISING")
                     one_d_signal.append(0)
                     one_d_signal.append(1)
                 if signal == self.devices.FALLING: 

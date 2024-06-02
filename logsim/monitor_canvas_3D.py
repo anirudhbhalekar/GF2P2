@@ -11,6 +11,8 @@ from monitors import Monitors
 from scanner import Scanner
 from parse import Parser
 
+from logic_draw_3D import LogicDrawer3D
+
 class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
     """Handle all drawing operations.
 
@@ -39,7 +41,7 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
                                                   operations.
     """
 
-    def __init__(self, parent, devices, monitors):
+    def __init__(self, parent, devices : Devices, monitors: Monitors):
         """Initialise canvas properties and useful variables."""
         super().__init__(parent, -1,
                          attribList=[wxcanvas.WX_GL_RGBA,
@@ -75,7 +77,7 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
         self.scene_rotate = np.identity(4, 'f')
 
         # Initialise variables for zooming
-        self.zoom = 1
+        self.zoom = 20
 
         self.names = parent.names
         self.network = parent.network
@@ -83,6 +85,13 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
         self.devices = devices
 
         self.parent = parent
+        self.monitor_vertex_loader = {} # {signal_type: vertices}
+        self.signal_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.monitor_vertex_loader)
+        self.color_arr = []
+
+        self.blank_signal = ["BLANK"] 
+
+        self.max_view = self.parent.max_3D_view
 
         # Offset between viewpoint and origin of the scene
         self.depth_offset = 1000
@@ -144,15 +153,57 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
     
     def render_monitor_plots(self): 
 
-        x_dist = 2.5 
-        monitors_dict = self.monitors.monitors_dictionary
+        x_dist = 2
+        y_dist = 15
+        y_offset = 0
+        x_offset = 0
 
-        for key in monitors_dict: 
-            dev_id = key[0]
-            port_id = key[1]
+        self.plot_array = []
+        self.name_array = []
 
-            
+        count = 0
+        blank_signal = self.blank_signal*self.parent.cycles_completed
+
+        for device_id, output_id in self.monitors.monitors_dictionary: 
         
+            if count >= len(self.color_arr):
+                self.color_arr.append((0.25 + np.random.uniform(0,0.7), 0.25 + np.random.uniform(0,0.7), 0.25 + np.random.uniform(0,0.7)))
+            
+            color = self.color_arr[count]
+            count += 1
+            monitor_name = self.devices.get_signal_name(device_id, output_id)
+            signal_list = self.monitors.monitors_dictionary[(device_id, output_id)]
+            x_offset = 0 
+
+            one_d_signal = []
+            for signal in signal_list: 
+                if signal == self.devices.HIGH: 
+                    s_name = "HIGH"
+                if signal == self.devices.LOW: 
+                    s_name = "LOW"
+                if signal == self.devices.RISING: 
+                    s_name = "RISING"
+                if signal == self.devices.FALLING: 
+                    s_name = "FALLING"
+                if signal == self.devices.BLANK: 
+                    s_name = "BLANK"
+                
+                one_d_signal.append(s_name)
+
+
+            if len(one_d_signal) < self.parent.cycles_completed:
+                one_d_signal = blank_signal + one_d_signal
+                one_d_signal = one_d_signal[-self.parent.cycles_completed:]
+            
+            if len(one_d_signal) > self.max_view: 
+                one_d_signal = one_d_signal[-self.max_view:]
+
+            for s_name in one_d_signal: 
+                self.signal_renderer.draw_signal(x_offset, y_offset, s_name, color)
+                x_offset += x_dist
+
+            self.signal_renderer.render_text(monitor_name, -15, y_offset, 10)
+            y_offset -= y_dist
 
     def render(self):
         """Handle all drawing operations."""
@@ -164,78 +215,12 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
 
         # Clear everything
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
-
-        # Draw a sample signal trace, make sure its centre of gravity
-        # is at the scene origin
-        GL.glColor3f(1.0, 1.0, 1.0)  # signal trace is beige
-        GL.glColor3f(0.7, 0.5, 0.1)  # text is white
-        self.render_text("D1.QBAR", 0, 0, 210)
+        self.render_monitor_plots()
 
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front
         GL.glFlush()
         self.SwapBuffers()
-
-    def draw_cuboid(self, x_pos, z_pos, half_width, half_depth, height):
-        """Draw a cuboid.
-
-        Draw a cuboid at the specified position, with the specified
-        dimensions.
-        """
-        '''
-        GL.glBegin(GL.GL_QUADS)
-        GL.glNormal3f(0, -1, 0)
-        GL.glVertex3f(x_pos - half_width, -6, z_pos - half_depth)
-        GL.glVertex3f(x_pos + half_width, -6, z_pos - half_depth)
-        GL.glVertex3f(x_pos + half_width, -6, z_pos + half_depth)
-        GL.glVertex3f(x_pos - half_width, -6, z_pos + half_depth)
-        GL.glNormal3f(0, 1, 0)
-        GL.glVertex3f(x_pos + half_width, -6 + height, z_pos - half_depth)
-        GL.glVertex3f(x_pos - half_width, -6 + height, z_pos - half_depth)
-        GL.glVertex3f(x_pos - half_width, -6 + height, z_pos + half_depth)
-        GL.glVertex3f(x_pos + half_width, -6 + height, z_pos + half_depth)
-        GL.glNormal3f(-1, 0, 0)
-        GL.glVertex3f(x_pos - half_width, -6 + height, z_pos - half_depth)
-        GL.glVertex3f(x_pos - half_width, -6, z_pos - half_depth)
-        GL.glVertex3f(x_pos - half_width, -6, z_pos + half_depth)
-        GL.glVertex3f(x_pos - half_width, -6 + height, z_pos + half_depth)
-        GL.glNormal3f(1, 0, 0)
-        GL.glVertex3f(x_pos + half_width, -6, z_pos - half_depth)
-        GL.glVertex3f(x_pos + half_width, -6 + height, z_pos - half_depth)
-        GL.glVertex3f(x_pos + half_width, -6 + height, z_pos + half_depth)
-        GL.glVertex3f(x_pos + half_width, -6, z_pos + half_depth)
-        GL.glNormal3f(0, 0, -1)
-        GL.glVertex3f(x_pos - half_width, -6, z_pos - half_depth)
-        GL.glVertex3f(x_pos - half_width, -6 + height, z_pos - half_depth)
-        GL.glVertex3f(x_pos + half_width, -6 + height, z_pos - half_depth)
-        GL.glVertex3f(x_pos + half_width, -6, z_pos - half_depth)
-        GL.glNormal3f(0, 0, 1)
-        GL.glVertex3f(x_pos - half_width, -6 + height, z_pos + half_depth)
-        GL.glVertex3f(x_pos - half_width, -6, z_pos + half_depth)
-        GL.glVertex3f(x_pos + half_width, -6, z_pos + half_depth)
-        GL.glVertex3f(x_pos + half_width, -6 + height, z_pos + half_depth)
-        GL.glEnd()
-        '''
-        '''
-        test_device = self.devices.devices_list[0]
-        test_id = test_device.device_id
-
-        test_device = self.devices.devices_list[1]
-        test2_id = test_device.device_id
-
-        test_device = self.devices.devices_list[4]
-        test3_id = test_device.device_id
-
-        test_device = self.devices.devices_list[5]
-        test4_id = test_device.device_id
-
-        and_test = LogicDrawer3D(self.names, self.devices, self.monitors, 20)
-        and_test.draw_with_id(test_id, 0, 0)
-        and_test.draw_with_id(test2_id,0, 20)
-        and_test.draw_with_id(test3_id, 20, 0)
-        and_test.draw_with_id(test3_id, 20, 20)
-        '''
-
         
     def on_paint(self, event):
         """Handle the paint event."""
