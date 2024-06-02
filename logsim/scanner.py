@@ -101,44 +101,66 @@ class Scanner:
         self.current_character = ""
         self.advance()
 
-    def advance(self): 
-        """Advances self.current_character"""
+    # def advance(self): 
+    #     """Advances self.current_character"""
 
-        self.file.seek(self.total_char_count)
+    #     self.file.seek(self.total_char_count)
 
+    #     next_char = self.file.read(1)
+    #     self.total_char_count += 1
+    #     self.line_char_count  += 1
+    #     self.symbol_char_count += 1
+
+    #     if self.current_character == "\n": 
+    #         self.line_count += 1
+    #         self.line_char_count = 0
+
+    #     if next_char == "%": 
+    #         next_char = self.file.read(1)
+    #         self.total_char_count += 1
+    #         self.line_char_count  += 1
+
+    #         if self.current_character == "\n" and next_char == "\n": 
+    #             self.line_count += 1
+    #             self.line_char_count = 0
+                    
+    #         while not next_char == "%" and next_char != "":
+
+    #             next_char = self.file.read(1)
+    #             self.total_char_count += 1
+    #             self.line_char_count  += 1
+
+    #             if next_char == "\n": 
+    #                 self.line_count += 1
+    #                 self.line_char_count = 0
+            
+    #         next_char = self.file.read(1)
+    #         self.total_char_count += 1
+    #         self.line_char_count  += 1
+
+    #     self.current_character = next_char
+
+    def read_next_char(self):
         next_char = self.file.read(1)
         self.total_char_count += 1
-        self.line_char_count  += 1
-        self.symbol_char_count += 1
-
-        if self.current_character == "\n": 
+        self.line_char_count += 1
+        if self.current_character == "\n":
             self.line_count += 1
             self.line_char_count = 0
-
-        if next_char == "%": 
-            next_char = self.file.read(1)
-            self.total_char_count += 1
-            self.line_char_count  += 1
-
-            if self.current_character == "\n" and next_char == "\n": 
-                self.line_count += 1
-                self.line_char_count = 0
-                    
-            while not next_char == "%" and next_char != "":
-
-                next_char = self.file.read(1)
-                self.total_char_count += 1
-                self.line_char_count  += 1
-
-                if next_char == "\n": 
-                    self.line_count += 1
-                    self.line_char_count = 0
-            
-            next_char = self.file.read(1)
-            self.total_char_count += 1
-            self.line_char_count  += 1
-
         self.current_character = next_char
+
+    def advance(self):
+        """Advance the current character."""
+        self.file.seek(self.total_char_count)
+        self.read_next_char()
+        self.symbol_char_count += 1
+
+        if self.current_character == "%":
+            self.read_next_char()
+            while self.current_character != "%" and self.current_character != "":
+                self.read_next_char()
+            self.read_next_char()
+
 
     def skip_spaces(self): 
         """ Skips spaces to next symbol and sets file pointer"""
@@ -177,11 +199,11 @@ class Scanner:
     def get_line(self, line_number):
         """Returns the line of the file at the given line number"""
         self.file.seek(0)
-        line_count = 1
+        line_number_count = 1
         line = ""
-        while line_count != line_number: 
+        while line_number_count != line_number: 
             line = self.file.readline()
-            line_count += 1
+            line_number_count += 1
         line = self.file.readline()
         # strip the newline
         line = line[:-1]

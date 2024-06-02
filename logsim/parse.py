@@ -86,6 +86,7 @@ class Parser:
             return False
 
 
+
     def get_error_message(self, error_code):
         """Return the error message corresponding to the error code."""
         error_messages = {
@@ -149,8 +150,8 @@ class Parser:
     def spec_file(self):
         """Implements rule spec_file = definition, connection, monitor, end;."""
         self.definition({self.scanner.SEMICOLON})
-        self.connection({self.scanner.KEYWORD})
-        self.monitor({self.scanner.KEYWORD})
+        self.connection({self.scanner.SEMICOLON})
+        self.monitor({self.scanner.SEMICOLON})
         self.end({self.scanner.SEMICOLON})
 
 
@@ -166,6 +167,8 @@ class Parser:
                 self.error(self.MISSING_SEMICOLON, stopping_symbols)
         else:
             self.error(self.EXPECTED_DEFINE, stopping_symbols)
+            if self.symbol.type == self.scanner.SEMICOLON:
+                self.symbol = self.scanner.get_symbol()
 
 
     def def_list(self, stopping_symbols):
@@ -211,7 +214,7 @@ class Parser:
                 else:
                     device_property = None
             else:
-                self.error(self.MISSING_SEMICOLON, stopping_symbols)
+                self.error(self.INVALID_KEYWORD, stopping_symbols)
             # Make device
             if self.error_count == 0:
                 error_type = self.devices.make_device(device_id, device_kind, device_property)
@@ -279,8 +282,7 @@ class Parser:
                 self.error(self.MISSING_SEMICOLON, stopping_symbols)
         else:
             self.error(self.EXPECTED_CONNECT, stopping_symbols)
-            # Keep searching until EOF or CONNECT
-            while self.symbol.type != self.scanner.EOF and self.symbol.type != self.scanner.KEYWORD:
+            if self.symbol.type == self.scanner.SEMICOLON:
                 self.symbol = self.scanner.get_symbol()
 
 
@@ -433,6 +435,8 @@ class Parser:
                 self.error(self.MISSING_SEMICOLON, stopping_symbols)
         else:
             self.error(self.EXPECTED_MONITOR, stopping_symbols)
+            if self.symbol.type == self.scanner.SEMICOLON:
+                self.symbol = self.scanner.get_symbol()
 
 
     def end(self, stopping_symbols):
