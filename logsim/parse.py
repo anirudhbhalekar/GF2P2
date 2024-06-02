@@ -52,7 +52,7 @@ class Parser:
          self.MISSING_END_STATEMENT, self.EXPECTED_NUMBER, self.EXPECTED_DOT, 
          self.INVALID_PIN_REF, self.EXPECTED_EQUALS, self.EXPECTED_DEFINE, self.EXPECTED_CONNECT, 
          self.EXPECTED_MONITOR, self.EXPECTED_END, self.INVALID_PARAM, self.MISSING_DTYPE_INPUTS, 
-         self.PASSED_KEYWORD, self.PASSED_DEVICE, self.PASSED_GATE] = self.names.unique_error_codes(23)
+         self.PASSED_KEYWORD, self.PASSED_DEVICE, self.PASSED_GATE, self.EMPTY_FILE] = self.names.unique_error_codes(24)
         self.devices = devices
         self.network = network
         self.monitors = monitors
@@ -80,10 +80,11 @@ class Parser:
         symbol_type=self.symbol.type, symbol_id=self.symbol.id, 
         name_string=self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME or self.symbol.type == self.scanner.KEYWORD else ''))
 
-        while (self.symbol.type not in stopping_symbols and self.symbol.type != self.scanner.EOF):
-            self.symbol = self.scanner.get_symbol()
         if self.symbol.type == self.scanner.EOF:
             return False
+
+        while (self.symbol.type not in stopping_symbols and self.symbol.type != self.scanner.EOF):
+            self.symbol = self.scanner.get_symbol()
 
 
 
@@ -114,6 +115,7 @@ class Parser:
             self.PASSED_KEYWORD: _("Passed a keyword when a name was expected"),
             self.PASSED_DEVICE: _("Passed a device when a name was expected"),
             self.PASSED_GATE: _("Passed a gate when a name was expected"),
+            self.EMPTY_FILE: _("Empty file"),
             # Network errors
             self.network.DEVICE_ABSENT: _("Device absent"),
             self.network.INPUT_CONNECTED: _("Input is already connected"),
@@ -138,6 +140,7 @@ class Parser:
         try:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type == self.scanner.EOF:
+                self.error(self.EMPTY_FILE)
                 return False
             self.spec_file()
             print(_("Total Error Count: {error_count}").format(error_count=self.error_count))
@@ -200,26 +203,27 @@ class Parser:
         while self.symbol.type == self.scanner.COMMA:
             self.symbol = self.scanner.get_symbol()
             device_id = self.name(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
-            if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS_ID:
-                self.symbol = self.scanner.get_symbol()
-                if self.symbol.type == self.scanner.DEVICE:
-                    device_kind = self.device(stopping_symbols)
-                elif self.symbol.type == self.scanner.GATE:
-                    device_kind = self.gate(stopping_symbols)
+            if device_id is not None:
+                if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.AS_ID:
+                    self.symbol = self.scanner.get_symbol()
+                    if self.symbol.type == self.scanner.DEVICE:
+                        device_kind = self.device(stopping_symbols)
+                    elif self.symbol.type == self.scanner.GATE:
+                        device_kind = self.gate(stopping_symbols)
+                    else:
+                        self.error(self.INVALID_KEYWORD, stopping_symbols)
+                    if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
+                        self.symbol = self.scanner.get_symbol()
+                        device_property = self.set_param(device_kind, stopping_symbols)
+                    else:
+                        device_property = None
                 else:
                     self.error(self.INVALID_KEYWORD, stopping_symbols)
-                if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
-                    self.symbol = self.scanner.get_symbol()
-                    device_property = self.set_param(device_kind, stopping_symbols)
-                else:
-                    device_property = None
-            else:
-                self.error(self.INVALID_KEYWORD, stopping_symbols)
-            # Make device
-            if self.error_count == 0:
-                error_type = self.devices.make_device(device_id, device_kind, device_property)
-                if error_type != self.devices.NO_ERROR:
-                    self.error(error_type, stopping_symbols)
+                # Make device
+                if self.error_count == 0:
+                    error_type = self.devices.make_device(device_id, device_kind, device_property)
+                    if error_type != self.devices.NO_ERROR:
+                        self.error(error_type, stopping_symbols)
 
 
     def set_param(self, device_kind, stopping_symbols):
@@ -275,10 +279,11 @@ class Parser:
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.CONNECT_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
-                self.con_list(stopping_symbols | {self.scanner.COMMA, self.scanner.SEMICOLON})
+                self.con_list(stopping_symbols | {self.scanner.COMMA})
             if self.symbol.type == self.scanner.SEMICOLON:
                 self.symbol = self.scanner.get_symbol()
             else:
+                print("hi")
                 self.error(self.MISSING_SEMICOLON, stopping_symbols)
         else:
             self.error(self.EXPECTED_CONNECT, stopping_symbols)
@@ -321,7 +326,7 @@ class Parser:
         d_type_devices = self.devices.find_devices(self.devices.D_TYPE)
         for device_id in d_type_devices:
             device = self.devices.get_device(device_id)
-            if any(value is None for value in device.inputs.values()):
+            if any(value is None for value in device.inputs.values()) and self.error_count == 0:
                 self.error(self.MISSING_DTYPE_INPUTS, stopping_symbols)
 
 
@@ -337,7 +342,6 @@ class Parser:
                 self.error(self.EXPECTED_DOT, stopping_symbols)
                 return None, None
         else:
-            self.error(self.EXPECTED_NAME, stopping_symbols)
             return None, None
         
     

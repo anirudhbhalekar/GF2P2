@@ -4,7 +4,7 @@ DEFINE
     rc AS RC WITH rc_cycles=10,
     dtype AS DTYPE,
     and1 AS AND WITH inputs=2,
-    nor1 AS NOR WITH inputs=2
+    nor1 AS NOR WITH inputs=2,
 ;
 
 CONNECT
@@ -15,7 +15,7 @@ CONNECT
     and1.I1 = clk,
     and1.I2 = dtype.Q,
     nor1.I1 = clk,
-    nor1.I2 = dtype.QBAR
+    nor1.I2 = dtype.QBAR,
 ;
 
 MONITOR
