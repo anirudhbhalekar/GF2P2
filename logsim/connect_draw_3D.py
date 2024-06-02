@@ -13,14 +13,10 @@ class ConnectDrawer3D:
         self.devices = devices 
         self.network = network 
         self.monitors = monitors
-
         self.inputs_dict = inputs_dict
         self.outputs_dict = outputs_dict
-
         num_inputs = len(self.inputs_dict.keys())
-
         self.tube_width = 0.2    
-
         self.z_offsets = range(2, num_inputs + 3)
         self.scale = 1
 

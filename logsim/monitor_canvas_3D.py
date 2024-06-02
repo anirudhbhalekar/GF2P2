@@ -92,10 +92,12 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
         self.blank_signal = ["BLANK"] 
 
         self.max_view = self.parent.max_3D_view
+        self.scroll_val = self.parent.scroll_val
 
         # Offset between viewpoint and origin of the scene
         self.depth_offset = 1000
 
+        self.initialise_monitor_plots()
         # Bind events to the canvas
         self.Bind(wx.EVT_PAINT, self.on_paint)
         self.Bind(wx.EVT_SIZE, self.on_size)
@@ -150,16 +152,12 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
         GL.glMultMatrixf(self.scene_rotate)
         GL.glScalef(self.zoom, self.zoom, self.zoom)
 
-    
-    def render_monitor_plots(self): 
-
-        x_dist = 2
-        y_dist = 15
-        y_offset = 0
-        x_offset = 0
+    def initialise_monitor_plots(self): 
 
         self.plot_array = []
         self.name_array = []
+        self.all_signals = []
+        self.m_names = []
 
         count = 0
         blank_signal = self.blank_signal*self.parent.cycles_completed
@@ -169,11 +167,9 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
             if count >= len(self.color_arr):
                 self.color_arr.append((0.25 + np.random.uniform(0,0.7), 0.25 + np.random.uniform(0,0.7), 0.25 + np.random.uniform(0,0.7)))
             
-            color = self.color_arr[count]
             count += 1
             monitor_name = self.devices.get_signal_name(device_id, output_id)
             signal_list = self.monitors.monitors_dictionary[(device_id, output_id)]
-            x_offset = 0 
 
             one_d_signal = []
             for signal in signal_list: 
@@ -190,15 +186,28 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
                 
                 one_d_signal.append(s_name)
 
-
             if len(one_d_signal) < self.parent.cycles_completed:
                 one_d_signal = blank_signal + one_d_signal
                 one_d_signal = one_d_signal[-self.parent.cycles_completed:]
             
-            if len(one_d_signal) > self.max_view: 
-                one_d_signal = one_d_signal[-self.max_view:]
+            self.all_signals.append(one_d_signal)
+            self.m_names.append(monitor_name)
+    
+    def render_monitor_plots(self): 
 
-            for s_name in one_d_signal: 
+        x_dist = 2
+        y_dist = 15
+        y_offset = 0
+        x_offset = 0
+
+        for i, signal_list in enumerate(self.all_signals): 
+            x_offset = 0
+            color = self.color_arr[i]
+            monitor_name = self.m_names[i]
+            
+            signal_list = signal_list[self.scroll_val: self.scroll_val + self.max_view]
+                        
+            for s_name in signal_list: 
                 self.signal_renderer.draw_signal(x_offset, y_offset, s_name, color)
                 x_offset += x_dist
 

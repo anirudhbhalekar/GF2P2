@@ -127,7 +127,6 @@ class LogicDrawer3D:
     def draw_mesh(self, x, y, file_name, device_id): 
         mesh = Mesh(file_name, device_id, x, y, self.names, self.devices, self.monitors, self.vertex_loader)
         
-
     def return_io_list(self, device_id, x, y): 
         """IO list of the object"""
 

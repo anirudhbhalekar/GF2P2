@@ -121,7 +121,8 @@ class Gui(wx.Frame):
         sourceMenu.Append(wx.ID_OPEN, _("&Open"))
         sourceMenu.Append(wx.ID_EDIT, _("&Edit"))
         commandMenu.Append(wx.ID_HELP_COMMANDS, _("&Commands"))
-        view3DMenu.Append(wx.ID_PREFERENCES,_("&Change 3D Signal Max") )
+        view3DMenu.Append(wx.ID_PREFERENCES,_("&Change 3D Signal Max"))
+        view3DMenu.Append(wx.ID_APPLY,_("&Change 2D Signal Max"))
         # Add language options
         languageMenu.Append(101, "English")
         languageMenu.Append(102, "Ελληνικά")  # Greek in Greek
@@ -166,9 +167,12 @@ class Gui(wx.Frame):
         self.text_box = PromptedTextCtrl(self, wx.ID_ANY, style=wx.TE_PROCESS_ENTER)
         self.clear_button = wx.Button(self, wx.ID_ANY, "Clear terminal") # button for clearing terminal output
         self.switch_to_3D_button = wx.ToggleButton(self, wx.ID_ANY, "3D Mode") # button to switch canvases out
-
+        self.scroll_bar = wx.ScrollBar(self, wx.ID_ANY)
+        self.scroll_bar.SetScrollbar(0, 10, 10, 9)
         self.is3D = False
-        self.max_3D_view = 100
+        self.max_3D_view = 75
+        self.max_2D_view = 100
+        self.max_total = 2000
 
         # Bind events to widgets
         self.Bind(wx.EVT_MENU, self.on_menu)
@@ -182,6 +186,7 @@ class Gui(wx.Frame):
         self.zap_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_zap_button)
         self.add_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_add_button)
         self.switch_to_3D_button.Bind(wx.EVT_TOGGLEBUTTON, self.draw_canvas_to_3D)
+        self.scroll_bar.Bind(wx.EVT_SCROLL, self.on_scroll)
 
         # Bind language selection events
         self.Bind(wx.EVT_MENU, self.on_language_selected, id=101)
@@ -201,8 +206,9 @@ class Gui(wx.Frame):
         self.legend = None
 
         # Arrange sizers, all stemming from main sizer
-        canvas_plot_sizer.Add(self.canvas, 2, wx.EXPAND | wx.ALL, 1)
-        canvas_plot_sizer.Add(self.matplotlib_canvas, 1, wx.EXPAND | wx.ALL, 1)
+        canvas_plot_sizer.Add(self.canvas, 40, wx.EXPAND | wx.ALL, 1)
+        canvas_plot_sizer.Add(self.matplotlib_canvas, 20, wx.EXPAND | wx.ALL, 1)
+        canvas_plot_sizer.Add(self.scroll_bar, 1, wx.EXPAND | wx.ALL, 1)
 
         main_sizer.Add(canvas_plot_sizer, 5, wx.EXPAND | wx.ALL, 5)
         main_sizer.Add(side_sizer, 1, wx.ALL, 5)
@@ -231,7 +237,11 @@ class Gui(wx.Frame):
     def draw_canvas_to_3D(self, event): 
         self.is3D = self.switch_to_3D_button.GetValue()
         
-        if self.is3D: 
+        if self.is3D:
+
+            GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+            GL.glFlush()
+
             self.zap_monitor_button.SetValue(False)
             self.add_monitor_button.SetValue(False)
             self.zap_monitor_button.Disable()
@@ -247,18 +257,26 @@ class Gui(wx.Frame):
             canvas_plot_sizer = main_sizer.GetChildren()[0].GetSizer()
 
             canvas_plot_sizer.Clear(delete_windows=False)
-            canvas_plot_sizer.Add(self.canvas, 2, wx.EXPAND | wx.ALL, 1)
-            canvas_plot_sizer.Add(self.matplotlib_canvas, 1, wx.EXPAND | wx.ALL, 1)
+            canvas_plot_sizer.Add(self.canvas, 40, wx.EXPAND | wx.ALL, 1)
+            canvas_plot_sizer.Add(self.matplotlib_canvas, 20, wx.EXPAND | wx.ALL, 1)
+            canvas_plot_sizer.Add(self.scroll_bar, 1, wx.EXPAND | wx.ALL, 1)
 
             # Refresh the layout
             main_sizer.Layout()
 
         else: 
+            GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+            GL.glFlush()
+
             self.canvas.Destroy()
             self.matplotlib_canvas.Destroy()
 
             self.zap_monitor_button.Enable()
             self.add_monitor_button.Enable()
+            self.zap_monitor_button.SetValue(False)
+            self.add_monitor_button.SetValue(False)
+            self.is_zap_monitor = False
+            self.is_add_monitor = False
 
             self.canvas = MyGLCanvas(self, self.devices, self.monitors, self.message_display)
             self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
@@ -267,11 +285,36 @@ class Gui(wx.Frame):
             canvas_plot_sizer = main_sizer.GetChildren()[0].GetSizer()
 
             canvas_plot_sizer.Clear(delete_windows=False)
-            canvas_plot_sizer.Add(self.canvas, 2, wx.EXPAND | wx.ALL, 1)
-            canvas_plot_sizer.Add(self.matplotlib_canvas, 1, wx.EXPAND | wx.ALL, 1)
+            canvas_plot_sizer.Add(self.canvas, 40, wx.EXPAND | wx.ALL, 1)
+            canvas_plot_sizer.Add(self.matplotlib_canvas, 20, wx.EXPAND | wx.ALL, 1)
+            canvas_plot_sizer.Add(self.scroll_bar, 1, wx.EXPAND | wx.ALL, 1)
 
             # Refresh the layout
             main_sizer.Layout()
+
+    def on_scroll(self, event): 
+
+        if not self.is3D: 
+        
+            max_view = self.max_2D_view
+            self.scroll_val = self.scroll_bar.GetThumbPosition()
+            self.axes.set_xlim(self.scroll_val, self.scroll_val + max_view)
+            self.matplotlib_canvas.draw()
+        else: 
+            self.scroll_val = self.scroll_bar.GetThumbPosition()
+            self.matplotlib_canvas.scroll_val = self.scroll_val
+            self.matplotlib_canvas.Refresh()
+
+    def update_scroll(self): 
+        if not self.is3D: 
+            max_view = self.max_2D_view
+        else: 
+            max_view = self.max_3D_view
+        diff = self.cycles_completed - max_view
+        if diff < 0: 
+            self.scroll_bar.SetScrollbar(0, 10, 10, 9) 
+        else: 
+            self.scroll_bar.SetScrollbar(diff, max_view, self.cycles_completed, self.cycles_completed - 1)
 
     def on_language_selected(self, event):
         language_id = event.GetId()
@@ -298,7 +341,7 @@ class Gui(wx.Frame):
         self.figure = Figure(figsize=(5,2))
         self.axes = self.figure.add_subplot(111)
         self.axes.set_title("Monitor Plots", **hfont)
-        self.axes.tick_params(axis = 'both', bottom = True, left = False, right = False, labelright = False, labelleft = False, labelbottom = False)
+        self.axes.tick_params(axis = 'both', bottom = True, left = False, right = False, labelright = False, labelleft = False, labelbottom = True)
 
     def execute_circuit(self, cycles): 
         """Simulates the circuit for N cycles"""
@@ -315,6 +358,8 @@ class Gui(wx.Frame):
         self.monitors.reset_monitors()
         self.devices.cold_startup()
 
+        self.update_scroll()
+
         if self.execute_circuit(cycles): 
             self.cycles_completed += cycles
             return True
@@ -327,6 +372,7 @@ class Gui(wx.Frame):
             return False 
         elif self.execute_circuit(cycles): 
             self.cycles_completed += cycles
+            self.update_scroll()
             return True 
         return False
 
@@ -404,8 +450,9 @@ class Gui(wx.Frame):
 
                         # Remove the old canvas and add the new one
                         canvas_plot_sizer.Clear(delete_windows=False)
-                        canvas_plot_sizer.Add(self.canvas, 2, wx.EXPAND | wx.ALL, 1)
-                        canvas_plot_sizer.Add(self.matplotlib_canvas, 1, wx.EXPAND | wx.ALL, 1)
+                        canvas_plot_sizer.Add(self.canvas, 40, wx.EXPAND | wx.ALL, 1)
+                        canvas_plot_sizer.Add(self.matplotlib_canvas, 20, wx.EXPAND | wx.ALL, 1)
+                        canvas_plot_sizer.Add(self.scroll_bar, 1, wx.EXPAND | wx.ALL, 1)
 
                         # Refresh the layout
                         main_sizer.Layout()
@@ -425,8 +472,17 @@ class Gui(wx.Frame):
         if Id == wx.ID_PREFERENCES: 
             with wx.TextEntryDialog(self, "Change Value of 3D max view", value = str(self.max_3D_view)) as text_dialog: 
                 if text_dialog.ShowModal() == wx.ID_OK: 
-                    
-                    self.max_3D_view = int(str(text_dialog.GetValue()))
+                    try:
+                        self.max_3D_view = int(str(text_dialog.GetValue()))
+                    except: 
+                        wx.LogError("Incorrect data type! Not saved")
+        if Id == wx.ID_APPLY: 
+            with wx.TextEntryDialog(self, "Change Value of 2D max view", value = str(self.max_2D_view)) as text_dialog: 
+                if text_dialog.ShowModal() == wx.ID_OK: 
+                    try:
+                        self.max_2D_view = int(str(text_dialog.GetValue()))
+                    except: 
+                        wx.LogError("Incorrect data type! Not saved")
 
 
     def on_spin(self, event):
@@ -458,14 +514,17 @@ class Gui(wx.Frame):
         self.axes.clear()
         self.axes.set_title(_("Monitor Plots"), **hfont)
         
-        try: self.legend.remove()
-        except: pass
+        try: 
+            self.legend.remove()
+        except: 
+            pass
 
         self.matplotlib_canvas.draw()
         self.plot_array = []
         self.name_array = []
 
         self.cycles_completed = 0
+        self.update_scroll()
         
         text = _("Reset plot button pressed.")
         self.canvas.render(text)
@@ -478,7 +537,6 @@ class Gui(wx.Frame):
         self.is_add_monitor = self.add_monitor_button.GetValue()
         self.is_zap_monitor = self.zap_monitor_button.GetValue()
 
-
     def on_add_button(self, event): 
         """Start add procedure"""
         if self.zap_monitor_button.GetValue(): 
@@ -486,6 +544,7 @@ class Gui(wx.Frame):
 
         self.is_add_monitor = self.add_monitor_button.GetValue()
         self.is_zap_monitor = self.zap_monitor_button.GetValue()
+
     def on_continue_button(self, event): 
         """Handle continue button event"""
         text = _("Continue button pressed, {cycle_count} cycles.").format(cycle_count=self.cycle_count)
@@ -582,19 +641,13 @@ class Gui(wx.Frame):
             for signal in signal_list: 
                 if signal == self.devices.HIGH: 
                     one_d_signal.append(1)
-                    one_d_signal.append(1)
                 if signal == self.devices.LOW: 
                     one_d_signal.append(0)
-                    one_d_signal.append(0)
                 if signal == self.devices.RISING: 
-                    print("RISING")
-                    one_d_signal.append(0)
-                    one_d_signal.append(1)
+                    one_d_signal.append(0.5)
                 if signal == self.devices.FALLING: 
-                    one_d_signal.append(1)
-                    one_d_signal.append(0)
+                    one_d_signal.append(0.5)
                 if signal == self.devices.BLANK: 
-                    one_d_signal.append(np.nan)
                     one_d_signal.append(np.nan)
             
             self.plot_array.append(one_d_signal)
@@ -603,6 +656,7 @@ class Gui(wx.Frame):
         for i, int_signal in enumerate(self.plot_array): 
 
             name = self.name_array[i]
+            tick_array = list(np.linspace(0, self.cycles_completed, self.cycles_completed))
             int_signal = np.array(int_signal) + 2*i
 
             if len(int_signal) < self.cycles_completed:
@@ -612,11 +666,11 @@ class Gui(wx.Frame):
                 int_signal = temp_signal
             
             zero_signal = np.zeros_like(int_signal) + 2*i
-            self.axes.plot(int_signal, label = name)
-            self.axes.plot(zero_signal, color = 'black', linestyle = "dashed") 
+            sig_plot = self.axes.plot(tick_array, int_signal, label = name)
+            sig_base = self.axes.plot(tick_array, zero_signal, color = 'black', linestyle = "dashed") 
         
         self.axes.set_ylim(0, 2*i + 2)
-        self.axes.set_xlim(0, self.cycles_completed - 1)
+        self.axes.set_xlim(max(self.cycles_completed - self.max_2D_view, 0), self.cycles_completed - 1)
         prop={'family':'Consolas', 'size':8}
         self.legend = self.figure.legend(fontsize="8", loc ="upper left", prop = prop)
 
