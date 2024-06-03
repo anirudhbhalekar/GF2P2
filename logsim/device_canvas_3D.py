@@ -106,11 +106,8 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         self.obj_vertex_loader = {} # This will store the vertex data for all the objects!
         self.tube_vertices_list = []
 
-        self.scene_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.obj_vertex_loader)
+        self.scene_renderer = None
         
-        self.initialise_device_render()
-        
-
         # Bind events to the canvas
         self.Bind(wx.EVT_PAINT, self.on_paint)
         self.Bind(wx.EVT_SIZE, self.on_size)
@@ -217,11 +214,8 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         for key in monitors_dict.keys(): 
             dev_id = key[0]
             port_id = key[1]
-
             m_coord = self.outputs_dict[(dev_id, port_id)]
-
             self.scene_renderer.draw_monitor(m_coord[0], m_coord[1], dev_id=dev_id, port_id=port_id)
-
 
     def render(self, text = None):
         """Handle all drawing operations."""
@@ -229,6 +223,8 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         if not self.init:
             # Configure the OpenGL rendering context
             self.init_gl()
+            self.scene_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.obj_vertex_loader)
+            self.initialise_device_render()
             self.init = True
 
         # Clear everything
@@ -252,6 +248,8 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         if not self.init:
             # Configure the OpenGL rendering context
             self.init_gl()
+            self.scene_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.obj_vertex_loader)
+            self.initialise_device_render()
             self.init = True    
 
         size = self.GetClientSize()
