@@ -312,13 +312,20 @@ class Gui(wx.Frame):
     def update_scroll(self): 
         if not self.is3D: 
             max_view = self.max_2D_view
+            diff = self.cycles_completed - max_view
+            if diff < 0: 
+                self.scroll_bar.SetScrollbar(0, self.cycles_completed, self.cycles_completed, self.cycles_completed - 1) 
+            else: 
+                self.scroll_bar.SetScrollbar(diff, max_view, self.cycles_completed, self.cycles_completed - 1)
         else: 
             max_view = self.max_3D_view
-        diff = self.cycles_completed - max_view
-        if diff < 0: 
-            self.scroll_bar.SetScrollbar(0, 10, 10, 9) 
-        else: 
-            self.scroll_bar.SetScrollbar(diff, max_view, self.cycles_completed, self.cycles_completed - 1)
+            diff = self.cycles_completed - max_view
+            if diff < 0: 
+                self.scroll_bar.SetScrollbar(0, 10, 10, 9) 
+            else: 
+                self.scroll_bar.SetScrollbar(self.scroll_val, max_view, self.cycles_completed, self.cycles_completed - 1)
+
+        
 
     def on_language_selected(self, event):
         language_id = event.GetId()
@@ -528,6 +535,7 @@ class Gui(wx.Frame):
                 wx.LogError("Max cycle count exceeded! Refresh the plot or edit the source data")
                 return 
             self.run_circuit(self.cycle_count)
+            self.matplotlib_canvas.initialise_monitor_plots()
             self.matplotlib_canvas.Refresh()
 
     
