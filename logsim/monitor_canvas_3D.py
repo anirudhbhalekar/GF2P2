@@ -86,7 +86,7 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
 
         self.parent = parent
         self.monitor_vertex_loader = {} # {signal_type: vertices}
-        self.signal_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.monitor_vertex_loader)
+        self.signal_renderer = None
         self.color_arr = []
 
         self.blank_signal = ["BLANK"] 
@@ -96,8 +96,6 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
 
         # Offset between viewpoint and origin of the scene
         self.depth_offset = 1000
-
-        self.initialise_monitor_plots()
         # Bind events to the canvas
         self.Bind(wx.EVT_PAINT, self.on_paint)
         self.Bind(wx.EVT_SIZE, self.on_size)
@@ -224,6 +222,7 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
             # Configure the OpenGL rendering context
             self.init_gl()
             self.signal_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.monitor_vertex_loader)
+            self.initialise_monitor_plots()
             self.init = True
 
         # Clear everything
@@ -242,6 +241,7 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
             # Configure the OpenGL rendering context
             self.init_gl()
             self.signal_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.monitor_vertex_loader)
+            self.initialise_monitor_plots()
             self.init = True
 
         size = self.GetClientSize()
