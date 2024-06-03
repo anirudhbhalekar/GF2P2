@@ -1,4 +1,6 @@
 import math
+import wx
+import wx.glcanvas as wxcanvas
 import numpy as np
 from OpenGL.GL import GL_LINE_STRIP, GL_LINE_LOOP, GL_POLYGON, GL_ENABLE_BIT, GL_LINE_STIPPLE
 from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, glPushAttrib, glLineStipple, glPopAttrib, glEnable
@@ -7,7 +9,7 @@ import os
 
 class LogicDrawer3D: 
     
-    def __init__(self, names, devices, monitors, vertex_loader) -> None:
+    def __init__(self, names, devices, monitors, vertex_loader, context = None) -> None:
         
         self.scale = 1
         self.names = names
@@ -21,25 +23,20 @@ class LogicDrawer3D:
         # self.master_signal_folder = "monitor_objs/"
         # self.vertex_folder = "vertices/"
 
-
         self.operator_height = 30 # Z direction
 
         try: 
             self.device = self.devices.get_device(self.id) # This is the device obj 
-
             self.device_inputs = self.device.inputs
             self.device_outputs = self.device.outputs
-
             self.n_inputs = len(self.device_inputs.keys())
-        
         except: 
             pass 
 
-
+        self.context = context
         self.inputs_dict = {}
         self.outputs_dict = {}
         self.monitors_dict = {}
-
         self.vertex_loader = vertex_loader # Loads device_kind_pos_x_pos_y to the vertex of said file
 
         # Thankfully with the infinite possibilities that the 3rd dimension adds,
@@ -208,9 +205,7 @@ class Mesh(LogicDrawer3D):
         self.x = pos_x
         self.y = pos_y
         self.filename = filename
-
         vertices = None
-
         try: 
             str_id = str(device_id)
             parent_dict = dict(self.vertex_loader)
@@ -225,7 +220,7 @@ class Mesh(LogicDrawer3D):
 
         vertices = np.array(vertices, dtype=np.float32)
         self.vertex_count = len(vertices)//8
-
+        
         self.vao = GL.glGenVertexArrays(1)
         #GL.glColor3f(0.7, 0.5, 0.1)
         GL.glBindVertexArray(self.vao)

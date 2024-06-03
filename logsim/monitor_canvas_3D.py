@@ -223,6 +223,7 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
         if not self.init:
             # Configure the OpenGL rendering context
             self.init_gl()
+            self.signal_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.monitor_vertex_loader)
             self.init = True
 
         # Clear everything
@@ -240,6 +241,7 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
         if not self.init:
             # Configure the OpenGL rendering context
             self.init_gl()
+            self.signal_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.monitor_vertex_loader)
             self.init = True
 
         size = self.GetClientSize()

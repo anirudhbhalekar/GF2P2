@@ -107,7 +107,6 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         self.tube_vertices_list = []
 
         self.scene_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.obj_vertex_loader)
-        
         self.initialise_device_render()
         
 
@@ -229,6 +228,7 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         if not self.init:
             # Configure the OpenGL rendering context
             self.init_gl()
+            self.scene_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.obj_vertex_loader)
             self.init = True
 
         # Clear everything
@@ -252,6 +252,7 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         if not self.init:
             # Configure the OpenGL rendering context
             self.init_gl()
+            self.scene_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.obj_vertex_loader)
             self.init = True    
 
         size = self.GetClientSize()
