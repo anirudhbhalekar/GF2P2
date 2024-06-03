@@ -44,13 +44,11 @@ class Parser:
         """Initialise constants."""
         
         self.names = names
-        [self.EXPECTED_NAME, self.INVALID_CHAR_IN_NAME, self.NULL_DEVICE_IN_CONNECT, 
-         self.INVALID_CONNECT_DELIMITER, self.DOUBLE_PUNCTUATION, self.MISSING_SEMICOLON, 
-         self.INVALID_KEYWORD, self.INVALID_COMMENT_SYMBOL, self.INVALID_BLOCK_ORDER, 
-         self.MISSING_END_STATEMENT, self.EXPECTED_NUMBER, self.EXPECTED_DOT, 
+        [self.EXPECTED_NAME, self.INVALID_CONNECT_DELIMITER, self.MISSING_SEMICOLON, 
+         self.INVALID_KEYWORD, self.MISSING_END_STATEMENT, self.EXPECTED_NUMBER, self.EXPECTED_DOT, 
          self.INVALID_PIN_REF, self.EXPECTED_EQUALS, self.EXPECTED_DEFINE, self.EXPECTED_CONNECT, 
          self.EXPECTED_MONITOR, self.EXPECTED_END, self.INVALID_PARAM, self.MISSING_DTYPE_INPUTS, 
-         self.PASSED_KEYWORD, self.PASSED_DEVICE, self.PASSED_GATE, self.EMPTY_FILE] = self.names.unique_error_codes(24)
+         self.PASSED_KEYWORD, self.PASSED_DEVICE, self.PASSED_GATE, self.EMPTY_FILE] = self.names.unique_error_codes(19)
         self.devices = devices
         self.network = network
         self.monitors = monitors
@@ -70,17 +68,13 @@ class Parser:
 
         error_message = self.get_error_message(error_code, self.symbol.type)
         error_line = self.scanner.get_line(line_number)
-        
+
         print(error_line) # no translation needed for this
         # print spaces and then a ^ under the character
         print(" " * (character - symbol_length) + "^")
-        print(_("Error code {error_code} at line {line_number}, character {character}: {error_message}").format(
-        error_code=error_code, line_number=line_number, character=character, error_message=error_message))
-        # had to reformat these for translation
-        print(_("Symbol type: {symbol_type}, Symbol id: {symbol_id}, String: {name_string}").format(
-        symbol_type=self.symbol.type, symbol_id=self.symbol.id, 
-        name_string=self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME or self.symbol.type == self.scanner.KEYWORD else ''))
-
+        print(_("Error at line {line_number}, character {character}: {error_message}").format(
+        error_code=error_code, line_number=line_number, character=character - symbol_length, error_message=error_message))
+        
         if self.symbol.type == self.scanner.EOF:
             return False
 
@@ -91,31 +85,25 @@ class Parser:
     def get_error_message(self, error_code, symbol_type):
         """Return the error message corresponding to the error code."""
         error_messages = {
-
             self.EXPECTED_NAME: _("Expected a name"),
-            self.INVALID_CHAR_IN_NAME: _("Invalid character in name"),
-            self.NULL_DEVICE_IN_CONNECT: _("CONNECT list cannot have null devices"),
             self.INVALID_CONNECT_DELIMITER: _("CONNECT list must have individual connections delimited by ','"),
-            self.DOUBLE_PUNCTUATION: _("Double punctuation marks are invalid"),
             self.MISSING_SEMICOLON: _("Semi-colons are required at the end of each line"),
             self.INVALID_KEYWORD: _("Invalid keyword, could be missing or misspelled"),
-            self.INVALID_COMMENT_SYMBOL: _("Comments starting or terminating with the wrong symbol"),
-            self.INVALID_BLOCK_ORDER: _("Invalid order of DEFINE, CONNECT, and MONITOR blocks"),
             self.MISSING_END_STATEMENT: _("No END statement after MONITOR clause"),
             self.EXPECTED_NUMBER: _("Expected a number"),
-            self.EXPECTED_DOT: _("Expected a dot"),
+            self.EXPECTED_DOT: _("Inputs should be specified - expected a dot"),
             self.INVALID_PIN_REF: _("Invalid pin reference"),
             self.EXPECTED_EQUALS: _("Expected an equals sign"),
-            self.EXPECTED_DEFINE: _("Expected a DEFINE statement"),
-            self.EXPECTED_CONNECT: _("Expected a CONNECT statement"),
-            self.EXPECTED_MONITOR: _("Expected a MONITOR statement"),
-            self.EXPECTED_END: _("Expected an END statement"),
+            self.EXPECTED_DEFINE: _("Expected a DEFINE statement first"),
+            self.EXPECTED_CONNECT: _("Expected a CONNECT statement second"),
+            self.EXPECTED_MONITOR: _("Expected a MONITOR statement third"),
+            self.EXPECTED_END: _("Expected an END statement fourth"),
             self.INVALID_PARAM: _("Invalid parameter for device"),
             self.MISSING_DTYPE_INPUTS: _("DTYPE device must have 4 inputs"),
             self.PASSED_KEYWORD: _("Passed a keyword when a name was expected"),
             self.PASSED_DEVICE: _("Passed a device when a name was expected"),
             self.PASSED_GATE: _("Passed a gate when a name was expected"),
-            self.EMPTY_FILE: _("Empty file"),
+            self.EMPTY_FILE: _("No symbols detected, either an empty file or all comments"),
             # Network errors
             self.network.DEVICE_ABSENT: _("Device absent"),
             self.network.INPUT_CONNECTED: _("Input is already connected"),
@@ -133,7 +121,7 @@ class Parser:
             self.monitors.MONITOR_PRESENT: _("Monitor already present")
         }
         if symbol_type == None:
-            return "Invalid symbol type"
+            return f"Invalid symbol type, {error_messages.get(error_code, _('Unknown error'))}"
         return error_messages.get(error_code, _("Unknown error"))
 
 

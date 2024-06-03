@@ -60,16 +60,17 @@ def test_error_definition_files(error_file_path):
 
     # Error codes are hardcoded in the error files
     error_count_map = {
-        'interim1_ex0_error.txt': 3,
-        'interim1_ex1_error.txt': 1,
-        'interim1_ex2_error.txt': 3,
+        'early_semicolon.txt': 3,
+        'input_output_reversed.txt': 1,
+        'undefined_device_and_param.txt': 3,
         'empty_file.txt': 1,
-        'missing_section': 3,
-        'extra_semicolon': 2,
-        'two_define': 1,
-        'extra_commas': 2,
-        'keyword_instead_of_name': 3,
-        'invalid_symbol': 1,
+        'missing_section.txt': 3,
+        'extra_semicolon.txt': 2,
+        'two_define.txt': 1,
+        'extra_commas.txt': 2,
+        'keyword_instead_of_name.txt': 3,
+        'invalid_symbol.txt': 1,
+        'dtype_three_inputs.txt': 1,
     }
 
     for error_file, expected_count in error_count_map.items():

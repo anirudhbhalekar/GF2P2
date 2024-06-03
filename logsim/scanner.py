@@ -80,6 +80,7 @@ class Scanner:
         self.current_character = ""
         self.advance()
 
+
     def read_next_char(self):
         """Read the next character from the file."""
         next_char = self.file.read(1)
@@ -89,6 +90,7 @@ class Scanner:
             self.line_count += 1
             self.line_char_count = 0
         self.current_character = next_char
+
 
     def advance(self):
         """Advance the current character."""
@@ -102,6 +104,7 @@ class Scanner:
                 self.read_next_char()
             self.read_next_char()
 
+
     def skip_spaces(self):
         """Skip spaces to the next symbol and set the file pointer."""
         space_count = 0
@@ -114,6 +117,7 @@ class Scanner:
                 space_count += 1
         return space_count
 
+
     def get_name(self):
         """Get name if the first char is alphabet and read until non-alnum char is reached."""
         name_string = ''
@@ -123,6 +127,7 @@ class Scanner:
             self.advance()
             
         return name_string
+
 
     def get_number(self):
         """Get number by appending digits together."""
@@ -134,6 +139,7 @@ class Scanner:
         
         return number_string
     
+
     def get_line(self, line_number):
         """Return the line of the file at the given line number."""
         self.file.seek(0)
@@ -143,9 +149,11 @@ class Scanner:
             line = self.file.readline()
             line_number_count += 1
         line = self.file.readline()
-        line = line.strip()
+        # remove newline
+        line = line[:-1]
         return line
-        
+
+
     def get_symbol(self):
         """Translate the next sequence of characters into a symbol."""
         if self.names is None: 
@@ -155,46 +163,37 @@ class Scanner:
         devices = Devices(self.names)
 
         space_count = self.skip_spaces()
+
+        punctuation_to_symbol_type = {
+            "=": self.EQUALS,
+            ",": self.COMMA,
+            ".": self.DOT,
+            ";": self.SEMICOLON
+        }
         
+        type_mapping = {
+            **{key: self.KEYWORD for key in self.keywords_list},
+            **{key: self.PARAM for key in self.param_list},
+            **{key: self.DEVICE for key in devices.device_strings},
+            **{key: self.GATE for key in devices.gate_strings},
+            **{key: self.DTYPE_INPUT for key in devices.dtype_inputs},
+            **{key: self.DTYPE_OUTPUT for key in devices.dtype_outputs},
+        }
+
         if self.current_character.isalpha(): 
             name_string = self.get_name()
-            if name_string in self.keywords_list: 
-                symbol.type = self.KEYWORD
-            elif name_string in self.param_list: 
-                symbol.type = self.PARAM
-            elif name_string in devices.device_strings: 
-                symbol.type = self.DEVICE
-            elif name_string in devices.gate_strings: 
-                symbol.type = self.GATE
-            elif name_string in devices.dtype_inputs: 
-                symbol.type = self.DTYPE_INPUT
-            elif name_string in devices.dtype_outputs: 
-                symbol.type = self.DTYPE_OUTPUT
-            else: 
-                symbol.type = self.NAME
+            symbol.type = type_mapping.get(name_string, self.NAME)
             [symbol.id] = self.names.lookup([name_string])
 
         elif self.current_character.isdigit(): 
             number_string = self.get_number()
             symbol.id = number_string
             symbol.type = self.NUMBER
-        
-        elif self.current_character == "=": 
-            symbol.type = self.EQUALS
-            self.advance()
 
-        elif self.current_character == ",": 
-            symbol.type = self.COMMA
+        elif self.current_character in punctuation_to_symbol_type:
+            symbol.type = punctuation_to_symbol_type[self.current_character]
             self.advance()
         
-        elif self.current_character == ".": 
-            symbol.type = self.DOT
-            self.advance()
-
-        elif self.current_character == ";": 
-            symbol.type = self.SEMICOLON
-            self.advance()
-
         elif self.current_character == "" and self.total_char_count != 0:
             symbol.type = self.EOF
             self.advance()

@@ -1,4 +1,6 @@
 import math
+import wx
+import wx.glcanvas as wxcanvas
 import numpy as np
 from OpenGL.GL import GL_LINE_STRIP, GL_LINE_LOOP, GL_POLYGON, GL_ENABLE_BIT, GL_LINE_STIPPLE
 from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, glPushAttrib, glLineStipple, glPopAttrib, glEnable
@@ -7,36 +9,34 @@ import os
 
 class LogicDrawer3D: 
     
-    def __init__(self, names, devices, monitors, vertex_loader) -> None:
+    def __init__(self, names, devices, monitors, vertex_loader, context = None) -> None:
         
         self.scale = 1
         self.names = names
         self.devices = devices
         self.monitors = monitors
-
-        self.master_obj_folder = "device_objs/"
-        self.master_signal_folder = "monitor_objs/"
-        self.vertex_folder = "vertices/"
-
+        current_dir = os.path.dirname(__file__)
+        self.master_obj_folder = os.path.join(current_dir, 'device_objs/')
+        self.master_signal_folder = os.path.join(current_dir, 'monitor_objs/')
+        self.vertex_folder = os.path.join(current_dir, 'vertices/')
+        # self.master_obj_folder = "device_objs/"
+        # self.master_signal_folder = "monitor_objs/"
+        # self.vertex_folder = "vertices/"
 
         self.operator_height = 30 # Z direction
 
         try: 
             self.device = self.devices.get_device(self.id) # This is the device obj 
-
             self.device_inputs = self.device.inputs
             self.device_outputs = self.device.outputs
-
             self.n_inputs = len(self.device_inputs.keys())
-        
         except: 
             pass 
 
-
+        self.context = context
         self.inputs_dict = {}
         self.outputs_dict = {}
         self.monitors_dict = {}
-
         self.vertex_loader = vertex_loader # Loads device_kind_pos_x_pos_y to the vertex of said file
 
         # Thankfully with the infinite possibilities that the 3rd dimension adds,
@@ -63,8 +63,10 @@ class LogicDrawer3D:
         device_name = self.names.get_name_string(this_device.device_id)
         device_kind = self.names.get_name_string(this_device.device_kind)
 
-        obj_file_path = self.master_obj_folder + str(device_kind) + ".obj"
-        frame_file_path =  self.master_obj_folder + str(device_kind) + "_frame.obj"
+        obj_file_path = os.path.join(self.master_obj_folder, f"{device_kind}.obj")
+        frame_file_path = os.path.join(self.master_obj_folder, f"{device_kind}_frame.obj")
+        # obj_file_path = self.master_obj_folder + str(device_kind) + ".obj"
+        # frame_file_path =  self.master_obj_folder + str(device_kind) + "_frame.obj"
         
         if not os.path.exists(obj_file_path) or not os.path.exists(frame_file_path): 
             raise FileNotFoundError
@@ -97,8 +99,10 @@ class LogicDrawer3D:
 
     def draw_monitor(self, x, y, dev_id, port_id): 
         
-        obj_file_path = self.master_obj_folder + "MONITOR.obj"
-        frame_file_path =  self.master_obj_folder + "MONITOR_frame.obj"
+        obj_file_path = os.path.join(self.master_obj_folder, "MONITOR.obj")
+        frame_file_path = os.path.join(self.master_obj_folder, "MONITOR_frame.obj")
+        # obj_file_path = self.master_obj_folder + "MONITOR.obj"
+        # frame_file_path =  self.master_obj_folder + "MONITOR_frame.obj"
 
         if not os.path.exists(obj_file_path) or not os.path.exists(frame_file_path): 
             raise FileNotFoundError
@@ -113,7 +117,9 @@ class LogicDrawer3D:
         # Here signal is either "HIGH", "LOW", "FALLING" or "RISING"
 
         if signal_name != "BLANK":
-            obj_file = self.master_signal_folder + str(signal_name) + ".obj"
+            obj_file = os.path.join(self.master_signal_folder, f"{signal_name}.obj")
+            # obj_file = self.master_signal_folder + str(signal_name) + ".obj"
+            
             if not os.path.exists(obj_file): 
                 raise FileNotFoundError
             
@@ -199,9 +205,7 @@ class Mesh(LogicDrawer3D):
         self.x = pos_x
         self.y = pos_y
         self.filename = filename
-
         vertices = None
-
         try: 
             str_id = str(device_id)
             parent_dict = dict(self.vertex_loader)
@@ -216,7 +220,7 @@ class Mesh(LogicDrawer3D):
 
         vertices = np.array(vertices, dtype=np.float32)
         self.vertex_count = len(vertices)//8
-
+        
         self.vao = GL.glGenVertexArrays(1)
         #GL.glColor3f(0.7, 0.5, 0.1)
         GL.glBindVertexArray(self.vao)

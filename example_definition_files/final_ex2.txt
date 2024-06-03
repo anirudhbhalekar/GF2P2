@@ -3,10 +3,10 @@ DEFINE
 	D2 AS DTYPE, 
 	A1 AS AND WITH inputs = 2, 
 	A2 AS AND WITH inputs = 2, 
-	A3 AS AND WITH inputs = 2,
-	A4 AS AND WITH inputs = 2, 
+	N1 AS NAND WITH inputs = 2,
+	X1 AS XOR, 
 	O1 AS OR WITH inputs = 2, 
-	O2 AS OR WITH inputs = 2, 
+	NO1 AS NOR WITH inputs = 2, 
 	S1 AS SWITCH WITH initial = 0, 
 	CLK1 AS CLOCK WITH cycle_rep = 5; 
 
@@ -25,17 +25,20 @@ CONNECT
 	D2.SET = S1, 
 	D2.CLEAR = S1, 
 	D2.CLK = CLK1, 
-	D2.DATA = O2, 
-	A3.I1 = D1.Q, 
-	A3.I2 = D2.QBAR, 
-	A4.I1 = D2.QBAR, 
-	A4.I2 = D1.QBAR, 
-	O2.I1 = A3,
-	O2.I2 = A4;
+	D2.DATA = NO1, 
+	N1.I1 = D1.Q, 
+	N1.I2 = D2.QBAR, 
+	X1.I1 = D2.QBAR, 
+	X1.I2 = D1.QBAR, 
+	NO1.I1 = N1,
+	NO1.I2 = X1;
 
 MONITOR
 	D1.Q, 
-	D2.Q; 
+	D2.QBAR,
+	A1,
+	CLK1,
+	NO1; 
 
 END; 
 
