@@ -268,6 +268,7 @@ class Gui(wx.Frame):
             canvas_plot_sizer.Add(self.matplotlib_canvas, 20, wx.EXPAND | wx.ALL, 1)
             canvas_plot_sizer.Add(self.scroll_bar, 1, wx.EXPAND | wx.ALL, 1)
 
+            self.update_scroll()
             # Refresh the layout
             main_sizer.Layout()
 
@@ -296,6 +297,7 @@ class Gui(wx.Frame):
             canvas_plot_sizer.Add(self.matplotlib_canvas, 20, wx.EXPAND | wx.ALL, 1)
             canvas_plot_sizer.Add(self.scroll_bar, 1, wx.EXPAND | wx.ALL, 1)
 
+            self.update_scroll()
             # Refresh the layout
             main_sizer.Layout()
 
