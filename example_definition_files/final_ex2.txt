@@ -3,8 +3,8 @@ DEFINE
 	D2 AS DTYPE, 
 	A1 AS AND WITH inputs = 2, 
 	A2 AS AND WITH inputs = 2, 
-	A3 AS AND WITH inputs = 2,
-	A4 AS AND WITH inputs = 2, 
+	N3 AS NAND WITH inputs = 2,
+	N4 AS NAND WITH inputs = 2, 
 	O1 AS OR WITH inputs = 2, 
 	O2 AS OR WITH inputs = 2, 
 	S1 AS SWITCH WITH initial = 0, 
@@ -26,12 +26,12 @@ CONNECT
 	D2.CLEAR = S1, 
 	D2.CLK = CLK1, 
 	D2.DATA = O2, 
-	A3.I1 = D1.Q, 
-	A3.I2 = D2.QBAR, 
-	A4.I1 = D2.QBAR, 
-	A4.I2 = D1.QBAR, 
-	O2.I1 = A3,
-	O2.I2 = A4;
+	N3.I1 = D1.Q, 
+	N3.I2 = D2.QBAR, 
+	N4.I1 = D2.QBAR, 
+	N4.I2 = D1.QBAR, 
+	O2.I1 = N3,
+	O2.I2 = N4;
 
 MONITOR
 	D1.Q, 
