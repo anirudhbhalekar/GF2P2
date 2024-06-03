@@ -145,13 +145,6 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
         GL.glEnable(GL.GL_LIGHT1)
         GL.glEnable(GL.GL_NORMALIZE)
 
-        #position
-        GL.glEnableVertexAttribArray(0)
-        GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(0))
-        #texture
-        GL.glEnableVertexAttribArray(1)
-        GL.glVertexAttribPointer(1, 2, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(12))
-
         # Viewing transformation - set the viewpoint back from the scene
         GL.glTranslatef(0.0, 0.0, -self.depth_offset)
 
