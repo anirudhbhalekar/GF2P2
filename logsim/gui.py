@@ -169,10 +169,14 @@ class Gui(wx.Frame):
         self.switch_to_3D_button = wx.ToggleButton(self, wx.ID_ANY, "3D Mode") # button to switch canvases out
         self.scroll_bar = wx.ScrollBar(self, wx.ID_ANY)
         self.scroll_bar.SetScrollbar(0, 10, 10, 9)
+        
         self.is3D = False
         self.max_3D_view = 75
         self.max_2D_view = 100
         self.max_total = 2000
+        self.scroll_val = 0
+        self.plot_array = []
+        self.name_array = []
 
         # Bind events to widgets
         self.Bind(wx.EVT_MENU, self.on_menu)
@@ -473,14 +477,22 @@ class Gui(wx.Frame):
             with wx.TextEntryDialog(self, "Change Value of 3D max view", value = str(self.max_3D_view)) as text_dialog: 
                 if text_dialog.ShowModal() == wx.ID_OK: 
                     try:
-                        self.max_3D_view = int(str(text_dialog.GetValue()))
+                        val = int(str(text_dialog.GetValue()))
+                        if val > 20: 
+                            self.max_3D_view = val
+                        else: 
+                            wx.LogError("Value must be greater than 20")
                     except: 
                         wx.LogError("Incorrect data type! Not saved")
         if Id == wx.ID_APPLY: 
             with wx.TextEntryDialog(self, "Change Value of 2D max view", value = str(self.max_2D_view)) as text_dialog: 
                 if text_dialog.ShowModal() == wx.ID_OK: 
                     try:
-                        self.max_2D_view = int(str(text_dialog.GetValue()))
+                        val = int(str(text_dialog.GetValue()))
+                        if val > 20: 
+                            self.max_3D_view = val
+                        else: 
+                            wx.LogError("Value must be greater than 20")
                     except: 
                         wx.LogError("Incorrect data type! Not saved")
 
@@ -497,37 +509,58 @@ class Gui(wx.Frame):
         """Handle the event when the user clicks the run button."""
 
         text = _("Run button pressed, {cycle_count} cycles.").format(cycle_count=self.cycle_count)
-        self.run_circuit(self.cycle_count)
-        self.canvas.render(text)
+        
+        if not self.is3D: 
+            if self.cycles_completed > self.max_total: 
+                wx.LogError("Max cycle count exceeded! Refresh the plot or edit the source data")
+                return 
+            self.run_circuit(self.cycle_count)
+            self.canvas.render(text)
 
-        try: 
-            self.monitor_plot()
-        except Exception: 
-            self.on_reset_plot_button(None)
-            wx.LogError(_("Run failed - cannot plot monitors"))
+            try: 
+                self.monitor_plot()
+            except Exception: 
+                self.on_reset_plot_button(None)
+                wx.LogError(_("Run failed - cannot plot monitors"))
+        
+        else: 
+            if self.cycles_completed > self.max_total: 
+                wx.LogError("Max cycle count exceeded! Refresh the plot or edit the source data")
+                return 
+            self.run_circuit(self.cycle_count)
+            self.matplotlib_canvas.Refresh()
+
     
     def on_reset_plot_button(self, event): 
         """Clears the matplotlib plot"""
         
-        hfont = {'fontname':'Consolas'}
-        
-        self.axes.clear()
-        self.axes.set_title(_("Monitor Plots"), **hfont)
-        
-        try: 
-            self.legend.remove()
-        except: 
-            pass
+        if not self.is3D: 
+            hfont = {'fontname':'Consolas'}
+            
+            self.axes.clear()
+            self.axes.set_title(_("Monitor Plots"), **hfont)
+            
+            try: 
+                self.legend.remove()
+            except: 
+                pass
 
-        self.matplotlib_canvas.draw()
-        self.plot_array = []
-        self.name_array = []
+            self.matplotlib_canvas.draw()
+            self.plot_array = []
+            self.name_array = []
 
-        self.cycles_completed = 0
-        self.update_scroll()
-        
-        text = _("Reset plot button pressed.")
-        self.canvas.render(text)
+            self.cycles_completed = 0
+            self.update_scroll()
+            
+            text = _("Reset plot button pressed.")
+            self.canvas.render(text)
+        else: 
+            self.plot_array = []
+            self.name_array = []
+            self.cycles_completed = 0
+            self.update_scroll()
+            self.matplotlib_canvas.Refresh()
+
 
     def on_zap_button(self, event): 
         """Starts zap procedure"""
@@ -548,17 +581,30 @@ class Gui(wx.Frame):
     def on_continue_button(self, event): 
         """Handle continue button event"""
         text = _("Continue button pressed, {cycle_count} cycles.").format(cycle_count=self.cycle_count)
-        self.continue_circuit(self.cycle_count)
-        self.canvas.render(text)
 
-        if self.cycles_completed == 0: 
-            wx.LogError(_("Nothing to Continue - try running the simulation first"))
-            return
-        try: 
-            self.monitor_plot()
-        except Exception: 
-            self.on_reset_plot_button(None)
-            wx.LogError(_("Run failed - cannot plot monitors"))
+        if self.cycles_completed > self.max_total: 
+            wx.LogError("Max cycle count exceeded! Refresh the plot or edit the source data")
+            return 
+        
+        if not self.is3D: 
+            self.continue_circuit(self.cycle_count)
+            self.canvas.render(text)
+
+            if self.cycles_completed == 0: 
+                wx.LogError(_("Nothing to Continue - try running the simulation first"))
+                return
+            try: 
+                self.monitor_plot()
+            except Exception: 
+                self.on_reset_plot_button(None)
+                wx.LogError(_("Run failed - cannot plot monitors"))
+        else: 
+            if self.cycles_completed == 0: 
+                wx.LogError(_("Nothing to Continue - try running the simulation first"))
+                return
+            self.continue_circuit(self.cycle_count)
+            self.matplotlib_canvas.initialise_monitor_plots()
+            self.matplotlib_canvas.Refresh()
     
     def change_switch_state(self, switch_name, switch_id, value): 
         

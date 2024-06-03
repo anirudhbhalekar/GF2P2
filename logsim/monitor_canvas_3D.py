@@ -206,8 +206,11 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
             monitor_name = self.m_names[i]
             
             signal_list = signal_list[self.scroll_val: self.scroll_val + self.max_view]
-                        
-            for s_name in signal_list: 
+
+            for j, s_name in enumerate(signal_list): 
+                if (j + self.scroll_val) % 10 == 0: 
+                    GL.glColor3f(1.0,1.0,1.0)
+                    self.signal_renderer.render_text(str(int(j + self.scroll_val)), x_offset, +15, 0)
                 self.signal_renderer.draw_signal(x_offset, y_offset, s_name, color)
                 x_offset += x_dist
 
