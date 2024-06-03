@@ -75,6 +75,7 @@ def test_error_definition_files(error_file_path):
     for error_file, expected_count in error_count_map.items():
         if error_file in error_file_path:
             print(f"Error file: {error_file}, expected count: {expected_count}")
+            print(f"Error file: {error_file}, expected count: {expected_count}")
             assert parser.error_count == expected_count
             break
 
