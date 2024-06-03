@@ -168,8 +168,8 @@ class Gui(wx.Frame):
         self.add_monitor_button = wx.ToggleButton(self, wx.ID_ANY, _("Add Monitor"))
         self.reset_view_button = wx.Button(self, wx.ID_ANY, _("Reset View"))
         self.text_box = PromptedTextCtrl(self, wx.ID_ANY, style=wx.TE_PROCESS_ENTER)
-        self.clear_button = wx.Button(self, wx.ID_ANY, "Clear terminal") # button for clearing terminal output
-        self.switch_to_3D_button = wx.ToggleButton(self, wx.ID_ANY, "3D Mode") # button to switch canvases out
+        self.clear_button = wx.Button(self, wx.ID_ANY, _("Clear terminal")) # button for clearing terminal output
+        self.switch_to_3D_button = wx.ToggleButton(self, wx.ID_ANY, _("3D Mode")) # button to switch canvases out
         self.scroll_bar = wx.ScrollBar(self, wx.ID_ANY)
         self.scroll_bar.SetScrollbar(0, 10, 10, 9)
         
