@@ -54,9 +54,12 @@ from monitor_canvas_3D import MyGLCanvasMonitor3D
 from canvas import MyGLCanvas
 from textctrl import TextEditor, PromptedTextCtrl
 import gettext
+import sys
 # Initialize gettext translation
-gettext.install('logsim', localedir='locales')
-_ = gettext.gettext
+locale = sys.argv[2] if len(sys.argv) > 2 else "en"
+lang = gettext.translation("logsim", localedir=r'C:\Users\Shawn\Documents\Cambridge Part IIA\Project GF2\GF2P2\logsim\locales', languages=[locale], fallback=True)
+lang.install()
+_ = lang.gettext
 
 class Gui(wx.Frame):
     """Configure the main window and all the widgets apart from the text box.
@@ -165,8 +168,8 @@ class Gui(wx.Frame):
         self.add_monitor_button = wx.ToggleButton(self, wx.ID_ANY, _("Add Monitor"))
         self.reset_view_button = wx.Button(self, wx.ID_ANY, _("Reset View"))
         self.text_box = PromptedTextCtrl(self, wx.ID_ANY, style=wx.TE_PROCESS_ENTER)
-        self.clear_button = wx.Button(self, wx.ID_ANY, "Clear terminal") # button for clearing terminal output
-        self.switch_to_3D_button = wx.ToggleButton(self, wx.ID_ANY, "3D Mode") # button to switch canvases out
+        self.clear_button = wx.Button(self, wx.ID_ANY, _("Clear terminal")) # button for clearing terminal output
+        self.switch_to_3D_button = wx.ToggleButton(self, wx.ID_ANY, _("3D Mode")) # button to switch canvases out
         self.scroll_bar = wx.ScrollBar(self, wx.ID_ANY)
         self.scroll_bar.SetScrollbar(0, 10, 10, 9)
         
@@ -336,14 +339,34 @@ class Gui(wx.Frame):
 
     def change_language(self, language_code):
         '''Load translations from the compiled .mo file in the current directory'''
-        print("Changing language,", language_code)
-        gettext.translation('logsim', localedir=os.getcwd(), languages=[language_code], fallback=True).install()
-        self.RefreshUI()
+        localedir = os.path.join(os.path.dirname(__file__), 'locales')
+        print("Changing language,", language_code, "located at", localedir)
+        try:
+            lang = gettext.translation('logsim', localedir=localedir, languages=[language_code])
+            lang.install()
+            print(f"Successfully changed language to: {language_code}")
+            self.RefreshUI()
+        except FileNotFoundError as e:
+            if language_code == 'en':
+                # English is the default language, no need to panic if it's not found
+                print(f"English translations not found, using default language.")
+            else:
+                print(f"Error: {e}")
+                print(f"Ensure that the .mo file exists at: {localedir}\{language_code}\LC_MESSAGES\logsim.mo")
         
     def RefreshUI(self):
         """Re-translate all translatable strings"""
         print("refreshui called")
-        self.SetMenuBar(self.GetMenuBar())  # Refresh menu bar
+        # Update labels for all widgets here
+        self.text.SetLabel(_("Cycles"))
+        self.run_button.SetLabel(_("Run"))
+        self.continue_button.SetLabel(_("Continue"))
+        self.reset_plot_button.SetLabel(_("Reset Plot"))
+        self.zap_monitor_button.SetLabel(_("Zap Monitor"))
+        self.add_monitor_button.SetLabel(_("Add Monitor"))
+        self.reset_view_button.SetLabel(_("Reset View"))
+        self.clear_button.SetLabel(_("Clear Terminal"))
+        #self.SetMenuBar(self.GetMenuBar())  # Refresh menu bar
         self.Layout()  # Refresh layout
     
     def configure_matplotlib_canvas(self): 
@@ -768,8 +791,8 @@ class Gui(wx.Frame):
                 current_line = lines[-1].strip()
             else:
                 current_line = lines[-2].strip()
-        print(lines)
-        print(current_line)
+        #print(lines)
+        #print(current_line)
         if current_line[0] == '>':
             current_line = current_line[1:].strip()
         text = current_line # should be without the initial >

@@ -18,10 +18,12 @@ Dependencies:
 
 import wx
 import gettext
+import sys
 # Initialize gettext translation
-gettext.install('logsim', localedir='locales')
-_ = gettext.gettext
-
+locale = sys.argv[2] if len(sys.argv) > 2 else "en"
+lang = gettext.translation("logsim", localedir=r'C:\Users\Shawn\Documents\Cambridge Part IIA\Project GF2\GF2P2\logsim\locales', languages=[locale], fallback=True)
+lang.install()
+_ = lang.gettext
 
 class PromptedTextCtrl(wx.TextCtrl):
     """
