@@ -339,7 +339,7 @@ class Gui(wx.Frame):
 
     def change_language(self, language_code):
         '''Load translations from the compiled .mo file in the current directory'''
-        localedir=r'C:\Users\Shawn\Documents\Cambridge Part IIA\Project GF2\GF2P2\logsim\locales'
+        localedir = os.path.join(os.path.dirname(__file__), 'locales')
         print("Changing language,", language_code, "located at", localedir)
         try:
             lang = gettext.translation('logsim', localedir=localedir, languages=[language_code])
