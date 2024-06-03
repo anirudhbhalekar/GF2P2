@@ -1,6 +1,12 @@
-#: canvas.py:277
-msgid "Canvas redrawn on paint event, size is "
-msgstr "Το Canvas επανασχεδιάστηκε κατά την εκτέλεση της εντολής paint, το μέγεθος είναι "
+msgid ""
+msgstr ""
+"Language: el\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: lang_demo.py:10
+msgid "Hello world"
+msgstr "αβγδε"
 
 #: canvas.py:340
 msgid "Monitor Removed\n"

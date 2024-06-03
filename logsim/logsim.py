@@ -14,8 +14,10 @@ from userint import UserInterface
 from gui import Gui
 
 # Initialize gettext translation
-gettext.install('logsim', localedir='locales')
-_ = gettext.gettext
+locale = sys.argv[2] if len(sys.argv) > 2 else "en"
+lang = gettext.translation("logsim", localedir=r'C:\Users\Shawn\Documents\Cambridge Part IIA\Project GF2\GF2P2\logsim\locales', languages=[locale], fallback=True)
+lang.install()
+_ = lang.gettext
 
 def main(arg_list):
     """Parse the command line options and arguments specified in arg_list.
@@ -54,12 +56,12 @@ Graphical user interface: logsim.py <file path>""")
 
     if not options:  # no option given, use the graphical user interface
 
-        if len(arguments) != 1:  # wrong number of arguments
-            print(_("Error: one file path required\n"))
+        if len(arguments) > 2:  # wrong number of arguments
+            print(_("Error: one file path required and one language code optional\n"))
             print(usage_message)
             sys.exit()
 
-        [path] = arguments
+        path = arguments[0]
         scanner = Scanner(path, names)
         parser = Parser(names, devices, network, monitors, scanner)
         
