@@ -13,10 +13,13 @@ class LogicDrawer3D:
         self.names = names
         self.devices = devices
         self.monitors = monitors
-
-        self.master_obj_folder = "device_objs/"
-        self.master_signal_folder = "monitor_objs/"
-        self.vertex_folder = "vertices/"
+        current_dir = os.path.dirname(__file__)
+        self.master_obj_folder = os.path.join(current_dir, 'device_objs/')
+        self.master_signal_folder = os.path.join(current_dir, 'monitor_objs/')
+        self.vertex_folder = os.path.join(current_dir, 'vertices/')
+        # self.master_obj_folder = "device_objs/"
+        # self.master_signal_folder = "monitor_objs/"
+        # self.vertex_folder = "vertices/"
 
 
         self.operator_height = 30 # Z direction
@@ -63,11 +66,12 @@ class LogicDrawer3D:
         device_name = self.names.get_name_string(this_device.device_id)
         device_kind = self.names.get_name_string(this_device.device_kind)
 
-        obj_file_path = self.master_obj_folder + str(device_kind) + ".obj"
-        frame_file_path =  self.master_obj_folder + str(device_kind) + "_frame.obj"
+        obj_file_path = os.path.join(self.master_obj_folder, f"{device_kind}.obj")
+        frame_file_path = os.path.join(self.master_obj_folder, f"{device_kind}_frame.obj")
+        # obj_file_path = self.master_obj_folder + str(device_kind) + ".obj"
+        # frame_file_path =  self.master_obj_folder + str(device_kind) + "_frame.obj"
         
         if not os.path.exists(obj_file_path) or not os.path.exists(frame_file_path): 
-            print(obj_file_path, frame_file_path)
             raise FileNotFoundError
         
         if device_kind in ["AND", "NAND", "OR", "XOR", "NOR"]:
@@ -98,8 +102,10 @@ class LogicDrawer3D:
 
     def draw_monitor(self, x, y, dev_id, port_id): 
         
-        obj_file_path = self.master_obj_folder + "MONITOR.obj"
-        frame_file_path =  self.master_obj_folder + "MONITOR_frame.obj"
+        obj_file_path = os.path.join(self.master_obj_folder, "MONITOR.obj")
+        frame_file_path = os.path.join(self.master_obj_folder, "MONITOR_frame.obj")
+        # obj_file_path = self.master_obj_folder + "MONITOR.obj"
+        # frame_file_path =  self.master_obj_folder + "MONITOR_frame.obj"
 
         if not os.path.exists(obj_file_path) or not os.path.exists(frame_file_path): 
             raise FileNotFoundError
@@ -114,7 +120,9 @@ class LogicDrawer3D:
         # Here signal is either "HIGH", "LOW", "FALLING" or "RISING"
 
         if signal_name != "BLANK":
-            obj_file = self.master_signal_folder + str(signal_name) + ".obj"
+            obj_file = os.path.join(self.master_signal_folder, f"{signal_name}.obj")
+            # obj_file = self.master_signal_folder + str(signal_name) + ".obj"
+            
             if not os.path.exists(obj_file): 
                 raise FileNotFoundError
             
