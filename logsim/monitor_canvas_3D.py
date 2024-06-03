@@ -101,6 +101,9 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
         self.Bind(wx.EVT_SIZE, self.on_size)
         self.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse)
 
+        self.signal_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.monitor_vertex_loader)
+        self.initialise_monitor_plots()
+
     def init_gl(self):
         """Configure and initialise the OpenGL context."""
         size = self.GetClientSize()
@@ -209,7 +212,7 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
                 if (j + self.scroll_val) % 10 == 0: 
                     GL.glColor3f(1.0,1.0,1.0)
                     self.signal_renderer.render_text(str(int(j + self.scroll_val)), x_offset, +15, 0)
-                self.signal_renderer.draw_signal(x_offset, y_offset, s_name, color)
+                self.signal_renderer.draw_signal(x_offset, y_offset, s_name, color, self.context, self)
                 x_offset += x_dist
 
             self.signal_renderer.render_text(monitor_name, -15, y_offset, 10)
@@ -221,8 +224,6 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
         if not self.init:
             # Configure the OpenGL rendering context
             self.init_gl()
-            self.signal_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.monitor_vertex_loader)
-            self.initialise_monitor_plots()
             self.init = True
 
         # Clear everything
@@ -240,8 +241,6 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
         if not self.init:
             # Configure the OpenGL rendering context
             self.init_gl()
-            self.signal_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.monitor_vertex_loader)
-            self.initialise_monitor_plots()
             self.init = True
 
         size = self.GetClientSize()

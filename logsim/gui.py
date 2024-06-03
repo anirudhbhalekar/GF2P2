@@ -171,7 +171,7 @@ class Gui(wx.Frame):
         self.scroll_bar.SetScrollbar(0, 10, 10, 9)
         
         self.is3D = False
-        self.max_3D_view = 75
+        self.max_3D_view = 50
         self.max_2D_view = 100
         self.max_total = 2000
         self.scroll_val = 0

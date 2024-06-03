@@ -224,10 +224,12 @@ class ConnectDrawer3D:
         # we have the input and output ids of two 
 
     
-    def draw_connections(self, vertices : list):
+    def draw_connections(self, vertices : list, context, canvas):
         
         vertices = np.array(vertices, dtype=np.float32)
         vertex_count = len(vertices) // 8
+
+        canvas.SetCurrent(context)
         self.vbo = GL.glGenBuffers(1)
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
         GL.glBufferData(GL.GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL.GL_STATIC_DRAW)
