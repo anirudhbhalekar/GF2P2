@@ -1,0 +1,7 @@
+DEFINE eeee AS CLOCK WITH cycle_rep = 1000; % waodi12o3i12o5i12oi#2$!^#$!%
+
+CONNECT;
+
+MONITOR r12312r;
+
+END;

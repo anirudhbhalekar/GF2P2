@@ -61,11 +61,14 @@ class Parser:
         """Print error message and increment error count."""
         # Note that if there is a syntax error before a semantic one, the semantic error will not be printed
         self.error_count += 1
+
         line_number = self.symbol.line_number
         character = self.symbol.character
         symbol_length = self.symbol.length
-        error_message = self.get_error_message(error_code)
+
+        error_message = self.get_error_message(error_code, self.symbol.type)
         error_line = self.scanner.get_line(line_number)
+        
         print(error_line) # no translation needed for this
         # print spaces and then a ^ under the character
         print(" " * (character - symbol_length) + "^")
@@ -83,7 +86,7 @@ class Parser:
             self.symbol = self.scanner.get_symbol()
 
 
-    def get_error_message(self, error_code):
+    def get_error_message(self, error_code, symbol_type):
         """Return the error message corresponding to the error code."""
         error_messages = {
 
@@ -127,6 +130,8 @@ class Parser:
             self.monitors.NOT_OUTPUT: _("Device output not found"),
             self.monitors.MONITOR_PRESENT: _("Monitor already present")
         }
+        if symbol_type == None:
+            return "Invalid symbol type"
         return error_messages.get(error_code, _("Unknown error"))
 
 
