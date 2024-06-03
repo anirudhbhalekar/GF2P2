@@ -69,6 +69,7 @@ def test_error_definition_files(error_file_path):
         'two_define': 1,
         'extra_commas': 2,
         'keyword_instead_of_name': 3,
+        'invalid_symbol': 1,
     }
 
     for error_file, expected_count in error_count_map.items():
