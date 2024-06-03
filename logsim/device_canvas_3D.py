@@ -154,6 +154,13 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         GL.glEnable(GL.GL_LIGHT1)
         GL.glEnable(GL.GL_NORMALIZE)
 
+        #position
+        GL.glEnableVertexAttribArray(0)
+        GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(0))
+        #texture
+        GL.glEnableVertexAttribArray(1)
+        GL.glVertexAttribPointer(1, 2, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(12))
+
         # Viewing transformation - set the viewpoint back from the scene
         GL.glTranslatef(0.0, 0.0, -self.depth_offset)
 
@@ -197,7 +204,7 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         for device in self.devices_list: 
             # We render any object as it comes 
             device_id = device.device_id
-            self.scene_renderer.draw_with_id(device_id, curr_x, curr_y, self.context, self)
+            self.scene_renderer.draw_with_id(device_id, curr_x, curr_y)
 
             curr_y -= y_space
 
@@ -206,7 +213,7 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
                 curr_x += x_space
 
     def assemble_connections(self): 
-        self.connect_render.draw_connections(self.tube_vertices_list, self.context, self)
+        self.connect_render.draw_connections(self.tube_vertices_list)
 
     def assemble_monitors(self): 
         monitors_dict = self.monitors.monitors_dictionary
@@ -215,7 +222,7 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
             dev_id = key[0]
             port_id = key[1]
             m_coord = self.outputs_dict[(dev_id, port_id)]
-            self.scene_renderer.draw_monitor(m_coord[0], m_coord[1], dev_id, port_id, self.context, self)
+            self.scene_renderer.draw_monitor(m_coord[0], m_coord[1], dev_id, port_id)
 
     def render(self, text = None):
         """Handle all drawing operations."""

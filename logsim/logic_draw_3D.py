@@ -56,7 +56,7 @@ class LogicDrawer3D:
 
         GL.glEnable(GL.GL_LIGHTING)
 
-    def draw_with_id(self, device_id, x, y, context, canvas): 
+    def draw_with_id(self, device_id, x, y): 
 
         this_device = self.devices.get_device(device_id)
         device_name = self.names.get_name_string(this_device.device_id)
@@ -92,12 +92,12 @@ class LogicDrawer3D:
         else: 
             self.render_text(device_name, (x + 2), (y + 2), 3)
 
-        self.draw_mesh(x, y, obj_file_path, device_id, context, canvas)
+        self.draw_mesh(x, y, obj_file_path, device_id)
         
         glColor3f(0.1, 0.1, 0.1)
-        self.draw_mesh(x, y, frame_file_path, str(str(device_id) + "_frame"), context, canvas)
+        self.draw_mesh(x, y, frame_file_path, str(str(device_id) + "_frame"))
 
-    def draw_monitor(self, x, y, dev_id, port_id, context, canvas): 
+    def draw_monitor(self, x, y, dev_id, port_id): 
         
         obj_file_path = os.path.join(self.master_obj_folder, "MONITOR.obj")
         frame_file_path = os.path.join(self.master_obj_folder, "MONITOR_frame.obj")
@@ -111,9 +111,9 @@ class LogicDrawer3D:
 
         unique_id = str(dev_id) + "_" + str(port_id)
 
-        self.draw_mesh(x, y, obj_file_path, unique_id, context, canvas)
+        self.draw_mesh(x, y, obj_file_path, unique_id)
 
-    def draw_signal(self, x, y, signal_name, signal_color, context, canvas): 
+    def draw_signal(self, x, y, signal_name, signal_color): 
         # Here signal is either "HIGH", "LOW", "FALLING" or "RISING"
 
         if signal_name != "BLANK":
@@ -126,12 +126,12 @@ class LogicDrawer3D:
             glColor3f(float(signal_color[0]), float(signal_color[1]), float(signal_color[2]))
             unique_id = str(signal_name) + "_" + str(x) + "_" + str(y)
 
-            self.draw_mesh(x, y, obj_file, unique_id, context, canvas)
+            self.draw_mesh(x, y, obj_file, unique_id)
         else: 
             pass
 
-    def draw_mesh(self, x, y, file_name, device_id, context, canvas): 
-        mesh = Mesh(file_name, device_id, x, y, self.names, self.devices, self.monitors, self.vertex_loader, context, canvas)
+    def draw_mesh(self, x, y, file_name, device_id): 
+        mesh = Mesh(file_name, device_id, x, y, self.names, self.devices, self.monitors, self.vertex_loader)
         
     def return_io_list(self, device_id, x, y): 
         """IO list of the object"""
@@ -198,15 +198,14 @@ class LogicDrawer3D:
 
 class Mesh(LogicDrawer3D): 
 
-    def __init__(self, filename, device_id, pos_x, pos_y, names, devices, monitors, vertex_loader, context = None, canvas = None) -> None:
+    def __init__(self, filename, device_id, pos_x, pos_y, names, devices, monitors, vertex_loader) -> None:
         
         super().__init__(names, devices, monitors, vertex_loader)
         
         self.x = pos_x
         self.y = pos_y
         self.filename = filename
-        self.context = context
-        self.canvas = canvas 
+     
         
         vertices = None
         try: 
@@ -223,12 +222,10 @@ class Mesh(LogicDrawer3D):
 
         vertices = np.array(vertices, dtype=np.float32)
         self.vertex_count = len(vertices)//8
-        
-        self.canvas.SetCurrent(self.context)
+
         self.vao = GL.glGenVertexArrays(1)
         #GL.glColor3f(0.7, 0.5, 0.1)
         GL.glBindVertexArray(self.vao)
-
         #Vertices
         self.vbo = GL.glGenBuffers(1)
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
@@ -322,11 +319,9 @@ class Mesh(LogicDrawer3D):
         # c to normal (all are in indices)
     
     def destroy(self): 
-
         GL.glDeleteVertexArrays(1, (self.vao,))
         GL.glDeleteBuffers(1, (self.vbo,))
 
     def draw(self) -> None:
-
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.vertex_count)
 
