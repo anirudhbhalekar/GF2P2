@@ -166,7 +166,7 @@ def test_con_symbol_sequence(scanner_test_ex0):
 @pytest.fixture
 def scanner_interim1_ex1():
     """Return a new instance of the Scanner class."""
-    return Scanner("error_definition_files/interim1_ex1_error.txt", Names())
+    return Scanner("error_definition_files/input_output_reversed.txt", Names())
 
 
 def test_EOF(scanner_interim1_ex1):

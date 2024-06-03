@@ -61,8 +61,8 @@ def test_error_definition_files(error_file_path):
     # Error codes are hardcoded in the error files
     error_count_map = {
         'interim1_ex0_error.txt': 3,
-        'interim1_ex1_error.txt': 1,
-        'interim1_ex2_error.txt': 3,
+        'input_output_reversed': 1,
+        'undefined_device_and_param': 3,
         'empty_file.txt': 1,
         'missing_section': 3,
         'extra_semicolon': 2,
@@ -74,6 +74,7 @@ def test_error_definition_files(error_file_path):
 
     for error_file, expected_count in error_count_map.items():
         if error_file in error_file_path:
+            print(f"Error file: {error_file}, expected count: {expected_count}")
             assert parser.error_count == expected_count
             break
 
