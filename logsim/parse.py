@@ -68,12 +68,12 @@ class Parser:
 
         error_message = self.get_error_message(error_code, self.symbol.type)
         error_line = self.scanner.get_line(line_number)
-        
+
         print(error_line) # no translation needed for this
         # print spaces and then a ^ under the character
         print(" " * (character - symbol_length) + "^")
-        print(_("Error code {error_code} at line {line_number}, character {character}: {error_message}").format(
-        error_code=error_code, line_number=line_number, character=character, error_message=error_message))
+        print(_("Error at line {line_number}, character {character}: {error_message}").format(
+        error_code=error_code, line_number=line_number, character=character - symbol_length, error_message=error_message))
         # had to reformat these for translation
         print(_("Symbol type: {symbol_type}, Symbol id: {symbol_id}, String: {name_string}").format(
         symbol_type=self.symbol.type, symbol_id=self.symbol.id, 
@@ -101,7 +101,7 @@ class Parser:
             self.INVALID_BLOCK_ORDER: _("Invalid order of DEFINE, CONNECT, and MONITOR blocks"),
             self.MISSING_END_STATEMENT: _("No END statement after MONITOR clause"),
             self.EXPECTED_NUMBER: _("Expected a number"),
-            self.EXPECTED_DOT: _("Expected a dot"),
+            self.EXPECTED_DOT: _("Inputs should be specified - expected a dot"),
             self.INVALID_PIN_REF: _("Invalid pin reference"),
             self.EXPECTED_EQUALS: _("Expected an equals sign"),
             self.EXPECTED_DEFINE: _("Expected a DEFINE statement"),

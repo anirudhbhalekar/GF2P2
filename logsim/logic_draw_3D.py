@@ -67,6 +67,7 @@ class LogicDrawer3D:
         frame_file_path =  self.master_obj_folder + str(device_kind) + "_frame.obj"
         
         if not os.path.exists(obj_file_path) or not os.path.exists(frame_file_path): 
+            print(obj_file_path, frame_file_path)
             raise FileNotFoundError
         
         if device_kind in ["AND", "NAND", "OR", "XOR", "NOR"]:

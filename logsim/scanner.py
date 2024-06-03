@@ -143,7 +143,8 @@ class Scanner:
             line = self.file.readline()
             line_number_count += 1
         line = self.file.readline()
-        line = line.strip()
+        # remove newline
+        line = line[:-1]
         return line
         
     def get_symbol(self):
