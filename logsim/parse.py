@@ -136,6 +136,7 @@ class Parser:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type == self.scanner.EOF:
                 self.error(self.EMPTY_FILE)
+                print(_("Total Error Count: {error_count}").format(error_count=self.error_count))
                 return False
             self.spec_file()
             print(_("Total Error Count: {error_count}").format(error_count=self.error_count))
