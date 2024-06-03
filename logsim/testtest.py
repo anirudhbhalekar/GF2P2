@@ -173,6 +173,7 @@ class TestCanvas(wxcanvas.GLCanvas):
         # Initialise the scene rotation matrix
         self.scene_rotate = np.identity(4, 'f')
 
+
         # Initialise variables for zooming
         self.zoom = 20
         self.parent = parent
@@ -196,53 +197,61 @@ class TestCanvas(wxcanvas.GLCanvas):
 
     def init_gl(self):
         """Configure and initialise the OpenGL context."""
-        size = self.GetClientSize()
-        self.SetCurrent(self.context)
 
-        GL.glViewport(0, 0, size.width, size.height)
+        if not self.init: 
+            size = self.GetClientSize()
+            self.SetCurrent(self.context)
 
-        GL.glMatrixMode(GL.GL_PROJECTION)
-        GL.glLoadIdentity()
-        GLU.gluPerspective(45, size.width / size.height, 10, 10000)
+            GL.glViewport(0, 0, size.width, size.height)
 
-        GL.glMatrixMode(GL.GL_MODELVIEW)
-        GL.glLoadIdentity()  # lights positioned relative to the viewer
-        GL.glLightfv(GL.GL_LIGHT0, GL.GL_AMBIENT, self.no_ambient)
-        GL.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, self.med_diffuse)
-        GL.glLightfv(GL.GL_LIGHT0, GL.GL_SPECULAR, self.full_specular)
-        GL.glLightfv(GL.GL_LIGHT0, GL.GL_POSITION, self.top_right)
-        GL.glLightfv(GL.GL_LIGHT1, GL.GL_AMBIENT, self.no_ambient)
-        GL.glLightfv(GL.GL_LIGHT1, GL.GL_DIFFUSE, self.dim_diffuse)
-        GL.glLightfv(GL.GL_LIGHT1, GL.GL_SPECULAR, self.no_specular)
-        GL.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, self.straight_on)
+            GL.glMatrixMode(GL.GL_PROJECTION)
+            GL.glLoadIdentity()
+            GLU.gluPerspective(45, size.width / size.height, 10, 10000)
 
-        GL.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, self.mat_specular)
-        GL.glMaterialfv(GL.GL_FRONT, GL.GL_SHININESS, self.mat_shininess)
-        GL.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE,
-                        self.mat_diffuse)
-        GL.glColorMaterial(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE)
+            GL.glMatrixMode(GL.GL_MODELVIEW)
+            GL.glLoadIdentity()  # lights positioned relative to the viewer
+            GL.glLightfv(GL.GL_LIGHT0, GL.GL_AMBIENT, self.no_ambient)
+            GL.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, self.med_diffuse)
+            GL.glLightfv(GL.GL_LIGHT0, GL.GL_SPECULAR, self.full_specular)
+            GL.glLightfv(GL.GL_LIGHT0, GL.GL_POSITION, self.top_right)
+            GL.glLightfv(GL.GL_LIGHT1, GL.GL_AMBIENT, self.no_ambient)
+            GL.glLightfv(GL.GL_LIGHT1, GL.GL_DIFFUSE, self.dim_diffuse)
+            GL.glLightfv(GL.GL_LIGHT1, GL.GL_SPECULAR, self.no_specular)
+            GL.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, self.straight_on)
 
-        GL.glClearColor(0.0, 0.0, 0.0, 0.0)
-        GL.glDepthFunc(GL.GL_LEQUAL)
-        GL.glShadeModel(GL.GL_SMOOTH)
-        GL.glDrawBuffer(GL.GL_BACK)
-        GL.glCullFace(GL.GL_BACK)
-        GL.glEnable(GL.GL_COLOR_MATERIAL)
-        GL.glEnable(GL.GL_CULL_FACE)
-        GL.glEnable(GL.GL_DEPTH_TEST)
-        GL.glEnable(GL.GL_LIGHTING)
-        GL.glEnable(GL.GL_LIGHT0)
-        GL.glEnable(GL.GL_LIGHT1)
-        GL.glEnable(GL.GL_NORMALIZE)
+            GL.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, self.mat_specular)
+            GL.glMaterialfv(GL.GL_FRONT, GL.GL_SHININESS, self.mat_shininess)
+            GL.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE,
+                            self.mat_diffuse)
+            GL.glColorMaterial(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE)
 
-        # Viewing transformation - set the viewpoint back from the scene
-        GL.glTranslatef(0.0, 0.0, -self.depth_offset)
+            GL.glClearColor(0.0, 0.0, 0.0, 0.0)
+            GL.glDepthFunc(GL.GL_LEQUAL)
+            GL.glShadeModel(GL.GL_SMOOTH)
+            GL.glDrawBuffer(GL.GL_BACK)
+            GL.glCullFace(GL.GL_BACK)
+            GL.glEnable(GL.GL_COLOR_MATERIAL)
+            GL.glEnable(GL.GL_CULL_FACE)
+            GL.glEnable(GL.GL_DEPTH_TEST)
+            GL.glEnable(GL.GL_LIGHTING)
+            GL.glEnable(GL.GL_LIGHT0)
+            GL.glEnable(GL.GL_LIGHT1)
+            GL.glEnable(GL.GL_NORMALIZE)
 
-        # Modelling transformation - pan, zoom and rotate
-        GL.glTranslatef(self.pan_x, self.pan_y, 0.0)
-        GL.glMultMatrixf(self.scene_rotate)
-        GL.glScalef(self.zoom, self.zoom, self.zoom)
+            # Viewing transformation - set the viewpoint back from the scene
+            GL.glTranslatef(0.0, 0.0, -self.depth_offset)
 
+            # Modelling transformation - pan, zoom and rotate
+            GL.glTranslatef(self.pan_x, self.pan_y, 0.0)
+            GL.glMultMatrixf(self.scene_rotate)
+            GL.glScalef(self.zoom, self.zoom, self.zoom)
+        
+            self.init = True
+        
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+        self.test_render()
+        GL.glFlush()
+        self.SwapBuffers()
     
     def test_render(self): 
         self.signal_renderer.draw_mesh(0, 0, "device_objs/AND.obj", -12344)
@@ -250,20 +259,10 @@ class TestCanvas(wxcanvas.GLCanvas):
     def render(self):
         """Handle all drawing operations."""
         self.SetCurrent(self.context)
-        if not self.init:
-            # Configure the OpenGL rendering context
-            self.init_gl()
-            self.init = True
-            return 
+        self.init_gl()
 
         # Clear everything
-        GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
         
-        self.test_render()
-        # We have been drawing to the back buffer, flush the graphics pipeline
-        # and swap the back buffer to the front
-        GL.glFlush()
-        self.SwapBuffers()
         
     def on_paint(self, event):
         """Handle the paint event."""
