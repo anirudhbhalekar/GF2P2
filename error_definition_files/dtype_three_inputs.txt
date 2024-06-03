@@ -1,0 +1,19 @@
+DEFINE 
+    CLK1 AS CLOCK WITH cycle_rep=10,
+    SW1 AS SWITCH WITH initial=1,  
+
+    G1 AS AND WITH inputs=2, 
+    G2 AS XOR,
+    DTYPE1 AS DTYPE;
+
+CONNECT DTYPE1.CLK = CLK1,
+    G1.I1 = CLK1,
+    DTYPE1.DATA = DTYPE1.QBAR,
+    DTYPE1.SET = DTYPE1.Q;
+
+MONITOR 
+    DTYPE1.Q, 
+    DTYPE2.Q, 
+    G2;
+
+END;

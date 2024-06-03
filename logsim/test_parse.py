@@ -70,6 +70,7 @@ def test_error_definition_files(error_file_path):
         'extra_commas.txt': 2,
         'keyword_instead_of_name.txt': 3,
         'invalid_symbol.txt': 1,
+        'dtype_three_inputs.txt': 1,
     }
 
     for error_file, expected_count in error_count_map.items():
