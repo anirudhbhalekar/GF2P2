@@ -68,6 +68,7 @@ def test_error_definition_files(error_file_path):
         'extra_semicolon': 2,
         'two_define': 1,
         'extra_commas': 2,
+        'keyword_instead_of_name': 3,
     }
 
     for error_file, expected_count in error_count_map.items():

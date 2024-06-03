@@ -245,15 +245,14 @@ class Mesh(LogicDrawer3D):
             line = file.readline()
             while line:
                 words = line.split(" ")
-                match words[0]:
-                    case "v":
-                        v.append(self.read_vertex_data(words))
-                    case "vt":
-                        vt.append(self.read_texcoord_data(words))
-                    case "vn":
-                        vn.append(self.read_normal_data(words))
-                    case "f":
-                        self.read_face_data(words, v, vt, vn, vertices)
+                if words[0] == "v":
+                    v.append(self.read_vertex_data(words))
+                elif words[0] == "vt":
+                    vt.append(self.read_texcoord_data(words))
+                elif words[0] == "vn":
+                    vn.append(self.read_normal_data(words))
+                elif words[0] == "f":
+                    self.read_face_data(words, v, vt, vn, vertices)
                 
                 line = file.readline()
 
