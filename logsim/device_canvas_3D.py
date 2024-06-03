@@ -23,6 +23,7 @@ from parse import Parser
 
 from logic_draw_3D import LogicDrawer3D
 from connect_draw_3D import ConnectDrawer3D
+import os
 
 class MyGLCanvas3D(wxcanvas.GLCanvas):
     """Handle all drawing operations.
@@ -58,6 +59,7 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
                          attribList=[wxcanvas.WX_GL_RGBA,
                                      wxcanvas.WX_GL_DOUBLEBUFFER,
                                      wxcanvas.WX_GL_DEPTH_SIZE, 16, 0])
+        os.environ["SDL_VIDEO_X11_FORCE_EGL"] = "1"
         GLUT.glutInit()
         self.init = False
         self.context = wxcanvas.GLContext(self)
