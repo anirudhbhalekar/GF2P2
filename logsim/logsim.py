@@ -12,7 +12,7 @@ from monitors import Monitors
 from scanner import Scanner
 from parse import Parser
 from userint import UserInterface
-from testtest import GuiTEST as Gui
+from gui import Gui
 
 # Initialize gettext translation
 locale = sys.argv[2] if len(sys.argv) > 2 else "en"

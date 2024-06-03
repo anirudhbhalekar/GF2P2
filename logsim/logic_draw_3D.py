@@ -223,19 +223,16 @@ class Mesh(LogicDrawer3D):
         vertices = np.array(vertices, dtype=np.float32)
         self.vertex_count = len(vertices)//8
 
-        #self.vao = GL.glGenVertexArrays(1)
+        self.vao = GL.glGenVertexArrays(1)
         #GL.glColor3f(0.7, 0.5, 0.1)
-        #GL.glBindVertexArray(self.vao)
+        GL.glBindVertexArray(self.vao)
         #Vertices
         self.vbo = GL.glGenBuffers(1)
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
         GL.glBufferData(GL.GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL.GL_STATIC_DRAW)
         #position
         GL.glEnableVertexAttribArray(0)
-        GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(0))
-        #texture
-        GL.glEnableVertexAttribArray(1)
-        GL.glVertexAttribPointer(1, 2, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(12))
+        GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 32, None)
 
         self.draw()
 

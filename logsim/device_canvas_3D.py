@@ -63,7 +63,6 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         self.init = False
         self.context = wxcanvas.GLContext(self)
 
-
         # Constants for OpenGL materials and lights
         self.mat_diffuse = [0.0, 0.0, 0.0, 1.0]
         self.mat_no_specular = [0.0, 0.0, 0.0, 0.0]

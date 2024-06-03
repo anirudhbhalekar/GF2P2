@@ -1,5 +1,6 @@
 import wx
 import wx.glcanvas as wxcanvas
+from OpenGL import platform
 import numpy as np
 import math
 from OpenGL import GL, GLU, GLUT
@@ -267,10 +268,7 @@ class TestCanvas(wxcanvas.GLCanvas):
     def on_paint(self, event):
         """Handle the paint event."""
         self.SetCurrent(self.context)
-        if not self.init:
-            # Configure the OpenGL rendering context
-            self.init_gl()
-            self.init = True
+        self.init_gl()
 
         size = self.GetClientSize()
         text = "".join(["Canvas redrawn on paint event, size is ",
