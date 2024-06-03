@@ -70,7 +70,7 @@ class GuiTEST(wx.Frame):
         self.monitors = monitors
 
         self.canvas = TestCanvas(self, devices, monitors)
-        
+
         # Configure sizers for layout
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)
         side_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -254,6 +254,7 @@ class TestCanvas(wxcanvas.GLCanvas):
             # Configure the OpenGL rendering context
             self.init_gl()
             self.init = True
+            return 
 
         # Clear everything
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)

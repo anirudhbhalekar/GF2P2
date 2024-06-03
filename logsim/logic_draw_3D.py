@@ -223,9 +223,9 @@ class Mesh(LogicDrawer3D):
         vertices = np.array(vertices, dtype=np.float32)
         self.vertex_count = len(vertices)//8
 
-        self.vao = GL.glGenVertexArrays(1)
+        #self.vao = GL.glGenVertexArrays(1)
         #GL.glColor3f(0.7, 0.5, 0.1)
-        GL.glBindVertexArray(self.vao)
+        #GL.glBindVertexArray(self.vao)
         #Vertices
         self.vbo = GL.glGenBuffers(1)
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
