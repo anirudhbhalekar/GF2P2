@@ -106,11 +106,11 @@ class Gui(wx.Frame):
         view3DMenu = wx.Menu()
         languageMenu = wx.Menu()  # New menu for language selection
 
-        # try: 
-        #     font = wx.Font(wx.FontInfo(9).FaceName("Consolas"))
-        #     self.SetFont(font)
-        # except: 
-        #     pass
+        try: 
+            font = wx.Font(wx.FontInfo(9).FaceName("Consolas"))
+            self.SetFont(font)
+        except: 
+            pass
 
         # Create an instance of the UserInterface class
         self.user_interface = UserInterface(names, devices, network, monitors)
@@ -348,11 +348,10 @@ class Gui(wx.Frame):
     
     def configure_matplotlib_canvas(self): 
         """ Sets the config params of the matplotlib canvas"""
-        # hfont = {'fontname':'Consolas'}
+        hfont = {'fontname':'Consolas'}
         self.figure = Figure(figsize=(5,2))
         self.axes = self.figure.add_subplot(111)
-        # self.axes.set_title("Monitor Plots", **hfont)
-        self.axes.set_title("Monitor Plots")
+        self.axes.set_title("Monitor Plots", **hfont)
         self.axes.tick_params(axis = 'both', bottom = True, left = False, right = False, labelright = False, labelleft = False, labelbottom = True)
 
     def execute_circuit(self, cycles): 
@@ -544,11 +543,10 @@ class Gui(wx.Frame):
         """Clears the matplotlib plot"""
         
         if not self.is3D: 
-            # hfont = {'fontname':'Consolas'}
+            hfont = {'fontname':'Consolas'}
             
             self.axes.clear()
-            # self.axes.set_title(_("Monitor Plots"), **hfont)
-            self.axes.set_title(_("Monitor Plots"))
+            self.axes.set_title(_("Monitor Plots"), **hfont)
             
             try: 
                 self.legend.remove()
@@ -679,10 +677,9 @@ class Gui(wx.Frame):
 
     def monitor_plot(self):
         
-        # hfont = {'fontname':'Consolas'}
+        hfont = {'fontname':'Consolas'}
         self.axes.clear()
-        # self.axes.set_title(_("Monitor Plots"), **hfont)
-        self.axes.set_title(_("Monitor Plots"))
+        self.axes.set_title(_("Monitor Plots"), **hfont)
         try: self.legend.remove()
         except: pass
         self.matplotlib_canvas.draw()
@@ -728,7 +725,7 @@ class Gui(wx.Frame):
         
         self.axes.set_ylim(0, 2*i + 2)
         self.axes.set_xlim(max(self.cycles_completed - self.max_2D_view, 0), self.cycles_completed - 1)
-        # prop={'family':'Consolas', 'size':8}
+        prop={'family':'Consolas', 'size':8}
         self.legend = self.figure.legend(fontsize="8", loc ="upper left", prop = prop)
 
         self.matplotlib_canvas.draw()
