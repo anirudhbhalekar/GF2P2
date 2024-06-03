@@ -72,11 +72,7 @@ class Parser:
         print(" " * (character - symbol_length) + "^")
         print(_("Error at line {line_number}, character {character}: {error_message}").format(
         error_code=error_code, line_number=line_number, character=character - symbol_length, error_message=error_message))
-        # had to reformat these for translation
-        print(_("Symbol type: {symbol_type}, Symbol id: {symbol_id}, String: {name_string}").format(
-        symbol_type=self.symbol.type, symbol_id=self.symbol.id, 
-        name_string=self.names.get_name_string(self.symbol.id) if self.symbol.type == self.scanner.NAME or self.symbol.type == self.scanner.KEYWORD else ''))
-
+        
         if self.symbol.type == self.scanner.EOF:
             return False
 
