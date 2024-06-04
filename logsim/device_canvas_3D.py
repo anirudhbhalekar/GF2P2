@@ -53,14 +53,14 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
                                                   operations.
     """
 
-    def __init__(self, parent, devices, monitors):
+    def __init__(self, parent, devices : Devices, monitors: Monitors):
         """Initialise canvas properties and useful variables."""
+
+        gl_attribs = wx.glcanvas.GLContextAttrs()
+        gl_attribs = gl_attribs.CoreProfile().OGLVersion(4, 5).Robust().ResetIsolation().EndList()
+
         super().__init__(parent, -1,
-                         attribList=[wxcanvas.WX_GL_RGBA,
-                                     wxcanvas.WX_GL_DOUBLEBUFFER,
-                                     wxcanvas.WX_GL_DEPTH_SIZE, 16, 0])
-        #GLUT.glutInit()
-        #GLUT.glutInitContextFlags(GLUT.GLUT_FORWARD_COMPATIBLE | GLUT.GLUT_DEBUG)
+                         attribList=gl_attribs)
         self.init = False
         self.context = wxcanvas.GLContext(self)
 
