@@ -56,11 +56,45 @@ from textctrl import TextEditor, PromptedTextCtrl
 import gettext
 import sys
 # Initialize gettext translation
-locale = sys.argv[2] if len(sys.argv) > 2 else "en"
-lang = gettext.translation("logsim", localedir=r'C:\Users\Shawn\Documents\Cambridge Part IIA\Project GF2\GF2P2\logsim\locales', languages=[locale], fallback=True)
+locale = "en"
+if len(sys.argv) > 2:
+    if sys.argv[2] == "el" or sys.argv[2] == "el_GR" or sys.argv[2] == "el_GR.utf8":
+        locale = "el_GR.utf8"
+        #print("Locale: Ελληνικα")
+        pass
+    elif sys.argv[2] == "en" or sys.argv[2] == "en_GB" or sys.argv[2] == "en_GB.utf8":
+        #print("Locale: English")
+        pass
+    else:
+        #print("Locale unknown, defaulting to English")
+        pass
+lang = gettext.translation("logsim", localedir=os.path.join(os.path.dirname(__file__), 'locales'), languages=[locale], fallback=True)
 lang.install()
 _ = lang.gettext
 
+
+class RunApp: 
+    def __init__(self, path, names, devices, network, monitors):
+        
+        self.path = path
+        self.names = names 
+        self.devices = devices 
+        self.network = network 
+        self.monitors = monitors
+
+        GLUT.glutInit()
+        GLUT.glutInitDisplayMode(GLUT.GLUT_DOUBLE | GLUT.GLUT_RGBA)
+        self.top_window = GLUT.glutCreateWindow(_("Logsim 2.0"))
+        GLUT.glutDisplayFunc(self.show_frame)
+        GLUT.glutMainLoop()
+        return True
+    
+    def show_frame(self): 
+        app = wx.App()
+        gui = Gui(_("Logic Simulator"), self.path, self.names, self.devices, self.network,
+                    self.monitors)
+        gui.Show(True)
+        app.MainLoop()
 
 
 class Gui(wx.Frame):
@@ -106,7 +140,7 @@ class Gui(wx.Frame):
 
         if "wayland" in os.getenv("XDG_SESSION_TYPE", "").lower() and not os.environ.get("PYOPENGL_PLATFORM", ""):
             os.environ["PYOPENGL_PLATFORM"] = "egl"
-            
+
         # Define all the menu tabs
         fileMenu = wx.Menu()
         sourceMenu = wx.Menu()
@@ -574,6 +608,8 @@ class Gui(wx.Frame):
     def on_reset_plot_button(self, event): 
         """Clears the matplotlib plot"""
         
+        self.monitors.reset_monitors()
+        
         if not self.is3D: 
             hfont = {'fontname':'Consolas'}
             
@@ -928,8 +964,22 @@ class Gui(wx.Frame):
                 self.text_box.AppendText("\n")
             self.text_box.AppendText(_("<{text}> is an invalid command. A list of available commands can be obtained by entering 'h', or navigating to 'Commands' in the Menu.\n").format(text=text))
 
-class RunApp(wx.App): 
-    """Combines Canvas onto App with Matplotlib"""
+"""class RunApp(wx.App): 
+    # Combines Canvas onto App with Matplotlib
     def __init__(self):
-        wx.App.__init__(self, redirect=False)
+        
+        GLUT.glutInit()
+        GLUT.glutInitDisplayMode(GLUT.GLUT_DOUBLE | GLUT.GLUT_RGBA)
+        GLUT.glutCreateWindow("Logsim 2.0")
+        GLUT.glutOverlayDisplayFunc(self.show_frame)
+        GLUT.glutMainLoop()
+        
+        return True
+    
+    def show_frame(self): 
+        print("IRHBIERUJBVIEJBVIERJB")
+        frame = wx.Frame(None, -1, 'OpenGL App', size=(400, 400))
+        canvas = MyGLCanvas(frame)
+        frame.Show(True)"""
 
+        
