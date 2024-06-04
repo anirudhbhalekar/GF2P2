@@ -61,6 +61,8 @@ lang = gettext.translation("logsim", localedir=r'C:\Users\Shawn\Documents\Cambri
 lang.install()
 _ = lang.gettext
 
+
+
 class Gui(wx.Frame):
     """Configure the main window and all the widgets apart from the text box.
 
@@ -102,12 +104,17 @@ class Gui(wx.Frame):
         # Configure the file menu
         menuBar = wx.MenuBar()
 
+        if "wayland" in os.getenv("XDG_SESSION_TYPE", "").lower() and not os.environ.get("PYOPENGL_PLATFORM", ""):
+            os.environ["PYOPENGL_PLATFORM"] = "egl"
+            
         # Define all the menu tabs
         fileMenu = wx.Menu()
         sourceMenu = wx.Menu()
         commandMenu = wx.Menu()
         view3DMenu = wx.Menu()
         languageMenu = wx.Menu()  # New menu for language selection
+        GLUT.glutInit()
+        GLUT.glutInitContextFlags(GLUT.GLUT_FORWARD_COMPATIBLE | GLUT.GLUT_DEBUG)
 
         try: 
             font = wx.Font(wx.FontInfo(9).FaceName("Consolas"))
@@ -587,11 +594,13 @@ class Gui(wx.Frame):
             
             text = _("Reset plot button pressed.")
             self.canvas.render(text)
+        
         else: 
             self.plot_array = []
             self.name_array = []
             self.cycles_completed = 0
             self.update_scroll()
+            self.matplotlib_canvas.initialise_monitor_plots()
             self.matplotlib_canvas.Refresh()
 
 
