@@ -11,6 +11,7 @@ Names - maps variable names and string names to unique integers.
 import gettext
 import sys
 import os
+'''
 # Initialize gettext translation
 locale = "en"
 if len(sys.argv) > 2:
@@ -22,9 +23,16 @@ if len(sys.argv) > 2:
     else:
         #print("Locale unknown, defaulting to English")
         pass
+'''
 if os.getenv("LANG") == "el_GR.UTF-8":
     locale = "el_GR.utf8"
     #print("Greek system language detected")
+elif os.getenv("LANG") == "en_US.UTF-8" or os.getenv("LANG") == "en_GB.UTF-8":
+    #print("Your system language is English.")
+    locale = "en_GB.utf8"
+else:
+    #print("Attention - your system language is neither English nor Greek. Logsim will run in English.")
+    locale = "en_GB.utf8"
 lang = gettext.translation("logsim", localedir=os.path.join(os.path.dirname(__file__), 'locales'), languages=[locale], fallback=True)
 lang.install()
 _ = lang.gettext
