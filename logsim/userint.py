@@ -25,7 +25,7 @@ if len(sys.argv) > 2:
         pass
 if os.getenv("LANG") == "el_GR.UTF-8":
     locale = "el_GR.utf8"
-    print("Greek system language detected")
+    #print("Greek system language detected")
 lang = gettext.translation("logsim", localedir=r'C:\Users\Shawn\Documents\Cambridge Part IIA\Project GF2\GF2P2\logsim\locales', languages=[locale], fallback=True)
 lang.install()
 _ = lang.gettext
