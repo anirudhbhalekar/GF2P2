@@ -1,21 +1,21 @@
-
+% NOR consistently 0 with changing DTYPE %
 DEFINE
     clock1 AS CLOCK WITH cycle_rep=5,
     switch1 AS SWITCH WITH initial=1,
     switch_set AS SWITCH WITH initial=0,
     switch_clear AS SWITCH WITH initial=0,
-    dff1 AS DTYPE,
+    d1 AS DTYPE,
     nor1 AS NOR WITH inputs=2;
 
 CONNECT
-    dff1.CLK = clock1,
-    dff1.DATA = switch1,
-    dff1.SET = switch_set,
-    dff1.CLEAR = switch_clear,
-    nor1.I1 = dff1.Q,
+    d1.CLK = clock1,
+    d1.DATA = switch1,
+    d1.SET = switch_set,
+    d1.CLEAR = switch_clear,
+    nor1.I1 = d1.Q,
     nor1.I2 = switch1;
 
 MONITOR
-    clock1, dff1.Q, nor1, switch1;
+    clock1, d1.Q, nor1, switch1;
 
 END;

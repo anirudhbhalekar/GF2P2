@@ -1,3 +1,4 @@
+% dtype.Q controlled by switch, influenced by the NOR gate and the clock cycle in between %
 DEFINE 
     clk AS CLOCK WITH cycle_rep = 10,
     sw AS SWITCH WITH initial = 1,
