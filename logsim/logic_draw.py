@@ -779,9 +779,9 @@ class LogicDrawer:
         glEnd()
 
         d_name = self.names.get_name_string(self.id)
-        self.render_text(d_name, self.x + self.length/2, self.y + self.height/2, color="black")
+        self.render_text(d_name, self.x - (self.width / 4), self.y, color="black")
 
-        inp_labels = ["DATA", "CLK", "SET", "RSET"]
+        inp_labels = ["CLK", "SET", "RSET", "DATA"]
         out_labels = ["Q", "QBAR"]
 
         for coord_input in list(self.input_dict.values()): 
@@ -802,13 +802,23 @@ class LogicDrawer:
         half_length = self.length / 2
         half_height = self.height / 2
 
-        glColor3f(1.0, 0.0, 0.0)  # Blue color
+        glColor3f(0.3, 0.5, 0.3)  # dark green color
         glBegin(GL_LINE_STRIP)
         glVertex2f(self.x - half_length, self.y)
         glVertex2f(self.x - half_length, self.y + half_height)
         glVertex2f(self.x + half_length, self.y)
         glVertex2f(self.x - half_length, self.y - half_height)
         glVertex2f(self.x - half_length, self.y)
+        glEnd()
+        # now draw the schmidt trigger symbol
+        glColor3f(0.3, 0.5, 0.3)  # dark green color
+        glBegin(GL_LINE_STRIP)
+        glVertex2f(self.x - half_length*(7/8), self.y - half_height/3)
+        glVertex2f(self.x, self.y - half_height/3)
+        glVertex2f(self.x, self.y + half_height/3)
+        glVertex2f(self.x + half_length*(2/8), self.y + half_height/3)
+        glVertex2f(self.x - half_length*(5/8), self.y + half_height/3)
+        glVertex2f(self.x - half_length*(5/8), self.y - half_height/3)
         glEnd()
 
         d_name = self.names.get_name_string(self.id)
