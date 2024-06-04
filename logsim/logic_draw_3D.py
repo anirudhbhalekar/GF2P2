@@ -233,7 +233,7 @@ class Mesh(LogicDrawer3D):
         #position
         GL.glEnableVertexAttribArray(0)
         GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 32, None)
-
+        #self.brute_force(vertices)
         self.draw()
 
     def load_mesh(self) -> list[float]: 
@@ -322,3 +322,36 @@ class Mesh(LogicDrawer3D):
     def draw(self) -> None:
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.vertex_count)
 
+    def brute_force(self, vertices): 
+
+        triangle_vertex = []
+        triangle_normal = []
+        normal = []
+        vertex = []
+    
+        for index, element in enumerate(vertices): 
+            pos = index % 8
+            if pos < 3: 
+                vertex.append(element)
+            elif pos < 6: 
+                normal.append(element)
+            else: 
+                pass 
+
+            triangle_vertex.append(vertex)
+            triangle_normal.append(normal)
+
+            if len(triangle_vertex) == 3 and len(triangle_normal) and len(normal) == 3: 
+                glBegin(GL.GL_TRIANGLES)
+                for vertex in triangle_vertex: 
+                    GL.glVertex3f(vertex[0], vertex[1], vertex[2])
+                    GL.glNormal3f(normal[0], normal[1], normal[2])
+                glEnd()
+                triangle_vertex = []
+                vertex = []
+                normal = []
+                
+
+
+
+            
