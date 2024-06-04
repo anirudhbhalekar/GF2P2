@@ -2,6 +2,7 @@ import wx
 import wx.grid as gridlib 
 import wx.glcanvas as wxcanvas
 import numpy as np
+import os
 from math import cos, sin, pi
 from OpenGL import GL, GLUT
 from OpenGL.GL import GL_LINE_STRIP, GL_LINE_LOOP, GL_POLYGON, GL_ENABLE_BIT, GL_LINE_STIPPLE
@@ -20,8 +21,18 @@ from connect_draw import ConnectDrawer
 import gettext
 import sys
 # Initialize gettext translation
-locale = sys.argv[2] if len(sys.argv) > 2 else "en"
-lang = gettext.translation("logsim", localedir=r'C:\Users\Shawn\Documents\Cambridge Part IIA\Project GF2\GF2P2\logsim\locales', languages=[locale], fallback=True)
+locale = "en"
+if len(sys.argv) > 2:
+    if sys.argv[2] == "el" or sys.argv[2] == "el_GR" or sys.argv[2] == "el_GR.utf8":
+        locale = "el_GR.utf8"
+        #print("Locale: Ελληνικα")
+    elif sys.argv[2] == "en" or sys.argv[2] == "en_GB" or sys.argv[2] == "en_GB.utf8":
+        #print("Locale: English")
+        pass
+    else:
+        #print("Locale unknown, defaulting to English")
+        pass
+lang = gettext.translation("logsim", localedir=os.path.join(os.path.dirname(__file__), 'locales'), languages=[locale], fallback=True)
 lang.install()
 _ = lang.gettext
 

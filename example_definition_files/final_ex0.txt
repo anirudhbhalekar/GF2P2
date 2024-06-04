@@ -20,7 +20,7 @@ CONNECT
 ;
 
 MONITOR 
-    dtype.Q
+    dtype.Q, rc, nor1
 ;
 
 END;
