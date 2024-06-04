@@ -1,3 +1,4 @@
+
 import wx
 import wx.glcanvas as wxcanvas
 from OpenGL import platform
@@ -5,16 +6,8 @@ import numpy as np
 import math
 from OpenGL import GL, GLU, GLUT
 
-from names import Names
-from devices import Devices
-from network import Network
-from monitors import Monitors
-from scanner import Scanner
-from parse import Parser
 
-from logic_draw_3D import LogicDrawer3D
-
-class GuiTEST(wx.Frame):
+class TESTGUI(wx.Frame):
     """Configure the main window and all the widgets.
 
     This class provides a graphical user interface for the Logic Simulator and
@@ -37,7 +30,7 @@ class GuiTEST(wx.Frame):
     on_text_box(self, event): Event handler for when the user enters text.
     """
 
-    def __init__(self, title, path, names, devices, network, monitors):
+    def __init__(self, title):
         """Initialise widgets and layout."""
         super().__init__(parent=None, title=title, size=(800, 600))
 
@@ -63,14 +56,8 @@ class GuiTEST(wx.Frame):
         self.spin.Bind(wx.EVT_SPINCTRL, self.on_spin)
         self.run_button.Bind(wx.EVT_BUTTON, self.on_run_button)
         self.text_box.Bind(wx.EVT_TEXT_ENTER, self.on_text_box)
-        
-        self.names = names 
-        self.path = path 
-        self.devices = devices
-        self.network = network 
-        self.monitors = monitors
 
-        self.canvas = TestCanvas(self, devices, monitors)
+        self.canvas = TestCanvas(self)
 
         # Configure sizers for layout
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -139,7 +126,7 @@ class TestCanvas(wxcanvas.GLCanvas):
                                                   operations.
     """
 
-    def __init__(self, parent, devices : Devices, monitors: Monitors):
+    def __init__(self, parent):
         """Initialise canvas properties and useful variables."""
         super().__init__(parent, -1,
                          attribList=[wxcanvas.WX_GL_RGBA,
@@ -178,9 +165,6 @@ class TestCanvas(wxcanvas.GLCanvas):
         # Initialise variables for zooming
         self.zoom = 20
         self.parent = parent
-        self.monitor_vertex_loader = {} # {signal_type: vertices}
-        self.signal_renderer = None
-        self.color_arr = []
 
         # Offset between viewpoint and origin of the scene
         self.depth_offset = 1000
@@ -189,17 +173,12 @@ class TestCanvas(wxcanvas.GLCanvas):
         self.Bind(wx.EVT_SIZE, self.on_size)
         self.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse)
 
-        
-        self.names = parent.names
-        self.network = parent.network
-        self.monitors = monitors
-        self.devices = devices
-        self.signal_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.monitor_vertex_loader)
+        self.vertex_loader = {}
 
     def init_gl(self):
         """Configure and initialise the OpenGL context."""
 
-        if not self.init: 
+        if not self.init:
             size = self.GetClientSize()
             self.SetCurrent(self.context)
 
@@ -246,16 +225,16 @@ class TestCanvas(wxcanvas.GLCanvas):
             GL.glTranslatef(self.pan_x, self.pan_y, 0.0)
             GL.glMultMatrixf(self.scene_rotate)
             GL.glScalef(self.zoom, self.zoom, self.zoom)
-        
+       
             self.init = True
-        
+       
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
         self.test_render()
         GL.glFlush()
         self.SwapBuffers()
-    
-    def test_render(self): 
-        self.signal_renderer.draw_mesh(0, 0, "device_objs/AND.obj", -12344)
+   
+    def test_render(self):
+        TestMesh("device_objs/AND.obj", self.vertex_loader, 1)
 
     def render(self):
         """Handle all drawing operations."""
@@ -263,8 +242,8 @@ class TestCanvas(wxcanvas.GLCanvas):
         self.init_gl()
 
         # Clear everything
-        
-        
+       
+       
     def on_paint(self, event):
         """Handle the paint event."""
         self.SetCurrent(self.context)
@@ -333,3 +312,166 @@ class TestCanvas(wxcanvas.GLCanvas):
                 GLUT.glutBitmapCharacter(font, ord(character))
 
         GL.glEnable(GL.GL_LIGHTING)
+       
+
+class TestMesh():
+
+    def __init__(self, filename, vertex_loader, device_id) -> None:
+       
+        self.x = 0
+        self.y = 0
+        self.filename = filename
+        self.scale = 1
+        self.vertex_loader = vertex_loader
+       
+        vertices = None
+
+        try:
+            str_id = str(device_id)
+            parent_dict = self.vertex_loader
+            if str_id not in parent_dict: 
+                pass
+            else: 
+                vertices = parent_dict[str_id]
+        except KeyError:
+            pass
+
+        if vertices is None:
+            vertices = self.load_mesh()
+            str_id = str(device_id)
+            self.vertex_loader[str_id] =  vertices
+
+        vertices = np.array(vertices, dtype=np.float32)
+        self.vertex_count = len(vertices)//8
+
+        self.vao = GL.glGenVertexArrays(1)
+        GL.glBindVertexArray(self.vao)
+        #Vertices
+        self.vbo = GL.glGenBuffers(1)
+        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
+        GL.glBufferData(GL.GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL.GL_STATIC_DRAW)
+        #position
+        GL.GL_CONTEXT_FLAG_NO_ERROR_BIT = True
+        GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(0))
+        GL.glEnableVertexAttribArray(0)
+        #self.brute_force(vertices)
+        self.draw()
+
+    def load_mesh(self) -> list[float]:
+   
+        v = []
+        vt = []
+        vn = []
+        vertices = []
+
+        with open(self.filename, "r") as file:
+            line = file.readline()
+            while line:
+                words = line.split(" ")
+                if words[0] == "v":
+                    v.append(self.read_vertex_data(words))
+                elif words[0] == "vt":
+                    vt.append(self.read_texcoord_data(words))
+                elif words[0] == "vn":
+                    vn.append(self.read_normal_data(words))
+                elif words[0] == "f":
+                    self.read_face_data(words, v, vt, vn, vertices)
+               
+                line = file.readline()
+
+        return vertices
+
+    def read_vertex_data(self, words : list[str]) -> list[float]:
+
+        return [
+                self.scale * float(float(words[1]) + self.x),
+                self.scale * float(float(words[2]) + self.y),
+                self.scale * float(float(words[3]))
+        ]
+
+    def read_texcoord_data(self, words: list[str]) -> list[float]:
+         return [
+                float(words[1]),
+                float(words[2])
+        ]
+   
+    def read_normal_data(self, words: list[str]) -> list[float]:
+         return [
+                float(words[1]),
+                float(words[2]),
+                float(words[3])
+        ]
+   
+    def read_face_data(self, words: list[float],
+                        v  : list[list[float]],
+                        vt : list[list[float]],
+                        vn : list[list[float]],
+                        vertices : list[float]) -> None:
+
+        triangle_count = len(words) - 3
+
+        for i in range(triangle_count):
+
+            self.make_corner(words[1], v, vt, vn, vertices)
+            self.make_corner(words[2 + i], v, vt, vn, vertices)
+            self.make_corner(words[3 + i], v, vt, vn, vertices)
+
+
+    def make_corner(self, corner_description: str,
+                        v  : list[list[float]],
+                        vt : list[list[float]],
+                        vn : list[list[float]],
+                        vertices : list[float]) -> None:
+       
+        v_vt_vn = corner_description.split("/") # OBJ splits corners this way
+
+        for element in v[int(v_vt_vn[0]) - 1]:
+            vertices.append(element)
+        for element in vt[int(v_vt_vn[1]) - 1]:
+            vertices.append(element)
+        for element in vn[int(v_vt_vn[2]) - 1]:
+            vertices.append(element)
+       
+        # OBJ files store faces in the format a/b/c a'/b'/c' ...
+        # for the first element for example, a corresponds to vertex, b to texture coord,
+        # c to normal (all are in indices)
+   
+    def destroy(self):
+        GL.glDeleteVertexArrays(1, (self.vao,))
+        GL.glDeleteBuffers(1, (self.vbo,))
+
+    def draw(self) -> None:
+        GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.vertex_count)
+
+    def brute_force(self, vertices):
+
+        normal = []
+        vertex = []
+
+        all_vertices = []
+        all_normals = []
+   
+        for index, element in enumerate(vertices):
+            pos = index % 8
+           
+            if pos < 3:
+                vertex.append(element)
+            elif 4 < pos < 8:
+                normal.append(element)
+            else:
+                pass
+
+            all_vertices.append(vertex)
+            all_normals.append(normal)
+        GL.glBegin(GL.GL_TRIANGLES)
+        for vertex, normal in zip(all_vertices, all_normals):
+            GL.glVertex3f(vertex[0], vertex[1], vertex[2])
+        GL.glEnd()
+
+
+if __name__ == "__main__":
+
+    app = wx.App()
+    gui = TESTGUI("Logic Simulator")
+    gui.Show(True)
+    app.MainLoop()
