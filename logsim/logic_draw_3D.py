@@ -225,14 +225,12 @@ class Mesh(LogicDrawer3D):
         self.vertex_count = len(vertices)//8
 
         self.vao = GL.glGenVertexArrays(1)
-        #GL.glColor3f(0.7, 0.5, 0.1)
         GL.glBindVertexArray(self.vao)
         #Vertices
         self.vbo = GL.glGenBuffers(1)
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
         GL.glBufferData(GL.GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL.GL_STATIC_DRAW)
         #position
-        print(platform.GetCurrentContext())
         GL.glEnableVertexAttribArray(0)
         GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 32, None)
         #self.brute_force(vertices)
@@ -326,32 +324,31 @@ class Mesh(LogicDrawer3D):
 
     def brute_force(self, vertices): 
 
-        triangle_vertex = []
-        triangle_normal = []
         normal = []
         vertex = []
+
+        all_vertices = []
+        all_normals = []
     
         for index, element in enumerate(vertices): 
             pos = index % 8
+            
             if pos < 3: 
                 vertex.append(element)
-            elif pos < 6: 
+            elif 4 < pos < 8: 
                 normal.append(element)
             else: 
-                pass 
+                pass
 
-            triangle_vertex.append(vertex)
-            triangle_normal.append(normal)
+            all_vertices.append(vertex)
+            all_normals.append(normal)
+        glBegin(GL.GL_TRIANGLES)
+        for vertex, normal in zip(all_vertices, all_normals): 
+            GL.glVertex3f(vertex[0], vertex[1], vertex[2])
+        glEnd()
 
-            if len(triangle_vertex) == 3 and len(triangle_normal) and len(normal) == 3: 
-                glBegin(GL.GL_TRIANGLES)
-                for vertex in triangle_vertex: 
-                    GL.glVertex3f(vertex[0], vertex[1], vertex[2])
-                    GL.glNormal3f(normal[0], normal[1], normal[2])
-                glEnd()
-                triangle_vertex = []
-                vertex = []
-                normal = []
+            
+            
                 
 
 
