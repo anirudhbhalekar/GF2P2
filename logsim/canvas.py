@@ -20,6 +20,7 @@ from connect_draw import ConnectDrawer
 
 import gettext
 import sys
+'''
 # Initialize gettext translation
 locale = "en"
 if len(sys.argv) > 2:
@@ -32,6 +33,7 @@ if len(sys.argv) > 2:
     else:
         #print("Locale unknown, defaulting to English")
         pass
+'''
 if os.getenv("LANG") == "el_GR.UTF-8":
     locale = "el_GR.utf8"
     #print("Greek system language detected")

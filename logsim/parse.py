@@ -12,8 +12,8 @@ from scanner import Symbol
 import gettext
 import sys
 import os
+'''
 # Initialize gettext translation
-# Initialize gettext translation, default english
 locale = "en"
 if len(sys.argv) > 2:
     if sys.argv[2] == "el" or sys.argv[2] == "el_GR" or sys.argv[2] == "el_GR.utf8":
@@ -25,6 +25,7 @@ if len(sys.argv) > 2:
     else:
         #print("Locale unknown, defaulting to English")
         pass
+'''
 if os.getenv("LANG") == "el_GR.UTF-8":
     locale = "el_GR.utf8"
     #print("Greek system language detected")

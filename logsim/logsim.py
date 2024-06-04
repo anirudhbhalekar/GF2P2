@@ -13,7 +13,7 @@ from scanner import Scanner
 from parse import Parser
 from userint import UserInterface
 from gui import Gui
-
+'''
 # Initialize gettext translation
 locale = "en"
 if len(sys.argv) > 2:
@@ -24,7 +24,7 @@ if len(sys.argv) > 2:
         print("Locale: English")
     else:
         print("Locale unknown, defaulting to English")
-
+'''
 if os.getenv("LANG") == "el_GR.UTF-8":
     locale = "el_GR.utf8"
     print("Greek system language detected")
