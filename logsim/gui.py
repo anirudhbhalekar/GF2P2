@@ -524,27 +524,27 @@ class Gui(wx.Frame):
                     wx.LogError(_("Cannot open file: {exception}").format(exception=ex))
 
         if Id == wx.ID_PREFERENCES: 
-            with wx.TextEntryDialog(self, "Change Value of 3D max view", value = str(self.max_3D_view)) as text_dialog: 
+            with wx.TextEntryDialog(self, _("Change Value of 3D max view"), value = str(self.max_3D_view)) as text_dialog: 
                 if text_dialog.ShowModal() == wx.ID_OK: 
                     try:
                         val = int(str(text_dialog.GetValue()))
                         if val > 20: 
                             self.max_3D_view = val
                         else: 
-                            wx.LogError("Value must be greater than 20")
+                            wx.LogError(_("Value must be greater than 20"))
                     except: 
-                        wx.LogError("Incorrect data type! Not saved")
+                        wx.LogError(_("Incorrect data type! Not saved"))
         if Id == wx.ID_APPLY: 
-            with wx.TextEntryDialog(self, "Change Value of 2D max view", value = str(self.max_2D_view)) as text_dialog: 
+            with wx.TextEntryDialog(self, _("Change Value of 2D max view"), value = str(self.max_2D_view)) as text_dialog: 
                 if text_dialog.ShowModal() == wx.ID_OK: 
                     try:
                         val = int(str(text_dialog.GetValue()))
                         if val > 20: 
                             self.max_3D_view = val
                         else: 
-                            wx.LogError("Value must be greater than 20")
+                            wx.LogError(_("Value must be greater than 20"))
                     except: 
-                        wx.LogError("Incorrect data type! Not saved")
+                        wx.LogError(_("Incorrect data type! Not saved"))
 
 
     def on_spin(self, event):
@@ -562,7 +562,7 @@ class Gui(wx.Frame):
         
         if not self.is3D: 
             if self.cycles_completed > self.max_total: 
-                wx.LogError("Max cycle count exceeded! Refresh the plot or edit the source data")
+                wx.LogError(_("Max cycle count exceeded! Refresh the plot or edit the source data"))
                 return 
             self.run_circuit(self.cycle_count)
             self.canvas.render(text)
@@ -575,7 +575,7 @@ class Gui(wx.Frame):
         
         else: 
             if self.cycles_completed > self.max_total: 
-                wx.LogError("Max cycle count exceeded! Refresh the plot or edit the source data")
+                wx.LogError(_("Max cycle count exceeded! Refresh the plot or edit the source data"))
                 return 
             self.run_circuit(self.cycle_count)
             self.matplotlib_canvas.initialise_monitor_plots()
@@ -636,7 +636,7 @@ class Gui(wx.Frame):
         text = _("Continue button pressed, {cycle_count} cycles.").format(cycle_count=self.cycle_count)
 
         if self.cycles_completed > self.max_total: 
-            wx.LogError("Max cycle count exceeded! Refresh the plot or edit the source data")
+            wx.LogError(_("Max cycle count exceeded! Refresh the plot or edit the source data"))
             return 
         
         if not self.is3D: 

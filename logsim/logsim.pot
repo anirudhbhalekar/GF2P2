@@ -3,9 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#: userint.py:274
+#, fuzzy
+msgid ""
+msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-31 01:43+0100\n"
+"POT-Creation-Date: 2024-06-04 16:23+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -13,139 +17,159 @@
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: canvas.py:277
+#: canvas.py:254
 msgid "Canvas redrawn on paint event, size is "
 msgstr ""
 
-#: canvas.py:340
+#: canvas.py:317
 msgid "Monitor Removed\n"
 msgstr ""
 
-#: canvas.py:342
+#: canvas.py:319
 msgid "Error! Monitor not found!"
 msgstr ""
 
-#: canvas.py:352
+#: canvas.py:329
 msgid "Monitor Added\n"
 msgstr ""
 
-#: canvas.py:354
+#: canvas.py:331
 msgid "Error! Monitor already added!"
 msgstr ""
 
-#: canvas.py:371
+#: canvas.py:348
 msgid "Mouse button pressed at: "
 msgstr ""
 
-#: canvas.py:388
+#: canvas.py:365
 msgid "Mouse button released at: "
 msgstr ""
 
-#: canvas.py:391
+#: canvas.py:368
 msgid "Mouse left canvas at: "
 msgstr ""
 
-#: canvas.py:399
+#: canvas.py:376
 msgid "Mouse dragged to: "
 msgstr ""
 
-#: canvas.py:409
+#: canvas.py:386
 msgid "Negative mouse wheel rotation. Zoom is now: "
 msgstr ""
 
-#: canvas.py:418
+#: canvas.py:395
 msgid "Positive mouse wheel rotation. Zoom is now: "
 msgstr ""
 
-#: gui.py:114
+#: gui.py:140
 msgid "&About"
 msgstr ""
 
-#: gui.py:115
+#: gui.py:141
 msgid "&Exit"
 msgstr ""
 
-#: gui.py:116
+#: gui.py:142
 msgid "&Open"
 msgstr ""
 
-#: gui.py:117
+#: gui.py:143
 msgid "&Edit"
 msgstr ""
 
-#: gui.py:118
+#: gui.py:144
 msgid "&Commands"
 msgstr ""
 
-#: gui.py:124
+#: gui.py:145
+msgid "&Change 3D Signal Max"
+msgstr ""
+
+#: gui.py:146
+msgid "&Change 2D Signal Max"
+msgstr ""
+
+#: gui.py:152
 msgid "&File"
 msgstr ""
 
-#: gui.py:125
+#: gui.py:153
 msgid "&Source"
 msgstr ""
 
-#: gui.py:126
+#: gui.py:154
 msgid "&Command"
 msgstr ""
 
-#: gui.py:153
+#: gui.py:155
+msgid "&View Options"
+msgstr ""
+
+#: gui.py:180 gui.py:381
 msgid "Cycles"
 msgstr ""
 
-#: gui.py:155
+#: gui.py:182 gui.py:382
 msgid "Run"
 msgstr ""
 
-#: gui.py:156
+#: gui.py:183 gui.py:383
 msgid "Continue"
 msgstr ""
 
-#: gui.py:157
+#: gui.py:184 gui.py:384
 msgid "Reset Plot"
 msgstr ""
 
-#: gui.py:158
+#: gui.py:185 gui.py:385
 msgid "Zap Monitor"
 msgstr ""
 
-#: gui.py:159
+#: gui.py:186 gui.py:386
 msgid "Add Monitor"
 msgstr ""
 
-#: gui.py:160
+#: gui.py:187 gui.py:387
 msgid "Reset View"
 msgstr ""
 
-#: gui.py:162
+#: gui.py:189
 msgid "Clear terminal"
 msgstr ""
 
-#: gui.py:253 userint.py:258
+#: gui.py:190
+msgid "3D Mode"
+msgstr ""
+
+#: gui.py:388
+msgid "Clear Terminal"
+msgstr ""
+
+#: gui.py:406 userint.py:262
 msgid "Error! Network oscillating."
 msgstr ""
 
-#: gui.py:270
+#: gui.py:425
 msgid "Nothing to continue - run the simulation first"
 msgstr ""
 
-#: gui.py:284
+#: gui.py:440
 msgid "Logic Simulator for GF2P2\n"
 msgstr ""
 
-#: gui.py:285
+#: gui.py:441
 msgid "Created by Mojisola Agboola, 2017\n"
 msgstr ""
 
-#: gui.py:286
+#: gui.py:442
 msgid "Modified by Anirudh Bhalekar, Moses Liew, Shawn Li, 2024"
 msgstr ""
 
-#: gui.py:287
+#: gui.py:443
 msgid "About Logsim"
 msgstr ""
 
-#: gui.py:304
+#: gui.py:459
 msgid ""
 "List of user commands: \n"
 "r N - run the simulation for N cycles\n"
@@ -157,123 +181,143 @@ msgid ""
 "q - quit the simulation"
 msgstr ""
 
-#: gui.py:314
+#: gui.py:468
 msgid "Open New Source File"
 msgstr ""
 
-#: gui.py:362
+#: gui.py:515
 msgid " Opened file:"
 msgstr ""
 
-#: gui.py:367
+#: gui.py:520
 msgid "Error! Faulty definition file!"
 msgstr ""
 
-#: gui.py:368
+#: gui.py:521
 msgid "{num_errors} errors caught"
 msgstr ""
 
-#: gui.py:371
+#: gui.py:524
 msgid "Cannot open file: {exception}"
 msgstr ""
 
-#: gui.py:379
+#: gui.py:527
+msgid "Change Value of 3D max view"
+msgstr ""
+
+#: gui.py:534 gui.py:545
+msgid "Value must be greater than 20"
+msgstr ""
+
+#: gui.py:536 gui.py:547
+msgid "Incorrect data type! Not saved"
+msgstr ""
+
+#: gui.py:538
+msgid "Change Value of 2D max view"
+msgstr ""
+
+#: gui.py:555
 msgid "New spin control value: "
 msgstr ""
 
-#: gui.py:385
+#: gui.py:561
 msgid "Run button pressed, {cycle_count} cycles."
 msgstr ""
 
-#: gui.py:393 gui.py:444 gui.py:624 gui.py:645
+#: gui.py:565 gui.py:578 gui.py:639
+msgid "Max cycle count exceeded! Refresh the plot or edit the source data"
+msgstr ""
+
+#: gui.py:574 gui.py:653 gui.py:835 gui.py:856
 msgid "Run failed - cannot plot monitors"
 msgstr ""
 
-#: gui.py:401 gui.py:511
+#: gui.py:592 gui.py:727
 msgid "Monitor Plots"
 msgstr ""
 
-#: gui.py:412
+#: gui.py:606
 msgid "Reset plot button pressed."
 msgstr ""
 
-#: gui.py:433
+#: gui.py:636
 msgid "Continue button pressed, {cycle_count} cycles."
 msgstr ""
 
-#: gui.py:438
+#: gui.py:647 gui.py:656
 msgid "Nothing to Continue - try running the simulation first"
 msgstr ""
 
-#: gui.py:458 gui.py:461
+#: gui.py:674 gui.py:677
 msgid "Invalid Device Type"
 msgstr ""
 
-#: gui.py:483 gui.py:503
+#: gui.py:699 gui.py:719
 msgid "Monitor addition error"
 msgstr ""
 
-#: gui.py:569
+#: gui.py:780
 msgid "Clear button pressed."
 msgstr ""
 
-#: gui.py:575
+#: gui.py:786
 msgid "Reset view button pressed"
 msgstr ""
 
-#: gui.py:628
+#: gui.py:839
 msgid "Running simulation for {cycles} cycles.\n"
 msgstr ""
 
-#: gui.py:633 gui.py:657
+#: gui.py:844 gui.py:868
 msgid "Invalid command. Please provide a valid number of cycles.\n"
 msgstr ""
 
-#: gui.py:649
+#: gui.py:860
 msgid "Continuing simulation for {cycles} cycles.\n"
 msgstr ""
 
-#: gui.py:653
+#: gui.py:864
 msgid "Nothing to continue - run the simulation first.\n"
 msgstr ""
 
-#: gui.py:667
+#: gui.py:878
 msgid "Switch value must be 0 or 1\n"
 msgstr ""
 
-#: gui.py:668
+#: gui.py:879
 msgid "Switch value must be 0 or 1"
 msgstr ""
 
-#: gui.py:672
+#: gui.py:883
 msgid "Switch set failed"
 msgstr ""
 
-#: gui.py:675
+#: gui.py:886
 msgid "Setting switch {switch_name} to {value}.\n"
 msgstr ""
 
-#: gui.py:679
+#: gui.py:890
 msgid "Invalid command format. Please provide switch ID and value.\n"
 msgstr ""
 
-#: gui.py:688
+#: gui.py:899
 msgid "Adding monitor on signal {signal}.\n"
 msgstr ""
 
-#: gui.py:692
+#: gui.py:903
 msgid "Monitor addition failed for signal {signal}.\n"
 msgstr ""
 
-#: gui.py:703
+#: gui.py:914
 msgid "Zapping monitor on signal {signal}.\n"
 msgstr ""
 
-#: gui.py:707
+#: gui.py:918
 msgid "Monitor zap failed for signal {signal}.\n"
 msgstr ""
 
-#: gui.py:713
+#: gui.py:924
 msgid ""
 "List of available commands:\n"
 "r N       - run the simulation for N cycles\n"
@@ -285,13 +329,17 @@ msgid ""
 "q         - quit the program\n"
 msgstr ""
 
-#: gui.py:729
+#: gui.py:940
 msgid ""
 "<{text}> is an invalid command. A list of available commands can be obtained "
 "by entering 'h', or navigating to 'Commands' in the Menu.\n"
 msgstr ""
 
-#: logsim.py:27
+#: lang_demo.py:11
+msgid "Hello world"
+msgstr ""
+
+#: logsim.py:38
 msgid ""
 "Usage:\n"
 "Show help: logsim.py -h\n"
@@ -299,35 +347,35 @@ msgid ""
 "Graphical user interface: logsim.py <file path>"
 msgstr ""
 
-#: logsim.py:34
+#: logsim.py:45
 msgid "Error: invalid command line arguments\n"
 msgstr ""
 
-#: logsim.py:59
-msgid "Error: one file path required\n"
+#: logsim.py:70
+msgid "Error: one file path required and one language code optional\n"
 msgstr ""
 
-#: logsim.py:70
+#: logsim.py:81
 msgid "Logic Simulator"
 msgstr ""
 
-#: names.py:58
+#: names.py:67
 msgid "Expected num_error_codes to be an integer."
 msgstr ""
 
-#: names.py:72
+#: names.py:80
 msgid "Need String argument"
 msgstr ""
 
-#: names.py:75
+#: names.py:82
 msgid "Null Strings are not accepted"
 msgstr ""
 
-#: names.py:94
+#: names.py:97
 msgid "Name list argument must be a list"
 msgstr ""
 
-#: names.py:99
+#: names.py:102
 msgid "Names must be strings"
 msgstr ""
 
@@ -335,247 +383,244 @@ msgstr ""
 msgid "Name ID must be an integer"
 msgstr ""
 
-#: names.py:123
+#: names.py:122
 msgid "Integer must be greater than or equal to 0"
 msgstr ""
 
-#: parse.py:74
-msgid ""
-"Error code {error_code} at line {line_number}, character {character}: "
-"{error_message}"
-msgstr ""
-
-#: parse.py:77
-msgid ""
-"Symbol type: {symbol_type}, Symbol id: {symbol_id}, String: {name_string}"
-msgstr ""
-
-#: parse.py:90
-msgid "Expected a name"
-msgstr ""
-
-#: parse.py:91
-msgid "Invalid character in name"
-msgstr ""
-
-#: parse.py:92
-msgid "CONNECT list cannot have null devices"
-msgstr ""
-
-#: parse.py:93
-msgid "CONNECT list must have individual connections delimited by ','"
-msgstr ""
-
-#: parse.py:94
-msgid "Double punctuation marks are invalid"
-msgstr ""
-
-#: parse.py:95
-msgid "Semi-colons are required at the end of each line"
-msgstr ""
-
-#: parse.py:96
-msgid "Invalid keyword, could be missing or misspelled"
-msgstr ""
-
-#: parse.py:97
-msgid "Comments starting or terminating with the wrong symbol"
-msgstr ""
-
-#: parse.py:98
-msgid "Invalid order of DEFINE, CONNECT, and MONITOR blocks"
-msgstr ""
-
-#: parse.py:99
-msgid "No END statement after MONITOR clause"
+#: parse.py:87
+msgid "Error at line {line_number}, character {character}: {error_message}"
 msgstr ""
 
 #: parse.py:100
-msgid "Expected a number"
+msgid "Expected a name"
 msgstr ""
 
 #: parse.py:101
-msgid "Expected a punctuation mark"
+msgid "CONNECT list must have individual connections delimited by ','"
 msgstr ""
 
 #: parse.py:102
-msgid "Invalid pin reference"
+msgid "Semi-colons are required at the end of each line"
 msgstr ""
 
 #: parse.py:103
-msgid "Expected an equals sign"
+msgid "Invalid keyword, could be missing or misspelled"
 msgstr ""
 
 #: parse.py:104
-msgid "Expected a DEFINE statement"
+msgid "No END statement after MONITOR clause"
 msgstr ""
 
 #: parse.py:105
-msgid "Expected a CONNECT statement"
+msgid "Expected a number"
 msgstr ""
 
 #: parse.py:106
-msgid "Expected a MONITOR statement"
+msgid "Inputs should be specified - expected a dot"
 msgstr ""
 
 #: parse.py:107
-msgid "Expected an END statement"
+msgid "Invalid pin reference"
+msgstr ""
+
+#: parse.py:108
+msgid "Expected an equals sign"
 msgstr ""
 
 #: parse.py:109
-msgid "Device absent"
+msgid "Expected a DEFINE statement first"
 msgstr ""
 
 #: parse.py:110
-msgid "Input is already connected"
+msgid "Expected a CONNECT statement second"
 msgstr ""
 
 #: parse.py:111
-msgid "Cannot connect an input to another input"
+msgid "Expected a MONITOR statement third"
 msgstr ""
 
 #: parse.py:112
-msgid "Port absent"
+msgid "Expected an END statement fourth"
 msgstr ""
 
 #: parse.py:113
-msgid "Cannot connect an output to another output"
+msgid "Invalid parameter for device"
+msgstr ""
+
+#: parse.py:114
+msgid "DTYPE device must have 4 inputs"
 msgstr ""
 
 #: parse.py:115
-msgid "Device already present"
+msgid "Passed a keyword when a name was expected"
 msgstr ""
 
 #: parse.py:116
-msgid "Qualifier is missing"
+msgid "Passed a device when a name was expected"
 msgstr ""
 
 #: parse.py:117
-msgid "Invalid qualifier"
+msgid "Passed a gate when a name was expected"
 msgstr ""
 
 #: parse.py:118
-msgid "Qualifier should not be present"
+msgid "No symbols detected, either an empty file or all comments"
 msgstr ""
 
-#: parse.py:119
-msgid "Invalid device type"
+#: parse.py:120
+msgid "Device absent"
 msgstr ""
 
 #: parse.py:121
-msgid "Device output not found"
+msgid "Input is already connected"
 msgstr ""
 
 #: parse.py:122
-msgid "Monitor already present"
+msgid "Cannot connect an input to another input"
+msgstr ""
+
+#: parse.py:123
+msgid "Port absent"
 msgstr ""
 
 #: parse.py:124
-msgid "Unknown error"
+msgid "Cannot connect an output to another output"
 msgstr ""
 
-#: parse.py:134
-msgid "Total Error Count: {error_count}"
+#: parse.py:126
+msgid "Device already present"
+msgstr ""
+
+#: parse.py:127
+msgid "Qualifier is missing"
+msgstr ""
+
+#: parse.py:128
+msgid "Invalid qualifier"
+msgstr ""
+
+#: parse.py:129
+msgid "Qualifier should not be present"
+msgstr ""
+
+#: parse.py:130
+msgid "Invalid device type"
+msgstr ""
+
+#: parse.py:132
+msgid "Device output not found"
+msgstr ""
+
+#: parse.py:133
+msgid "Monitor already present"
 msgstr ""
 
 #: parse.py:137
+msgid "Unknown error"
+msgstr ""
+
+#: parse.py:146 parse.py:149
+msgid "Total Error Count: {error_count}"
+msgstr ""
+
+#: parse.py:152
 msgid "Syntax Error: {error}"
 msgstr ""
 
-#: textctrl.py:155
+#: textctrl.py:157
 msgid "Save"
 msgstr ""
 
-#: textctrl.py:182
+#: textctrl.py:184
 msgid "Save File"
 msgstr ""
 
-#: textctrl.py:198
+#: textctrl.py:200
 msgid "Cannot save current data to file."
 msgstr ""
 
-#: userint.py:87
+#: userint.py:91
 msgid ""
 "Logic Simulator: interactive command line user interface.\n"
 "Enter 'h' for help."
 msgstr ""
 
-#: userint.py:105
+#: userint.py:109
 msgid "Invalid command. Enter 'h' for help."
 msgstr ""
 
-#: userint.py:140
+#: userint.py:144
 msgid "Error! Expected a name."
 msgstr ""
 
-#: userint.py:158
+#: userint.py:162
 msgid "Error! Unknown name."
 msgstr ""
 
-#: userint.py:186
+#: userint.py:190
 msgid "Error! Expected a number."
 msgstr ""
 
-#: userint.py:195 userint.py:200
+#: userint.py:199 userint.py:204
 msgid "Number out of range."
 msgstr ""
 
-#: userint.py:207
+#: userint.py:211
 msgid "User commands:"
 msgstr ""
 
-#: userint.py:208
+#: userint.py:212
 msgid "r N       - run the simulation for N cycles"
 msgstr ""
 
-#: userint.py:209
+#: userint.py:213
 msgid "c N       - continue the simulation for N cycles"
 msgstr ""
 
-#: userint.py:210
+#: userint.py:214
 msgid "s X N     - set switch X to N (0 or 1)"
 msgstr ""
 
-#: userint.py:211
+#: userint.py:215
 msgid "m X       - set a monitor on signal X"
 msgstr ""
 
-#: userint.py:212
+#: userint.py:216
 msgid "z X       - zap the monitor on signal X"
 msgstr ""
 
-#: userint.py:213
+#: userint.py:217
 msgid "h         - help (this command)"
 msgstr ""
 
-#: userint.py:214
+#: userint.py:218
 msgid "q         - quit the program"
 msgstr ""
 
-#: userint.py:223
+#: userint.py:227
 msgid "Successfully set switch."
 msgstr ""
 
-#: userint.py:225
+#: userint.py:229
 msgid "Error! Invalid switch."
 msgstr ""
 
-#: userint.py:235
+#: userint.py:239
 msgid "Successfully made monitor."
 msgstr ""
 
-#: userint.py:237
+#: userint.py:241
 msgid "Error! Could not make monitor."
 msgstr ""
 
-#: userint.py:245
+#: userint.py:249
 msgid "Successfully zapped monitor"
 msgstr ""
 
-#: userint.py:247
+#: userint.py:251
 msgid "Error! Could not zap monitor."
 msgstr ""
 
-#: userint.py:280
+#: userint.py:284
 msgid "Error! Nothing to continue. Run first."
 msgstr ""
