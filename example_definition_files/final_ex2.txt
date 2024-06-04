@@ -1,3 +1,5 @@
+% Feedback between D1 and D2 through AND, OR, NAND, XOR, and NOR gates to create
+ similar changes every clock cycle.%
 DEFINE 
 	D1 AS DTYPE, 
 	D2 AS DTYPE, 
