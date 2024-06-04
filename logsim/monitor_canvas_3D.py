@@ -48,6 +48,7 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
                                      wxcanvas.WX_GL_DOUBLEBUFFER,
                                      wxcanvas.WX_GL_DEPTH_SIZE, 16, 0])
         GLUT.glutInit()
+        GLUT.glutInitContextFlags(GLUT.GLUT_FORWARD_COMPATIBLE | GLUT.GLUT_DEBUG)
         self.init = False
         self.context = wxcanvas.GLContext(self)
 
