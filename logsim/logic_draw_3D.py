@@ -4,7 +4,7 @@ import wx.glcanvas as wxcanvas
 import numpy as np
 from OpenGL.GL import GL_LINE_STRIP, GL_LINE_LOOP, GL_POLYGON, GL_ENABLE_BIT, GL_LINE_STIPPLE
 from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, glPushAttrib, glLineStipple, glPopAttrib, glEnable
-from OpenGL import GL, GLUT, WGL
+from OpenGL import GL, GLUT
 from OpenGL import platform
 import os
 
@@ -231,8 +231,8 @@ class Mesh(LogicDrawer3D):
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
         GL.glBufferData(GL.GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL.GL_STATIC_DRAW)
         #position
-        GL.glEnableVertexAttribArray(0)
         GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(0))
+        GL.glEnableVertexAttribArray(0)
         #self.brute_force(vertices)
         self.draw()
 
