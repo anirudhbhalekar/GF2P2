@@ -56,7 +56,17 @@ from textctrl import TextEditor, PromptedTextCtrl
 import gettext
 import sys
 # Initialize gettext translation
-locale = sys.argv[2] if len(sys.argv) > 2 else "en"
+locale = "en"
+if len(sys.argv) > 2:
+    if sys.argv[2] == "el" or sys.argv[2] == "el_GR" or sys.argv[2] == "el_GR.utf8":
+        locale = "el_GR.utf8"
+        #print("Locale: Ελληνικα")
+    elif sys.argv[2] == "en" or sys.argv[2] == "en_GB" or sys.argv[2] == "en_GB.utf8":
+        #print("Locale: English")
+        pass
+    else:
+        #print("Locale unknown, defaulting to English")
+        pass
 lang = gettext.translation("logsim", localedir=os.path.join(os.path.dirname(__file__), 'locales'), languages=[locale], fallback=True)
 lang.install()
 _ = lang.gettext
@@ -513,27 +523,27 @@ class Gui(wx.Frame):
                     wx.LogError(_("Cannot open file: {exception}").format(exception=ex))
 
         if Id == wx.ID_PREFERENCES: 
-            with wx.TextEntryDialog(self, "Change Value of 3D max view", value = str(self.max_3D_view)) as text_dialog: 
+            with wx.TextEntryDialog(self, _("Change Value of 3D max view"), value = str(self.max_3D_view)) as text_dialog: 
                 if text_dialog.ShowModal() == wx.ID_OK: 
                     try:
                         val = int(str(text_dialog.GetValue()))
                         if val > 20: 
                             self.max_3D_view = val
                         else: 
-                            wx.LogError("Value must be greater than 20")
+                            wx.LogError(_("Value must be greater than 20"))
                     except: 
-                        wx.LogError("Incorrect data type! Not saved")
+                        wx.LogError(_("Incorrect data type! Not saved"))
         if Id == wx.ID_APPLY: 
-            with wx.TextEntryDialog(self, "Change Value of 2D max view", value = str(self.max_2D_view)) as text_dialog: 
+            with wx.TextEntryDialog(self, _("Change Value of 2D max view"), value = str(self.max_2D_view)) as text_dialog: 
                 if text_dialog.ShowModal() == wx.ID_OK: 
                     try:
                         val = int(str(text_dialog.GetValue()))
                         if val > 20: 
                             self.max_3D_view = val
                         else: 
-                            wx.LogError("Value must be greater than 20")
+                            wx.LogError(_("Value must be greater than 20"))
                     except: 
-                        wx.LogError("Incorrect data type! Not saved")
+                        wx.LogError(_("Incorrect data type! Not saved"))
 
 
     def on_spin(self, event):
@@ -551,7 +561,7 @@ class Gui(wx.Frame):
         
         if not self.is3D: 
             if self.cycles_completed > self.max_total: 
-                wx.LogError("Max cycle count exceeded! Refresh the plot or edit the source data")
+                wx.LogError(_("Max cycle count exceeded! Refresh the plot or edit the source data"))
                 return 
             self.run_circuit(self.cycle_count)
             self.canvas.render(text)
@@ -564,7 +574,7 @@ class Gui(wx.Frame):
         
         else: 
             if self.cycles_completed > self.max_total: 
-                wx.LogError("Max cycle count exceeded! Refresh the plot or edit the source data")
+                wx.LogError(_("Max cycle count exceeded! Refresh the plot or edit the source data"))
                 return 
             self.run_circuit(self.cycle_count)
             self.matplotlib_canvas.initialise_monitor_plots()
@@ -627,7 +637,7 @@ class Gui(wx.Frame):
         text = _("Continue button pressed, {cycle_count} cycles.").format(cycle_count=self.cycle_count)
 
         if self.cycles_completed > self.max_total: 
-            wx.LogError("Max cycle count exceeded! Refresh the plot or edit the source data")
+            wx.LogError(_("Max cycle count exceeded! Refresh the plot or edit the source data"))
             return 
         
         if not self.is3D: 
@@ -776,7 +786,34 @@ class Gui(wx.Frame):
         """Handle the event when the user clicks the reset view button."""
         text = _("Reset view button pressed")
         self.canvas.render(text)
-        self.canvas.reset_view()
+        if not self.is3D:
+            self.canvas.reset_view()
+        elif self.is3D:
+            GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+            GL.glFlush()
+
+            self.zap_monitor_button.SetValue(False)
+            self.add_monitor_button.SetValue(False)
+            self.zap_monitor_button.Disable()
+            self.add_monitor_button.Disable()
+
+            self.canvas.Destroy()
+            self.matplotlib_canvas.Destroy()
+
+            self.canvas = MyGLCanvas3D(self, self.devices, self.monitors)
+            self.matplotlib_canvas = MyGLCanvasMonitor3D(self, self.devices, self.monitors)
+
+            main_sizer = self.GetSizer()
+            canvas_plot_sizer = main_sizer.GetChildren()[0].GetSizer()
+
+            canvas_plot_sizer.Clear(delete_windows=False)
+            canvas_plot_sizer.Add(self.canvas, 40, wx.EXPAND | wx.ALL, 1)
+            canvas_plot_sizer.Add(self.matplotlib_canvas, 20, wx.EXPAND | wx.ALL, 1)
+            canvas_plot_sizer.Add(self.scroll_bar, 1, wx.EXPAND | wx.ALL, 1)
+
+            self.update_scroll()
+            # Refresh the layout
+            main_sizer.Layout()
 
     def open_text_editor(self):
         """Handle the event when the text editor is opened."""
