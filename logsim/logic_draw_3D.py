@@ -5,6 +5,7 @@ import numpy as np
 from OpenGL.GL import GL_LINE_STRIP, GL_LINE_LOOP, GL_POLYGON, GL_ENABLE_BIT, GL_LINE_STIPPLE
 from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, glPushAttrib, glLineStipple, glPopAttrib, glEnable
 from OpenGL import GL, GLUT
+from OpenGL import platform
 import os
 
 class LogicDrawer3D: 
@@ -231,6 +232,7 @@ class Mesh(LogicDrawer3D):
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
         GL.glBufferData(GL.GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL.GL_STATIC_DRAW)
         #position
+        print(platform.GetCurrentContext())
         GL.glEnableVertexAttribArray(0)
         GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 32, None)
         #self.brute_force(vertices)

@@ -12,7 +12,7 @@ import wx
 import wx.glcanvas as wxcanvas
 import numpy as np
 import math
-from OpenGL import GL, GLU, GLUT
+from OpenGL import GL, GLU, GLUT, WGL
 
 from names import Names
 from devices import Devices
@@ -237,7 +237,8 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
     def on_paint(self, event):
         """Handle the paint event."""
         dc = wx.PaintDC(self)
-        self.SetCurrent(self.context)
+        gc = wx.GraphicsContext.Create(dc)
+        #self.SetCurrent(self.context)
     
         if not not hasattr(self, 'init'):
             # Configure the OpenGL rendering context
@@ -260,6 +261,7 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
     def on_mouse(self, event):
         """Handle mouse events."""
         self.SetCurrent(self.context)
+        
 
         if event.ButtonDown():
             self.last_mouse_x = event.GetX()
