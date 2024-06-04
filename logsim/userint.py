@@ -11,7 +11,17 @@ UserInterface - reads and parses user commands.
 import gettext
 import sys
 # Initialize gettext translation
-locale = sys.argv[2] if len(sys.argv) > 2 else "en"
+locale = "en"
+if len(sys.argv) > 2:
+    if sys.argv[2] == "el" or sys.argv[2] == "el_GR" or sys.argv[2] == "el_GR.utf8":
+        locale = "el_GR.utf8"
+        #print("Locale: Ελληνικα")
+    elif sys.argv[2] == "en" or sys.argv[2] == "en_GB" or sys.argv[2] == "en_GB.utf8":
+        #print("Locale: English")
+        pass
+    else:
+        #print("Locale unknown, defaulting to English")
+        pass
 lang = gettext.translation("logsim", localedir=r'C:\Users\Shawn\Documents\Cambridge Part IIA\Project GF2\GF2P2\logsim\locales', languages=[locale], fallback=True)
 lang.install()
 _ = lang.gettext
