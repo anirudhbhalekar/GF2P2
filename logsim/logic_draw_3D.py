@@ -231,8 +231,8 @@ class Mesh(LogicDrawer3D):
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
         GL.glBufferData(GL.GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL.GL_STATIC_DRAW)
         #position
-        GL.glEnableVertexAttribArray(0)
         GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(0))
+        GL.glEnableVertexAttribArray(0)
         #self.brute_force(vertices)
         self.draw()
 
