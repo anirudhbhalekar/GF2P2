@@ -4,7 +4,7 @@ import wx.glcanvas as wxcanvas
 import numpy as np
 from OpenGL.GL import GL_LINE_STRIP, GL_LINE_LOOP, GL_POLYGON, GL_ENABLE_BIT, GL_LINE_STIPPLE
 from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, glPushAttrib, glLineStipple, glPopAttrib, glEnable
-from OpenGL import GL, GLUT, WGL
+from OpenGL import GL, GLUT
 from OpenGL import platform
 import os
 

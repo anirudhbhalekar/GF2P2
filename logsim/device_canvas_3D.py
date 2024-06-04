@@ -12,7 +12,7 @@ import wx
 import wx.glcanvas as wxcanvas
 import numpy as np
 import math
-from OpenGL import GL, GLU, GLUT, WGL
+from OpenGL import GL, GLU, GLUT
 
 from names import Names
 from devices import Devices
