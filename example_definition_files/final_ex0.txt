@@ -5,8 +5,7 @@ DEFINE
     rc AS RC WITH rc_cycles = 5,
     and1 AS AND WITH inputs = 2,
     dtype AS DTYPE,
-    nor1 AS NOR WITH inputs = 2
-;
+    nor1 AS NOR WITH inputs = 2;
 
 CONNECT 
     dtype.CLK = clk,
@@ -16,11 +15,9 @@ CONNECT
     nor1.I1 = rc,
     nor1.I2 = dtype.Q,
     dtype.CLEAR = nor1,
-    dtype.SET = sw
-;
+    dtype.SET = sw;
 
 MONITOR 
-    dtype.Q, rc, nor1
-;
+    dtype.Q, rc, nor1;
 
 END;

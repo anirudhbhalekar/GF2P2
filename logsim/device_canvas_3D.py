@@ -116,7 +116,9 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
     def init_gl(self):
         """Configure and initialise the OpenGL context."""
         size = self.GetClientSize()
-        self.SetCurrent(self.context)
+   
+        GL.glClearColor(0.0, 0.0, 0.0, 1.0)
+        GL.glEnable(GL.GL_DEPTH_TEST)
 
         GL.glViewport(0, 0, size.width, size.height)
 
@@ -219,18 +221,11 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
 
     def render(self, text = None):
         """Handle all drawing operations."""
-        self.SetCurrent(self.context)
-        if not self.init:
-            # Configure the OpenGL rendering context
-            self.init_gl()
-            self.init = True
-
         # Clear everything
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
 
         # Draw a sample signal trace, make sure its centre of gravity
         # is at the scene origin
-        GL.glColor3f(1.0, 1.0, 1.0)  # signal trace is beige
         self.assemble_devices()
         self.assemble_connections()
         self.assemble_monitors()
@@ -238,20 +233,23 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front
         GL.glFlush()
-        self.SwapBuffers()
 
     def on_paint(self, event):
         """Handle the paint event."""
+        dc = wx.PaintDC(self)
         self.SetCurrent(self.context)
-        if not self.init:
+    
+        if not not hasattr(self, 'init'):
             # Configure the OpenGL rendering context
+            self.init = True 
             self.init_gl()
-            self.init = True    
+               
 
         size = self.GetClientSize()
         text = "".join(["Canvas redrawn on paint event, size is ",
                         str(size.width), ", ", str(size.height)])
         self.render()
+        self.SwapBuffers()
 
     def on_size(self, event):
         """Handle the canvas resize event."""

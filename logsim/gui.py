@@ -56,18 +56,7 @@ from textctrl import TextEditor, PromptedTextCtrl
 import gettext
 import sys
 # Initialize gettext translation
-locale = "en"
-if len(sys.argv) > 2:
-    if sys.argv[2] == "el" or sys.argv[2] == "el_GR" or sys.argv[2] == "el_GR.utf8":
-        locale = "el_GR.utf8"
-        #print("Locale: Ελληνικα")
-        pass
-    elif sys.argv[2] == "en" or sys.argv[2] == "en_GB" or sys.argv[2] == "en_GB.utf8":
-        #print("Locale: English")
-        pass
-    else:
-        #print("Locale unknown, defaulting to English")
-        pass
+locale = sys.argv[2] if len(sys.argv) > 2 else "en"
 lang = gettext.translation("logsim", localedir=os.path.join(os.path.dirname(__file__), 'locales'), languages=[locale], fallback=True)
 lang.install()
 _ = lang.gettext
@@ -117,7 +106,7 @@ class Gui(wx.Frame):
 
         if "wayland" in os.getenv("XDG_SESSION_TYPE", "").lower() and not os.environ.get("PYOPENGL_PLATFORM", ""):
             os.environ["PYOPENGL_PLATFORM"] = "egl"
-            
+
         # Define all the menu tabs
         fileMenu = wx.Menu()
         sourceMenu = wx.Menu()
@@ -585,6 +574,8 @@ class Gui(wx.Frame):
     def on_reset_plot_button(self, event): 
         """Clears the matplotlib plot"""
         
+        self.monitors.reset_monitors()
+        
         if not self.is3D: 
             hfont = {'fontname':'Consolas'}
             
@@ -938,9 +929,3 @@ class Gui(wx.Frame):
             if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                 self.text_box.AppendText("\n")
             self.text_box.AppendText(_("<{text}> is an invalid command. A list of available commands can be obtained by entering 'h', or navigating to 'Commands' in the Menu.\n").format(text=text))
-
-class RunApp(wx.App): 
-    """Combines Canvas onto App with Matplotlib"""
-    def __init__(self):
-        wx.App.__init__(self, redirect=False)
-
