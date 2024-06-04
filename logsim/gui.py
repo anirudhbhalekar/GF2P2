@@ -786,7 +786,34 @@ class Gui(wx.Frame):
         """Handle the event when the user clicks the reset view button."""
         text = _("Reset view button pressed")
         self.canvas.render(text)
-        self.canvas.reset_view()
+        if not self.is3D:
+            self.canvas.reset_view()
+        elif self.is3D:
+            GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+            GL.glFlush()
+
+            self.zap_monitor_button.SetValue(False)
+            self.add_monitor_button.SetValue(False)
+            self.zap_monitor_button.Disable()
+            self.add_monitor_button.Disable()
+
+            self.canvas.Destroy()
+            self.matplotlib_canvas.Destroy()
+
+            self.canvas = MyGLCanvas3D(self, self.devices, self.monitors)
+            self.matplotlib_canvas = MyGLCanvasMonitor3D(self, self.devices, self.monitors)
+
+            main_sizer = self.GetSizer()
+            canvas_plot_sizer = main_sizer.GetChildren()[0].GetSizer()
+
+            canvas_plot_sizer.Clear(delete_windows=False)
+            canvas_plot_sizer.Add(self.canvas, 40, wx.EXPAND | wx.ALL, 1)
+            canvas_plot_sizer.Add(self.matplotlib_canvas, 20, wx.EXPAND | wx.ALL, 1)
+            canvas_plot_sizer.Add(self.scroll_bar, 1, wx.EXPAND | wx.ALL, 1)
+
+            self.update_scroll()
+            # Refresh the layout
+            main_sizer.Layout()
 
     def open_text_editor(self):
         """Handle the event when the text editor is opened."""
