@@ -108,9 +108,6 @@ class Gui(wx.Frame):
         """Initialise main window, widgets and layout."""
         super().__init__(parent=None, title=title, size=(800, 600))
 
-        self.language_code = 'en'  # Default to English on startup
-        self.change_language(self.language_code)
-
         # Configure the file menu
         menuBar = wx.MenuBar()
 
@@ -143,16 +140,12 @@ class Gui(wx.Frame):
         commandMenu.Append(wx.ID_HELP_COMMANDS, _("&Commands"))
         view3DMenu.Append(wx.ID_PREFERENCES,_("&Change 3D Signal Max"))
         view3DMenu.Append(wx.ID_APPLY,_("&Change 2D Signal Max"))
-        # Add language options
-        languageMenu.Append(101, "English")
-        languageMenu.Append(102, "Ελληνικά")  # Greek in Greek
 
         # Populate the menu bar
         menuBar.Append(fileMenu, _("&File"))
         menuBar.Append(sourceMenu, _("&Source")) # for source/definition file being parsed
         menuBar.Append(commandMenu, _("&Command")) # list of user commands
         menuBar.Append(view3DMenu, _("&View Options"))
-        menuBar.Append(languageMenu, ("&ABC/ΠΣΩ"))  # Language selection menu
 
         self.SetMenuBar(menuBar)
 
@@ -211,10 +204,6 @@ class Gui(wx.Frame):
         self.add_monitor_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_add_button)
         self.switch_to_3D_button.Bind(wx.EVT_TOGGLEBUTTON, self.draw_canvas_to_3D)
         self.scroll_bar.Bind(wx.EVT_SCROLL, self.on_scroll)
-
-        # Bind language selection events
-        self.Bind(wx.EVT_MENU, self.on_language_selected, id=101)
-        self.Bind(wx.EVT_MENU, self.on_language_selected, id=102)
 
         # Configure sizers for layout
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -346,47 +335,6 @@ class Gui(wx.Frame):
                 self.scroll_bar.SetScrollbar(0, 10, 10, 9) 
             else: 
                 self.scroll_bar.SetScrollbar(self.scroll_val, max_view, self.cycles_completed, self.cycles_completed - 1)
-
-        
-
-    def on_language_selected(self, event):
-        language_id = event.GetId()
-        if language_id == 101:  # English
-            self.change_language('en')
-        elif language_id == 102:  # Greek
-            self.change_language('el')  # Change 'el' to the appropriate language code for Greek
-
-    def change_language(self, language_code):
-        '''Load translations from the compiled .mo file in the current directory'''
-        localedir = os.path.join(os.path.dirname(__file__), 'locales')
-        print("Changing language,", language_code, "located at", localedir)
-        try:
-            lang = gettext.translation('logsim', localedir=localedir, languages=[language_code])
-            lang.install()
-            print(f"Successfully changed language to: {language_code}")
-            self.RefreshUI()
-        except FileNotFoundError as e:
-            if language_code == 'en':
-                # English is the default language, no need to panic if it's not found
-                print(f"English translations not found, using default language.")
-            else:
-                print(f"Error: {e}")
-                print(f"Ensure that the .mo file exists at: {localedir}\{language_code}\LC_MESSAGES\logsim.mo")
-        
-    def RefreshUI(self):
-        """Re-translate all translatable strings"""
-        print("refreshui called")
-        # Update labels for all widgets here
-        self.text.SetLabel(_("Cycles"))
-        self.run_button.SetLabel(_("Run"))
-        self.continue_button.SetLabel(_("Continue"))
-        self.reset_plot_button.SetLabel(_("Reset Plot"))
-        self.zap_monitor_button.SetLabel(_("Zap Monitor"))
-        self.add_monitor_button.SetLabel(_("Add Monitor"))
-        self.reset_view_button.SetLabel(_("Reset View"))
-        self.clear_button.SetLabel(_("Clear Terminal"))
-        #self.SetMenuBar(self.GetMenuBar())  # Refresh menu bar
-        self.Layout()  # Refresh layout
     
     def configure_matplotlib_canvas(self): 
         """ Sets the config params of the matplotlib canvas"""
