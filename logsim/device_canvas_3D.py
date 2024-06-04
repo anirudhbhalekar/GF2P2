@@ -236,7 +236,6 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
 
     def on_paint(self, event):
         """Handle the paint event."""
-    
         self.SetCurrent(self.context)
         if not not hasattr(self, 'init'):
             # Configure the OpenGL rendering context
