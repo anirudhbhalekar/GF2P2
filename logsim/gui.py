@@ -73,7 +73,7 @@ class RunApp:
 
         GLUT.glutInit()
         GLUT.glutInitDisplayMode(GLUT.GLUT_DOUBLE | GLUT.GLUT_RGBA)
-        GLUT.glutCreateWindow(_("Logsim 2.0"))
+        self.top_window = GLUT.glutCreateWindow(_("Logsim 2.0"))
         GLUT.glutDisplayFunc(self.show_frame)
         GLUT.glutMainLoop()
         return True
