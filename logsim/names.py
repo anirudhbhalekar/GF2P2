@@ -22,6 +22,9 @@ if len(sys.argv) > 2:
     else:
         #print("Locale unknown, defaulting to English")
         pass
+if os.getenv("LANG") == "el_GR.UTF-8":
+    locale = "el_GR.utf8"
+    #print("Greek system language detected")
 lang = gettext.translation("logsim", localedir=os.path.join(os.path.dirname(__file__), 'locales'), languages=[locale], fallback=True)
 lang.install()
 _ = lang.gettext
