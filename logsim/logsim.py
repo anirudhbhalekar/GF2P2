@@ -13,6 +13,7 @@ from scanner import Scanner
 from parse import Parser
 from userint import UserInterface
 from gui import Gui
+from gui import RunApp
 
 # Initialize gettext translation, default english
 locale = "en"
@@ -25,6 +26,7 @@ if len(sys.argv) > 2:
     else:
         print("Locale unknown, defaulting to English")
 
+        
 lang = gettext.translation("logsim", localedir=os.path.join(os.path.dirname(__file__), 'locales'), languages=[locale], fallback=True)
 lang.install()
 _ = lang.gettext
@@ -77,11 +79,12 @@ Graphical user interface: logsim.py <file path>""")
         
         assert parser.parse_network()
         # Initialise an instance of the gui.Gui() class
-        app = wx.App()
+        """app = wx.App()
         gui = Gui(_("Logic Simulator"), path, names, devices, network,
                     monitors)
         gui.Show(True)
-        app.MainLoop()
+        app.MainLoop()"""
+        app = RunApp(path, names, devices, network, monitors)
 
 
 if __name__ == "__main__":
