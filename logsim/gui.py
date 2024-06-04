@@ -424,6 +424,7 @@ class Gui(wx.Frame):
                     return
 
                 pathname = file_dialog.GetPath()
+                self.path = pathname   
                 try:
                     # Reinitialize the names, devices, network, and monitors
                     self.names = Names()
