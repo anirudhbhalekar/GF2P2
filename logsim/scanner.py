@@ -89,6 +89,9 @@ class Scanner:
         if self.current_character == "\n":
             self.line_count += 1
             self.line_char_count = 0
+        elif self.current_character == "\t":
+            # On Linux, tabs are 8 spaces so we convert to that amount of spaces as char
+            self.line_char_count += 7
         self.current_character = next_char
 
 
