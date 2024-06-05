@@ -158,6 +158,8 @@ class Gui(wx.Frame):
         self.network = network
         self.monitors = monitors
         self.devices = devices
+        self.scanner = Scanner(self.path, self.names)
+        self.parser = Parser(self.names, self.devices, self.network, self.monitors, self.scanner)
 
         self.is_zap_monitor = False
         self.is_add_monitor = False
@@ -423,25 +425,34 @@ class Gui(wx.Frame):
                 if file_dialog.ShowModal() == wx.ID_CANCEL:
                     return
 
-                pathname = file_dialog.GetPath()
-                self.path = pathname   
+                pathname = file_dialog.GetPath() 
                 try:
                     # Reinitialize the names, devices, network, and monitors
-                    self.names = Names()
-                    self.devices = Devices(self.names)
-                    self.network = Network(self.names, self.devices)
-                    self.monitors = Monitors(self.names, self.devices, self.network)
+                    
+                    names = Names()
+                    devices = Devices(names)
+                    network = Network(names, devices)
+                    monitors = Monitors(names, devices, network)
 
-                    # Reinitialize the scanner and parser with the new file
-                    self.scanner = Scanner(pathname, self.names)
-                    self.parser = Parser(self.names, self.devices, self.network, self.monitors, self.scanner)
+                    scanner = Scanner(pathname, names)
+                    parser = Parser(names, devices, network, monitors, scanner)
                     
                     # Parse the new network file
-                    if self.parser.parse_network(): 
+                    if parser.parse_network(): 
+                        
+                        self.names = names
+                        self.devices = devices
+                        self.network = network
+                        self.monitors = monitors
+
+                        # Reinitialize the scanner and parser with the new file
+                        self.scanner = scanner
+                        self.parser = parser
                 
                         # Reinitialize the canvas with the new devices and monitors
                         self.on_reset_plot_button(None)
                         self.draw_canvas_to_3D(None)
+                        self.path = pathname  
                         # Print the name of the file opened to the terminal (text box) window
                         wx.MessageBox(_(" Opened file:"), pathname)
                     else: 
@@ -452,6 +463,7 @@ class Gui(wx.Frame):
                         _("{num_errors} errors caught").format(num_errors=num_errors))
 
                 except Exception as ex:
+
                     wx.LogError(_("Cannot open file: {exception}").format(exception=ex))
 
         if Id == wx.ID_PREFERENCES: 
