@@ -347,7 +347,7 @@ class Gui(wx.Frame):
 
         self.figure = Figure(figsize=(5,2))
         self.axes = self.figure.add_subplot(111)
-        self.axes.set_title("Monitor Plots")
+        self.axes.set_title(_("Monitor Plots"))
         self.axes.tick_params(axis = 'both', bottom = True, left = False, right = False, labelright = False, labelleft = False, labelbottom = True)
 
     def execute_circuit(self, cycles): 
@@ -439,7 +439,7 @@ class Gui(wx.Frame):
                     
                     # Parse the new network file
                     if parser.parse_network(): 
-                        
+
                         self.names = names
                         self.devices = devices
                         self.network = network
@@ -463,9 +463,7 @@ class Gui(wx.Frame):
                         _("{num_errors} errors caught").format(num_errors=num_errors))
 
                 except Exception as ex:
-
                     wx.LogError(_("Cannot open file: {exception}").format(exception=ex))
-
         if Id == wx.ID_PREFERENCES: 
             with wx.TextEntryDialog(self, _("Change Value of 3D max view"), value = str(self.max_3D_view)) as text_dialog: 
                 if text_dialog.ShowModal() == wx.ID_OK: 
@@ -797,7 +795,7 @@ class Gui(wx.Frame):
                 self.run_circuit(N)
                 
                 try: 
-                    self.monitor_plot()
+                    self.on_run_button(None)
                 except Exception: 
                     self.on_reset_plot_button(None)
                     wx.LogError(_("Run failed - cannot plot monitors"))
@@ -818,7 +816,7 @@ class Gui(wx.Frame):
                 # If True (continuing circuit doesn't give error)
                 if bool_cont:
                     try: 
-                        self.monitor_plot()
+                        self.on_continue_button(None)
                     except Exception: 
                         self.on_reset_plot_button(None)
                         wx.LogError(_("Run failed - cannot plot monitors"))
