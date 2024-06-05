@@ -199,7 +199,7 @@ class Parser:
                 elif self.symbol.type == self.scanner.GATE:
                     device_kind = self.gate(stopping_symbols)
                 else:
-                    self.error(self.INVALID_KEYWORD, stopping_symbols)
+                    self.error(self.INVALID_KEYWORD, stopping_symbols|{self.scanner.COMMA})
                 if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                     self.symbol = self.scanner.get_symbol()
                     device_property = self.set_param(device_kind, stopping_symbols)
@@ -224,7 +224,7 @@ class Parser:
                     elif self.symbol.type == self.scanner.GATE:
                         device_kind = self.gate(stopping_symbols)
                     else:
-                        self.error(self.INVALID_KEYWORD, stopping_symbols)
+                        self.error(self.INVALID_KEYWORD, stopping_symbols|{self.scanner.COMMA})
                     if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                         self.symbol = self.scanner.get_symbol()
                         device_property = self.set_param(device_kind, stopping_symbols)
