@@ -152,7 +152,8 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
         GL.glEnable(GL.GL_NORMALIZE)
 
         # Viewing transformation - set the viewpoint back from the scene
-        GL.glTranslatef(0.0, 0.0, -self.depth_offset)
+        GL.glTranslatef(25, 0.0, -self.depth_offset * 2)
+        GL.glRotatef(-60, 1, 0, 0)
 
         # Modelling transformation - pan, zoom and rotate
         GL.glTranslatef(self.pan_x, self.pan_y, 0.0)
