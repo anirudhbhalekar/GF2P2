@@ -10,7 +10,7 @@ import os
 
 class LogicDrawer3D: 
     
-    def __init__(self, names, devices, monitors, vertex_loader) -> None:
+    def __init__(self, names, devices, monitors, vertex_loader, face_loader) -> None:
         
         self.scale = 1
         self.names = names
@@ -38,6 +38,7 @@ class LogicDrawer3D:
         self.outputs_dict = {}
         self.monitors_dict = {}
         self.vertex_loader = vertex_loader # Loads device_kind_pos_x_pos_y to the vertex of said file
+        self.face_loader = face_loader
 
         # Thankfully with the infinite possibilities that the 3rd dimension adds,
         # a domain list is not necessary, we add it here anyway
@@ -132,7 +133,7 @@ class LogicDrawer3D:
             pass
 
     def draw_mesh(self, x, y, file_name, device_id): 
-        mesh = Mesh(file_name, device_id, x, y, self.names, self.devices, self.monitors, self.vertex_loader)
+        mesh = Mesh(file_name, device_id, x, y, self.names, self.devices, self.monitors, self.vertex_loader, self.face_loader)
         
     def return_io_list(self, device_id, x, y): 
         """IO list of the object"""
@@ -199,13 +200,15 @@ class LogicDrawer3D:
 
 class Mesh(LogicDrawer3D): 
 
-    def __init__(self, filename, device_id, pos_x, pos_y, names, devices, monitors, vertex_loader) -> None:
+    def __init__(self, filename, device_id, pos_x, pos_y, names, devices, monitors, vertex_loader, face_loader) -> None:
         
-        super().__init__(names, devices, monitors, vertex_loader)
+        super().__init__(names, devices, monitors, vertex_loader, face_loader)
         
         self.x = pos_x
         self.y = pos_y
         self.filename = filename
+        self.device_id = device_id
+        self.face_loader = face_loader
      
         
         vertices = None
@@ -222,8 +225,21 @@ class Mesh(LogicDrawer3D):
             self.vertex_loader[str_id] =  vertices
 
         self.vertices = vertices 
-        self.deprecated_draw()
+        
+        faces_data = None
+        try: 
+            str_id = str(device_id)
+            parent_dict = dict(self.face_loader)
+            faces_data = parent_dict[str_id]
+        except: 
+            pass
 
+        if faces_data is None: 
+            faces_data = self.deprecated_make_lists()
+            str_id = str(device_id)
+            self.face_loader[str_id] = faces_data
+
+        self.deprecated_face_draw()
         # DOESN'T WORK ON LINUX BECUASE LINUX IS GARBAGE
         #vertices = np.array(vertices, dtype=np.float32)
         #self.vertex_count = len(vertices)//8
@@ -260,7 +276,6 @@ class Mesh(LogicDrawer3D):
                     vn.append(self.read_normal_data(words))
                 elif words[0] == "f":
                     self.read_face_data(words, v, vt, vn, vertices)
-                
                 line = file.readline()
 
         return vertices
@@ -327,11 +342,60 @@ class Mesh(LogicDrawer3D):
     def draw(self) -> None:
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.vertex_count)
 
+    def deprecated_make_lists(self): 
+        
+        all_triangles = []
+        all_normals = []
+
+        triangle_vertices = []
+        triangle_normals = []
+
+        this_vertex = []
+        this_normal = []
+
+        for index, element in enumerate(self.vertices): 
+            # If the element is in ther 0, 1, 2 position read vertex
+            # If the element is in the 5, 6, 7 position read as normal
+            if index % 8 < 3: 
+                this_vertex.append(element)
+            elif index % 8 > 4: 
+                this_normal.append(element)
+            else: 
+                continue
+        
+            
+            if len(this_normal) == 3: 
+                triangle_vertices.append(tuple(this_vertex))
+                triangle_normals.append(tuple(this_normal))
+                this_vertex.clear()
+                this_normal.clear()
+            
+            #print(triangle_vertices)
+            
+            if len(triangle_normals) == 3: 
+                all_triangles.append(tuple(triangle_vertices))
+                all_normals.append(tuple(triangle_normals))
+                triangle_vertices.clear()
+                triangle_normals.clear()
+
+        
+        return list([tuple(all_triangles), tuple(all_normals)])
+
+    def deprecated_face_draw(self): 
+        GL.glBegin(GL.GL_TRIANGLES)
+        for triangle_vertices, triangle_normals in zip(self.face_loader[str(self.device_id)][0], self.face_loader[str(self.device_id)][1]): 
+            GL.glNormal3f(triangle_normals[0][0], triangle_normals[0][1], triangle_normals[0][2])
+            GL.glVertex3f(triangle_vertices[0][0], triangle_vertices[0][1], triangle_vertices[0][2])
+            GL.glNormal3f(triangle_normals[0][0], triangle_normals[0][1], triangle_normals[0][2])
+            GL.glVertex3f(triangle_vertices[1][0], triangle_vertices[1][1], triangle_vertices[1][2])
+            GL.glNormal3f(triangle_normals[1][0], triangle_normals[1][1], triangle_normals[1][2])
+            GL.glVertex3f(triangle_vertices[2][0], triangle_vertices[2][1], triangle_vertices[2][2])
+        GL.glEnd()
+        
     def deprecated_draw(self) -> None: 
         
         triangle_vertices = []
         triangle_normals = []
-
         this_vertex = []
         this_normal = []
 
@@ -366,7 +430,7 @@ class Mesh(LogicDrawer3D):
                 GL.glEnd()
                 triangle_normals.clear() 
                 triangle_vertices.clear()
-            
+    
             
                 
 

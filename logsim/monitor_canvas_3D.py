@@ -91,6 +91,7 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
 
         self.parent = parent
         self.monitor_vertex_loader = {} # {signal_type: vertices}
+        self.face_loader = {}
         self.signal_renderer = None
         self.color_arr = []
 
@@ -106,7 +107,7 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
         self.Bind(wx.EVT_SIZE, self.on_size)
         self.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse)
 
-        self.signal_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.monitor_vertex_loader)
+        self.signal_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.monitor_vertex_loader, self.face_loader)
         self.initialise_monitor_plots()
 
     def init_gl(self):

@@ -227,6 +227,7 @@ class ConnectDrawer3D:
     def draw_connections(self, vertices : list):
         
         self.deprecated_draw(vertices)
+
         # REMOVED BECAUSE LINUX IS GARBAGE
         #vertices = np.array(vertices, dtype=np.float32)
         #vertex_count = len(vertices) // 8

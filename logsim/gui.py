@@ -438,17 +438,16 @@ class Gui(wx.Frame):
                     
                     # Parse the new network file
                     if self.parser.parse_network(): 
+                        
+                        self.switch_to_3D_button.SetValue(False)
+                        self.is3D = False
 
                         # Reinitialize the canvas with the new devices and monitors
                         self.on_reset_plot_button(None)
                         self.canvas.Destroy()  # Destroy the old canvas
                         
-                        if self.is3D: 
-                            self.canvas = MyGLCanvas3D(self, self.devices, self.monitors)
-                            self.matplotlib_canvas = MyGLCanvasMonitor3D(self, self.devices, self.monitors)
-                        else: 
-                            self.canvas = MyGLCanvas(self, self.devices, self.monitors, self.message_display)
-                            self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
+                        self.canvas = MyGLCanvas(self, self.devices, self.monitors, self.message_display)
+                        self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
 
                         # Update the layout to replace the old canvas with the new one
                         main_sizer = self.GetSizer()

@@ -104,6 +104,7 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
 
         self.devices_list = self.devices.devices_list
         self.obj_vertex_loader = {} # This will store the vertex data for all the objects!
+        self.face_loader = {} # For face storing data
         self.tube_vertices_list = []
         
         # Bind events to the canvas
@@ -111,7 +112,7 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         self.Bind(wx.EVT_SIZE, self.on_size)
         self.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse)
 
-        self.scene_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.obj_vertex_loader)
+        self.scene_renderer = LogicDrawer3D(self.names, self.devices, self.monitors, self.obj_vertex_loader, self.face_loader)
         self.initialise_device_render()
 
     def init_gl(self):

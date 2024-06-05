@@ -80,8 +80,11 @@ Graphical user interface: logsim.py <file path>""")
             print(_("Error: one file path required and one language code optional\n"))
             print(usage_message)
             sys.exit()
-
-        path = arguments[0]
+        try: 
+            path = arguments[0]
+        except: 
+            raise ValueError("Valid File Path Error")
+        
         scanner = Scanner(path, names)
         parser = Parser(names, devices, network, monitors, scanner)
         
