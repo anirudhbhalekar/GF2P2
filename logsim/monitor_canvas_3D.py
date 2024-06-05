@@ -170,6 +170,8 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
         count = 0
         blank_signal = self.blank_signal*self.parent.cycles_completed
 
+        if not bool(self.monitors.monitors_dictionary): 
+            return 
         for device_id, output_id in self.monitors.monitors_dictionary: 
         
             if count >= len(self.color_arr):

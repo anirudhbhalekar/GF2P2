@@ -176,7 +176,7 @@ class Gui(wx.Frame):
 
         # Configure the widgets
         self.text = wx.StaticText(self, wx.ID_ANY, _("Cycles")) 
-        self.spin = wx.SpinCtrl(self, wx.ID_ANY, initial=self.cycle_count, min=1, max=50)
+        self.spin = wx.SpinCtrl(self, wx.ID_ANY, initial=self.cycle_count, min=1, max=500)
         self.run_button = wx.Button(self, wx.ID_ANY, _("Run"))
         self.continue_button = wx.Button(self, wx.ID_ANY, _("Continue"))
         self.reset_plot_button = wx.Button(self, wx.ID_ANY, _("Reset Plot"))
@@ -356,7 +356,7 @@ class Gui(wx.Frame):
             if self.network.execute_network():
                 self.monitors.record_signals()
             else:
-                wx.LogError(_("Error! Network oscillating."))
+                wx.MessageBox("Error! Network oscillating.")
                 return False
         return True
     

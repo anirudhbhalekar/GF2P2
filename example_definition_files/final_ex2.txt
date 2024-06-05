@@ -1,46 +1,53 @@
-%Divide by 4 counter (found online) I have forgotten everything about part 1A digital electronics%
-
+% Just a clock % 
 DEFINE
 	
-	CLK1 AS CLOCK WITH cycle_rep = 5, 
-	D1 AS DTYPE, 
-	D2 AS DTYPE, 
-	A1 AS AND WITH inputs = 2, 
-	A2 AS AND WITH inputs = 2, 
-	A3 AS AND WITH inputs = 2, 
-	A4 AS AND WITH inputs = 2, 
-	O1 AS OR WITH inputs = 2, 
-	O2 AS OR WITH inputs = 2, 
-	NA1 AS NAND WITH inputs = 2,  
-	NO1 AS NOR WITH inputs = 2, 
-	SW AS SWITCH WITH initial = 0;
+	clk1 AS CLOCK WITH cycle_rep = 5, 
+	d1 AS DTYPE, 
+	d2 AS DTYPE, 
+	a1 AS AND WITH inputs = 2, 
+	a2 AS AND WITH inputs = 2, 
+	a3 AS AND WITH inputs = 2, 
+	a4 AS AND WITH inputs = 2, 
+	o1 AS OR WITH inputs = 2, 
+	o2 AS OR WITH inputs = 2, 
+	sw AS SWITCH WITH initial = 0; 
 
-CONNECT 
-	D1.CLK = CLK1,
-	D1.DATA = O1, 
-	D1.SET = SW, 
-	D1.CLEAR = SW, 
-	A1.I1 = D1.Q, 
-	A1.I2 = D2.QBAR, 
-	A2.I1 = D1.QBAR, 
-	A2.I2 = D2.Q, 
-	O1.I1 = A1, 
-	O1.I2 = A2, 
-	D2.CLK = CLK1, 
-	D2.DATA = O2, 
-	D2.SET = SW,
-	D2.CLEAR = SW, 
-	A3.I1 = D1.Q, 
-	A3.I2 = D2.QBAR, 
-	A4.I1 = D2.Q, 
-	A4.I2 = D1.QBAR, 
-	O2.I1 = A3, 
-	O2.I2 = A4, 
-	NO1.I1 = CLK1, 
-	NA1.I1 = NO1, 
-	NA1.I2 = CLK1; 
+
+CONNECT
+
+	d1.DATA = o1, 
+	d1.CLK = clk1, 
+	d1.SET = sw, 
+	d1.CLEAR = sw, 
+
+	d2.DATA = o2, 
+	d2.CLK = clk1, 
+	d2.SET = sw, 
+	d2.CLEAR = sw, 
+
+	a1.I1 = d1.Q, 
+	a1.I2 = d2.QBAR, 
+
+	a2.I1 = d2.Q, 
+	a2.I2 = d1.QBAR, 
+
+	o1.I1 = a1, 
+	o1.I2 = a2, 
+
+	a3.I1 = d1.Q, 
+	a3.I2 = d2.QBAR,  
+
+	a4.I1 = d2.QBAR, 
+	a4.I2 = d1.QBAR, 
+
+	o2.I1 = a3, 
+	o2.I2 = a4; 
+
+
+	
 
 MONITOR 
-	D1.Q,
-	D2.Q; 
+	clk1, 
+	d1.Q, 
+	d2.Q; 
 END; 
