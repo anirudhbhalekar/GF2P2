@@ -438,30 +438,10 @@ class Gui(wx.Frame):
                     
                     # Parse the new network file
                     if self.parser.parse_network(): 
-                        
-                        self.switch_to_3D_button.SetValue(False)
-                        self.is3D = False
-
+                
                         # Reinitialize the canvas with the new devices and monitors
                         self.on_reset_plot_button(None)
-                        self.canvas.Destroy()  # Destroy the old canvas
-                        
-                        self.canvas = MyGLCanvas(self, self.devices, self.monitors, self.message_display)
-                        self.matplotlib_canvas = FigureCanvas(self, -1, self.figure)
-
-                        # Update the layout to replace the old canvas with the new one
-                        main_sizer = self.GetSizer()
-                        canvas_plot_sizer = main_sizer.GetChildren()[0].GetSizer()
-
-                        # Remove the old canvas and add the new one
-                        canvas_plot_sizer.Clear(delete_windows=False)
-                        canvas_plot_sizer.Add(self.canvas, 40, wx.EXPAND | wx.ALL, 1)
-                        canvas_plot_sizer.Add(self.matplotlib_canvas, 20, wx.EXPAND | wx.ALL, 1)
-                        canvas_plot_sizer.Add(self.scroll_bar, 1, wx.EXPAND | wx.ALL, 1)
-
-                        # Refresh the layout
-                        main_sizer.Layout()
-
+                        self.draw_canvas_to_3D(None)
                         # Print the name of the file opened to the terminal (text box) window
                         wx.MessageBox(_(" Opened file:"), pathname)
                     else: 
