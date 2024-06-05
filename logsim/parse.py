@@ -70,7 +70,8 @@ class Parser:
          self.INVALID_KEYWORD, self.MISSING_END_STATEMENT, self.EXPECTED_NUMBER, self.EXPECTED_DOT, 
          self.INVALID_PIN_REF, self.EXPECTED_EQUALS, self.EXPECTED_DEFINE, self.EXPECTED_CONNECT, 
          self.EXPECTED_MONITOR, self.EXPECTED_END, self.INVALID_PARAM, self.MISSING_DTYPE_INPUTS, 
-         self.PASSED_KEYWORD, self.PASSED_DEVICE, self.PASSED_GATE, self.EMPTY_FILE] = self.names.unique_error_codes(19)
+         self.PASSED_KEYWORD, self.PASSED_DEVICE, self.PASSED_GATE, self.EMPTY_FILE,
+         self.EXPECTED_DEVICE_OR_GATE] = self.names.unique_error_codes(20)
         self.devices = devices
         self.network = network
         self.monitors = monitors
@@ -126,6 +127,7 @@ class Parser:
             self.PASSED_DEVICE: _("Passed a device when a name was expected"),
             self.PASSED_GATE: _("Passed a gate when a name was expected"),
             self.EMPTY_FILE: _("No symbols detected, either an empty file or all comments"),
+            self.EXPECTED_DEVICE_OR_GATE: _("Expected a device or gate"),
             # Network errors
             self.network.DEVICE_ABSENT: _("Device absent"),
             self.network.INPUT_CONNECTED: _("Input is already connected"),
@@ -199,7 +201,7 @@ class Parser:
                 elif self.symbol.type == self.scanner.GATE:
                     device_kind = self.gate(stopping_symbols)
                 else:
-                    self.error(self.INVALID_KEYWORD, stopping_symbols|{self.scanner.COMMA})
+                    self.error(self.EXPECTED_DEVICE_OR_GATE, stopping_symbols | {self.scanner.COMMA})
                 if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                     self.symbol = self.scanner.get_symbol()
                     device_property = self.set_param(device_kind, stopping_symbols)
@@ -224,7 +226,7 @@ class Parser:
                     elif self.symbol.type == self.scanner.GATE:
                         device_kind = self.gate(stopping_symbols)
                     else:
-                        self.error(self.INVALID_KEYWORD, stopping_symbols|{self.scanner.COMMA})
+                        self.error(self.EXPECTED_DEVICE_OR_GATE, stopping_symbols | {self.scanner.COMMA})
                     if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.WITH_ID:
                         self.symbol = self.scanner.get_symbol()
                         device_property = self.set_param(device_kind, stopping_symbols)
