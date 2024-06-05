@@ -55,12 +55,13 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
 
     def __init__(self, parent, devices : Devices, monitors: Monitors):
         """Initialise canvas properties and useful variables."""
-
-        gl_attribs = wx.glcanvas.GLContextAttrs()
-        gl_attribs = gl_attribs.CoreProfile().OGLVersion(4, 5).Robust().ResetIsolation().EndList()
-
+   
         super().__init__(parent, -1,
-                         attribList=gl_attribs)
+                         attribList=[wxcanvas.WX_GL_RGBA,
+                                    wxcanvas.WX_GL_DOUBLEBUFFER,
+                                   wxcanvas.WX_GL_DEPTH_SIZE, 16, 0])
+        
+        GLUT.glutInit()
         self.init = False
         self.context = wxcanvas.GLContext(self)
 
@@ -233,6 +234,7 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front
         GL.glFlush()
+        self.SwapBuffers()
 
     def on_paint(self, event):
         """Handle the paint event."""
@@ -241,14 +243,11 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
             # Configure the OpenGL rendering context
             self.init = True 
             self.init_gl()
-               
-
         size = self.GetClientSize()
         text = "".join(["Canvas redrawn on paint event, size is ",
                         str(size.width), ", ", str(size.height)])
         self.render()
-        self.SwapBuffers()
-
+        
     def on_size(self, event):
         """Handle the canvas resize event."""
         # Forces reconfiguration of the viewport, modelview and projection

@@ -221,21 +221,25 @@ class Mesh(LogicDrawer3D):
             str_id = str(device_id)
             self.vertex_loader[str_id] =  vertices
 
-        vertices = np.array(vertices, dtype=np.float32)
-        self.vertex_count = len(vertices)//8
+        self.vertices = vertices 
+        self.deprecated_draw()
 
-        self.vao = GL.glGenVertexArrays(1)
-        GL.glBindVertexArray(self.vao)
-        #Vertices
-        self.vbo = GL.glGenBuffers(1)
-        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
-        GL.glBufferData(GL.GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL.GL_STATIC_DRAW)
-        #position
-        GL.GL_CONTEXT_FLAG_NO_ERROR_BIT = True
-        GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(0))
-        GL.glEnableVertexAttribArray(0)
-        #self.brute_force(vertices)
-        self.draw()
+        # DOESN'T WORK ON LINUX BECUASE LINUX IS GARBAGE
+        #vertices = np.array(vertices, dtype=np.float32)
+        #self.vertex_count = len(vertices)//8
+
+        #self.vao = GL.glGenVertexArrays(1)
+        #GL.glBindVertexArray(self.vao)
+        ##Vertices
+        #self.vbo = GL.glGenBuffers(1)
+        #GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
+        #GL.glBufferData(GL.GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL.GL_STATIC_DRAW)
+        ##position
+        #GL.GL_CONTEXT_FLAG_NO_ERROR_BIT = True
+        #GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(0))
+        #GL.glEnableVertexAttribArray(0)
+        ##self.brute_force(vertices)
+        #self.draw()
 
     def load_mesh(self) -> list[float]: 
     
@@ -323,31 +327,45 @@ class Mesh(LogicDrawer3D):
     def draw(self) -> None:
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.vertex_count)
 
-    def brute_force(self, vertices): 
+    def deprecated_draw(self) -> None: 
+        
+        triangle_vertices = []
+        triangle_normals = []
 
-        normal = []
-        vertex = []
+        this_vertex = []
+        this_normal = []
 
-        all_vertices = []
-        all_normals = []
-    
-        for index, element in enumerate(vertices): 
-            pos = index % 8
-            
-            if pos < 3: 
-                vertex.append(element)
-            elif 4 < pos < 8: 
-                normal.append(element)
+        for index, element in enumerate(self.vertices): 
+            # If the element is in ther 0, 1, 2 position read vertex
+            # If the element is in the 5, 6, 7 position read as normal
+            if index % 8 < 3: 
+                this_vertex.append(element)
+            elif index % 8 > 4: 
+                this_normal.append(element)
             else: 
-                pass
-
-            all_vertices.append(vertex)
-            all_normals.append(normal)
-        glBegin(GL.GL_TRIANGLES)
-        for vertex, normal in zip(all_vertices, all_normals): 
-            GL.glVertex3f(vertex[0], vertex[1], vertex[2])
-        glEnd()
-
+                continue
+        
+            
+            if len(this_normal) == 3: 
+                triangle_vertices.append(tuple(this_vertex))
+                triangle_normals.append(tuple(this_normal))
+                this_vertex.clear()
+                this_normal.clear()
+            
+            #print(triangle_vertices)
+            
+            if len(triangle_normals) == 3: 
+                GL.glBegin(GL.GL_TRIANGLES)
+                GL.glNormal3f(triangle_normals[0][0], triangle_normals[0][1], triangle_normals[0][2])
+                GL.glVertex3f(triangle_vertices[0][0], triangle_vertices[0][1], triangle_vertices[0][2])
+                #GL.glNormal3f(triangle_normals[0][0], triangle_normals[0][1], triangle_normals[0][2])
+                GL.glVertex3f(triangle_vertices[1][0], triangle_vertices[1][1], triangle_vertices[1][2])
+                #GL.glNormal3f(triangle_normals[1][0], triangle_normals[1][1], triangle_normals[1][2])
+                GL.glVertex3f(triangle_vertices[2][0], triangle_vertices[2][1], triangle_vertices[2][2])
+                #GL.glNormal3f(triangle_normals[2][0], triangle_normals[2][1], triangle_normals[2][2])
+                GL.glEnd()
+                triangle_normals.clear() 
+                triangle_vertices.clear()
             
             
                 

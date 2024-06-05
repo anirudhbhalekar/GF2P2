@@ -387,7 +387,6 @@ class TestMesh():
 
     def deprecated_draw(self) -> None: 
         
-        GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
         triangle_vertices = []
         triangle_normals = []
 
@@ -423,40 +422,6 @@ class TestMesh():
                 GL.glEnd()
                 triangle_normals.clear() 
                 triangle_vertices.clear()
-
-        GL.glFlush()
-        
-
-            
-
-
-
-
-    def brute_force(self, vertices):
-
-        normal = []
-        vertex = []
-
-        all_vertices = []
-        all_normals = []
-
-        for index, element in enumerate(vertices):
-            pos = index % 8
-        
-            if pos < 3:
-                vertex.append(element)
-            elif 4 < pos < 8:
-                normal.append(element)
-            else:
-                pass
-
-            all_vertices.append(vertex)
-            all_normals.append(normal)
-        GL.glBegin(GL.GL_TRIANGLES)
-        for vertex, normal in zip(all_vertices, all_normals):
-            GL.glVertex3f(vertex[0], vertex[1], vertex[2])
-        GL.glEnd()
-
 
 if __name__ == "__main__":
 

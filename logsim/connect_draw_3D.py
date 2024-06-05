@@ -226,20 +226,62 @@ class ConnectDrawer3D:
     
     def draw_connections(self, vertices : list):
         
-        vertices = np.array(vertices, dtype=np.float32)
-        vertex_count = len(vertices) // 8
+        self.deprecated_draw(vertices)
+        # REMOVED BECAUSE LINUX IS GARBAGE
+        #vertices = np.array(vertices, dtype=np.float32)
+        #vertex_count = len(vertices) // 8
 
 
-        self.vbo = GL.glGenBuffers(1)
-        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
-        GL.glBufferData(GL.GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL.GL_STATIC_DRAW)
-        #position
-        GL.glEnableVertexAttribArray(0)
-        GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(0))
-        #texture
-        GL.glEnableVertexAttribArray(1)
-        GL.glVertexAttribPointer(1, 2, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(12))
+        #self.vbo = GL.glGenBuffers(1)
+        #GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
+        #GL.glBufferData(GL.GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL.GL_STATIC_DRAW)
+        ##position
+        #GL.glEnableVertexAttribArray(0)
+        #GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(0))
+        ##texture
+        #GL.glEnableVertexAttribArray(1)
+        #GL.glVertexAttribPointer(1, 2, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(12))
 
-        GL.glColor3f(0.7, 0.6, 0.1)
-        GL.glDrawArrays(GL.GL_QUADS, 0, vertex_count)
+        #GL.glColor3f(0.7, 0.6, 0.1)
+        #GL.glDrawArrays(GL.GL_QUADS, 0, vertex_count)
+
+    def deprecated_draw(self, vertices : list) -> None: 
         
+        quad_vertices = []
+        quad_normals = []
+
+        this_vertex = []
+        this_normal = []
+        GL.glColor3f(0.5, 0.5, 0.2)
+        for index, element in enumerate(vertices): 
+            # If the element is in ther 0, 1, 2 position read vertex
+            # If the element is in the 5, 6, 7 position read as normal
+            if index % 8 < 3: 
+                this_vertex.append(element)
+            elif index % 8 > 4: 
+                this_normal.append(element)
+            else: 
+                continue
+            
+            if len(this_normal) == 3: 
+                # X, Y, Z has been stored
+                quad_vertices.append(tuple(this_vertex))
+                quad_normals.append(tuple(this_normal))
+                this_vertex.clear()
+                this_normal.clear()
+            
+            #print(triangle_vertices)
+            
+            if len(quad_normals) == 4: 
+                GL.glBegin(GL.GL_QUADS)
+                GL.glNormal3f(quad_normals[0][0], quad_normals[0][1], quad_normals[0][2])
+                GL.glVertex3f(quad_vertices[0][0], quad_vertices[0][1], quad_vertices[0][2])
+                #GL.glNormal3f(triangle_normals[0][0], triangle_normals[0][1], triangle_normals[0][2])
+                GL.glVertex3f(quad_vertices[1][0], quad_vertices[1][1], quad_vertices[1][2])
+                #GL.glNormal3f(triangle_normals[1][0], triangle_normals[1][1], triangle_normals[1][2])
+                GL.glVertex3f(quad_vertices[2][0], quad_vertices[2][1], quad_vertices[2][2])
+                #GL.glNormal3f(triangle_normals[2][0], triangle_normals[2][1], triangle_normals[2][2])
+                GL.glVertex3f(quad_vertices[3][0], quad_vertices[3][1], quad_vertices[3][2])
+                GL.glEnd()
+                quad_vertices.clear() 
+                quad_normals.clear()
