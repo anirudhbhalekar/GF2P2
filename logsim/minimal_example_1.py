@@ -173,20 +173,18 @@ class TestCanvas(wxcanvas.GLCanvas):
             GL.glScalef(self.zoom, self.zoom, self.zoom)
     
             self.init = True
-    
-        GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
-        self.test_render()
-        GL.glFlush()
-        self.SwapBuffers()
 
     def test_render(self):
-        TestMesh("device_objs/AND.obj", self.vertex_loader, 1)
+        obj = TestMesh("device_objs/AND.obj", self.vertex_loader, 1)
 
     def render(self):
         self.SetCurrent(self.context)
         self.init_gl()
 
-        # Clear everything
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+        self.test_render()
+        GL.glFlush()
+        self.SwapBuffers()
     
     
     def on_paint(self, event):
@@ -282,22 +280,25 @@ class TestMesh():
             str_id = str(device_id)
             self.vertex_loader[str_id] =  vertices
 
-        vertices = np.array(vertices, dtype=np.float32)
-        self.vertex_count = len(vertices)//8
-
-        self.vao = GL.glGenVertexArrays(1)
-        GL.glBindVertexArray(self.vao)
-        #Vertices
-        self.vbo = GL.glGenBuffers(1)
-        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
-        GL.glBufferData(GL.GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL.GL_STATIC_DRAW)
-        #position
-
-        GL.glEnableVertexAttribArray(0)
-        GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(0))
-        #self.brute_force(vertices)
-        self.draw()
-
+        self.vertices = vertices
+        #vertices = np.array(vertices, dtype=np.float32)
+        #self.vertex_count = len(vertices)//8
+        #GL.glBegin(GL.GL_STATIC_DRAW)
+        #self.vao = GL.glGenVertexArrays(1)
+        #GL.glBindVertexArray(self.vao)
+        ##Vertices
+        #self.vbo = GL.glGenBuffers(1)
+        #GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
+        #GL.glBufferData(GL.GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL.GL_STATIC_DRAW)
+        ##position
+#
+        #GL.glEnableVertexAttribArray(0)
+        #GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(0))
+        ##self.brute_force(vertices)
+        #self.draw()
+        ##GL.glEnd()
+        
+        self.deprecated_draw()
     def load_mesh(self) -> list[float]:
 
         v = []
@@ -376,13 +377,60 @@ class TestMesh():
         # OBJ files store faces in the format a/b/c a'/b'/c' ...
         # for the first element for example, a corresponds to vertex, b to texture coord,
         # c to normal (all are in indices)
-
+    
     def destroy(self):
         GL.glDeleteVertexArrays(1, (self.vao,))
         GL.glDeleteBuffers(1, (self.vbo,))
 
     def draw(self) -> None:
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.vertex_count)
+
+    def deprecated_draw(self) -> None: 
+        
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+        triangle_vertices = []
+        triangle_normals = []
+
+        this_vertex = []
+        this_normal = []
+
+        for index, element in enumerate(self.vertices): 
+            # If the element is in ther 0, 1, 2 position read vertex
+            # If the element is in the 5, 6, 7 position read as normal
+            index = index % 8
+            if index < 3: 
+                this_vertex.append(element)
+            elif index > 4: 
+                this_normal.append(element)
+        
+            
+            if len(this_vertex) == 3 and len(this_normal) == 3: 
+                triangle_vertices.append(tuple(this_vertex))
+                triangle_normals.append(tuple(this_normal))
+                this_vertex.clear()
+                this_normal.clear()
+            
+            #print(triangle_vertices)
+            
+            if np.shape(triangle_normals) == (3, 3) and np.shape(triangle_vertices) == (3,3): 
+                GL.glBegin(GL.GL_TRIANGLES)
+                GL.glVertex3f(triangle_vertices[0][0], triangle_vertices[0][1], triangle_vertices[0][2])
+                GL.glNormal3f(triangle_normals[0][0], triangle_normals[0][1], triangle_normals[0][2])
+                GL.glVertex3f(triangle_vertices[1][0], triangle_vertices[1][1], triangle_vertices[1][2])
+                GL.glNormal3f(triangle_normals[1][0], triangle_normals[1][1], triangle_normals[1][2])
+                GL.glVertex3f(triangle_vertices[2][0], triangle_vertices[2][1], triangle_vertices[2][2])
+                GL.glNormal3f(triangle_normals[2][0], triangle_normals[2][1], triangle_normals[2][2])
+                GL.glEnd()
+                triangle_normals.clear() 
+                triangle_vertices.clear()
+
+        GL.glFlush()
+        
+
+            
+
+
+
 
     def brute_force(self, vertices):
 
