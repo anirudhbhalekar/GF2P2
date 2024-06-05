@@ -193,9 +193,8 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
                     s_name = "FALLING"
                 if signal == self.devices.BLANK: 
                     s_name = "BLANK"
-                
+   
                 one_d_signal.append(s_name)
-
             if len(one_d_signal) < self.parent.cycles_completed:
                 one_d_signal = blank_signal + one_d_signal
                 one_d_signal = one_d_signal[-self.parent.cycles_completed:]

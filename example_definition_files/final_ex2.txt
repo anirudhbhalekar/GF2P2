@@ -10,6 +10,8 @@ DEFINE
 	a4 AS AND WITH inputs = 2, 
 	o1 AS OR WITH inputs = 2, 
 	o2 AS OR WITH inputs = 2, 
+	na1 AS NAND WITH inputs = 2, 
+	no1 AS NOR WITH inputs = 2,
 	sw AS SWITCH WITH initial = 0; 
 
 
@@ -39,6 +41,12 @@ CONNECT
 
 	a4.I1 = d2.QBAR, 
 	a4.I2 = d1.QBAR, 
+
+	na1.I1 = clk1, 
+	na1.I2 = clk1, 
+
+	no1.I1 = clk1, 
+	no1.I2 = clk1, 
 
 	o2.I1 = a3, 
 	o2.I2 = a4; 

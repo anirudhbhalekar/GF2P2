@@ -527,7 +527,9 @@ class Gui(wx.Frame):
         """Clears the matplotlib plot"""
         
         self.monitors.reset_monitors()
-        
+        self.plot_array = []
+        self.name_array = []
+
         if not self.is3D:             
             self.axes.clear()
             self.axes.set_title(_("Monitor Plots"))
@@ -548,6 +550,14 @@ class Gui(wx.Frame):
             self.canvas.render(text)
         
         else: 
+            self.axes.clear()
+            self.axes.set_title(_("Monitor Plots"))
+            
+            try: 
+                self.legend.remove()
+            except: 
+                pass
+
             self.plot_array = []
             self.name_array = []
             self.cycles_completed = 0
@@ -621,9 +631,9 @@ class Gui(wx.Frame):
     
     def add_monitor_with_name(self, m_string: str):
         
-        bool_add_mon = False
+        bool_add_mon = None
         string_array = m_string.split('.')
-
+        
         dev_name = string_array[0]
         dev_id = self.names.query(dev_name)
 
@@ -632,10 +642,22 @@ class Gui(wx.Frame):
         if len(string_array) > 1: 
             port_name = string_array[1]
             port_id = self.names.query(port_name)
-        
+
         try: 
             bool_add_mon = self.monitors.make_monitor(dev_id, port_id, self.cycles_completed)
-            self.Refresh()
+            if bool_add_mon == self.network.DEVICE_ABSENT: 
+                self.Refresh()
+                return "DEVICE ABSENT"
+            elif bool_add_mon == self.monitors.MONITOR_PRESENT: 
+                self.Refresh()
+                return "MONITOR ALREADY PRESENT"
+            elif bool_add_mon == self.monitors.NOT_OUTPUT:
+                self.Refresh() 
+                return "NOT AN OUTPUT"
+            elif bool_add_mon == self.monitors.NO_ERROR: 
+                self.Refresh()
+                return "MONITOR ADDED SUCCESSFULLY"
+        
         except: 
             wx.LogError(_("Monitor addition error"))
         
@@ -792,8 +814,10 @@ class Gui(wx.Frame):
             # Run simulation for N cycles
             try:
                 N = int(text[2:].strip())
+                if N < 1: 
+                    wx.LogError(_("Must run for positive number of cycles"))
+                    return 
                 self.run_circuit(N)
-                
                 try: 
                     self.on_run_button(None)
                 except Exception: 
@@ -812,6 +836,9 @@ class Gui(wx.Frame):
             # Continue the simulation for N cycles
             try:
                 N = int(text[2:].strip())
+                if N < 1: 
+                    wx.LogError(_("Must run for positive number of cycles"))
+                    return 
                 bool_cont = self.continue_circuit(N)
                 # If True (continuing circuit doesn't give error)
                 if bool_cont:
@@ -859,14 +886,18 @@ class Gui(wx.Frame):
             signal = text[2:].strip()
 
             bool_add_mon = self.add_monitor_with_name(signal) 
-            if bool_add_mon:
+            if bool_add_mon == "MONITOR ADDED SUCCESSFULLY":
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                     self.text_box.AppendText("\n")
                 self.text_box.AppendText(_("Adding monitor on signal {signal}.\n").format(signal=signal))
+            elif bool_add_mon == "DEVICE ABSENT" or bool_add_mon == "NOT AN OUTPUT": 
+                if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
+                    self.text_box.AppendText("\n")
+                self.text_box.AppendText(_("Monitor addition failed for signal {signal}\n").format(signal=signal))
             else: 
                 if platform == 'linux' or platform == 'linux2' or platform == 'darwin':
                     self.text_box.AppendText("\n")
-                self.text_box.AppendText(_("Monitor addition failed for signal {signal}.\n").format(signal=signal))
+                self.text_box.AppendText(_("Monitor already exists\n"))
 
         elif text.startswith('z ') or text.startswith('zap '):
             # Zap the monitor on signal X
