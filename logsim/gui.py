@@ -310,6 +310,7 @@ class Gui(wx.Frame):
             canvas_plot_sizer.Add(self.scroll_bar, 1, wx.EXPAND | wx.ALL, 1)
 
             self.update_scroll()
+            self.monitor_plot()
             # Refresh the layout
             main_sizer.Layout()
 
@@ -453,6 +454,7 @@ class Gui(wx.Frame):
                         self.on_reset_plot_button(None)
                         self.draw_canvas_to_3D(None)
                         self.path = pathname  
+                   
                         # Print the name of the file opened to the terminal (text box) window
                         wx.MessageBox(_(" Opened file:"), pathname)
                     else: 
