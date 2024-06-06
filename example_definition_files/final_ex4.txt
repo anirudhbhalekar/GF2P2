@@ -1,23 +1,21 @@
-% stores the state of the SWITCH on every rising edge of the CLOCK in the DTYPE, 
-with the XOR gate outputting a constant 1 and the AND gate outputting a constant 0 %
-
-DEFINE CLK1 AS CLOCK WITH cycle_rep = 2,
-       SW AS SWITCH WITH initial = 0,
-       SW_SET AS SWITCH WITH initial = 0,
-       SW_CLEAR AS SWITCH WITH initial = 0,
-       DFF AS DTYPE,
+% Combinatorial Circuit %
+DEFINE SW1 AS SWITCH WITH initial = 0,
+       SW2 AS SWITCH WITH initial = 0,
+       SW3 AS SWITCH WITH initial = 0,
        XOR1 AS XOR,
-       AND1 AS AND WITH inputs = 2;
+       AND1 AS AND WITH inputs = 2,
+       NOR1 AS NOR WITH inputs = 2,
+       NOR2 AS NOR WITH inputs = 2;
 
-CONNECT DFF.CLK = CLK1,
-        DFF.DATA = SW,
-        DFF.SET = SW_SET,
-        DFF.CLEAR = SW_CLEAR,
-        XOR1.I1 = DFF.Q,
-        XOR1.I2 = DFF.QBAR,
-        AND1.I1 = DFF.Q,
-        AND1.I2 = DFF.QBAR;
+CONNECT NOR1.I1 = SW2,
+        NOR1.I2 = NOR2,
+        NOR2.I1 = NOR1,
+        NOR2.I2 = SW3,
+        XOR1.I1 = NOR1,
+        XOR1.I2 = NOR2,
+        AND1.I1 = NOR1,
+        AND1.I2 = NOR2;
 
-MONITOR DFF.Q, DFF.QBAR, XOR1, AND1;
+MONITOR NOR1.Q, NOR2.Q, XOR1, AND1;
 
 END;
