@@ -1,16 +1,15 @@
 % Combinatorial Circuit %
 DEFINE SW1 AS SWITCH WITH initial = 0,
        SW2 AS SWITCH WITH initial = 0,
-       SW3 AS SWITCH WITH initial = 0,
        XOR1 AS XOR,
        AND1 AS AND WITH inputs = 2,
        NOR1 AS NOR WITH inputs = 2,
        NOR2 AS NOR WITH inputs = 2;
 
-CONNECT NOR1.I1 = SW2,
+CONNECT NOR1.I1 = SW1,
         NOR1.I2 = NOR2,
         NOR2.I1 = NOR1,
-        NOR2.I2 = SW3,
+        NOR2.I2 = SW2,
         XOR1.I1 = NOR1,
         XOR1.I2 = NOR2,
         AND1.I1 = NOR1,
