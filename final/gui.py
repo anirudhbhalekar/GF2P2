@@ -458,7 +458,7 @@ class Gui(wx.Frame):
                     try:
                         val = int(str(text_dialog.GetValue()))
                         if val > 20: 
-                            self.max_3D_view = val
+                            self.max_2D_view = val
                         else: 
                             wx.LogError(_("Value must be greater than 20"))
                     except: 
