@@ -448,6 +448,7 @@ class Gui(wx.Frame):
                         val = int(str(text_dialog.GetValue()))
                         if val > 20: 
                             self.max_3D_view = val
+                            self.draw_canvas_to_3D(None)
                         else: 
                             wx.LogError(_("Value must be greater than 20"))
                     except: 
@@ -459,6 +460,7 @@ class Gui(wx.Frame):
                         val = int(str(text_dialog.GetValue()))
                         if val > 20: 
                             self.max_2D_view = val
+                            self.draw_canvas_to_3D(None)
                         else: 
                             wx.LogError(_("Value must be greater than 20"))
                     except: 
