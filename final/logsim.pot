@@ -1,0 +1,626 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#: userint.py:274
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-06-04 16:23+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: canvas.py:254
+msgid "Canvas redrawn on paint event, size is "
+msgstr ""
+
+#: canvas.py:317
+msgid "Monitor Removed\n"
+msgstr ""
+
+#: canvas.py:319
+msgid "Error! Monitor not found!"
+msgstr ""
+
+#: canvas.py:329
+msgid "Monitor Added\n"
+msgstr ""
+
+#: canvas.py:331
+msgid "Error! Monitor already added!"
+msgstr ""
+
+#: canvas.py:348
+msgid "Mouse button pressed at: "
+msgstr ""
+
+#: canvas.py:365
+msgid "Mouse button released at: "
+msgstr ""
+
+#: canvas.py:368
+msgid "Mouse left canvas at: "
+msgstr ""
+
+#: canvas.py:376
+msgid "Mouse dragged to: "
+msgstr ""
+
+#: canvas.py:386
+msgid "Negative mouse wheel rotation. Zoom is now: "
+msgstr ""
+
+#: canvas.py:395
+msgid "Positive mouse wheel rotation. Zoom is now: "
+msgstr ""
+
+#: gui.py:140
+msgid "&About"
+msgstr ""
+
+#: gui.py:141
+msgid "&Exit"
+msgstr ""
+
+#: gui.py:142
+msgid "&Open"
+msgstr ""
+
+#: gui.py:143
+msgid "&Edit"
+msgstr ""
+
+#: gui.py:144
+msgid "&Commands"
+msgstr ""
+
+#: gui.py:145
+msgid "&Change 3D Signal Max"
+msgstr ""
+
+#: gui.py:146
+msgid "&Change 2D Signal Max"
+msgstr ""
+
+#: gui.py:152
+msgid "&File"
+msgstr ""
+
+#: gui.py:153
+msgid "&Source"
+msgstr ""
+
+#: gui.py:154
+msgid "&Command"
+msgstr ""
+
+#: gui.py:155
+msgid "&View Options"
+msgstr ""
+
+#: gui.py:180 gui.py:381
+msgid "Cycles"
+msgstr ""
+
+#: gui.py:182 gui.py:382
+msgid "Run"
+msgstr ""
+
+#: gui.py:183 gui.py:383
+msgid "Continue"
+msgstr ""
+
+#: gui.py:184 gui.py:384
+msgid "Reset Plot"
+msgstr ""
+
+#: gui.py:185 gui.py:385
+msgid "Zap Monitor"
+msgstr ""
+
+#: gui.py:186 gui.py:386
+msgid "Add Monitor"
+msgstr ""
+
+#: gui.py:187 gui.py:387
+msgid "Reset View"
+msgstr ""
+
+#: gui.py:189
+msgid "Clear terminal"
+msgstr ""
+
+#: gui.py:190
+msgid "3D Mode"
+msgstr ""
+
+#: gui.py:388
+msgid "Clear Terminal"
+msgstr ""
+
+#: gui.py:406 userint.py:262
+msgid "Error! Network oscillating."
+msgstr ""
+
+#: gui.py:425
+msgid "Nothing to continue - run the simulation first"
+msgstr ""
+
+#: gui.py:440
+msgid "Logic Simulator for GF2P2\n"
+msgstr ""
+
+#: gui.py:441
+msgid "Created by Mojisola Agboola, 2017\n"
+msgstr ""
+
+#: gui.py:442
+msgid "Modified by Anirudh Bhalekar, Moses Liew, Shawn Li, 2024"
+msgstr ""
+
+#: gui.py:443
+msgid "About Logsim"
+msgstr ""
+
+#: gui.py:459
+msgid ""
+"List of user commands: \n"
+"r N - run the simulation for N cycles\n"
+"c N - continue simulation for N cycles\n"
+"s X N - set switch X to N (0 or 1)\n"
+"m X - set a monitor on signal X\n"
+"z X - zap the monitor on signal X\n"
+"h - print a list of available commands on the terminal\n"
+"q - quit the simulation"
+msgstr ""
+
+#: gui.py:468
+msgid "Open New Source File"
+msgstr ""
+
+#: gui.py:515
+msgid " Opened file:"
+msgstr ""
+
+#: gui.py:520
+msgid "Error! Faulty definition file!"
+msgstr ""
+
+#: gui.py:521
+msgid "{num_errors} errors caught"
+msgstr ""
+
+#: gui.py:524
+msgid "Cannot open file: {exception}"
+msgstr ""
+
+#: gui.py:527
+msgid "Change Value of 3D max view"
+msgstr ""
+
+#: gui.py:534 gui.py:545
+msgid "Value must be greater than 20"
+msgstr ""
+
+#: gui.py:536 gui.py:547
+msgid "Incorrect data type! Not saved"
+msgstr ""
+
+#: gui.py:538
+msgid "Change Value of 2D max view"
+msgstr ""
+
+#: gui.py:555
+msgid "New spin control value: "
+msgstr ""
+
+#: gui.py:561
+msgid "Run button pressed, {cycle_count} cycles."
+msgstr ""
+
+#: gui.py:565 gui.py:578 gui.py:639
+msgid "Max cycle count exceeded! Refresh the plot or edit the source data"
+msgstr ""
+
+#: gui.py:574 gui.py:653 gui.py:835 gui.py:856
+msgid "Run failed - cannot plot monitors"
+msgstr ""
+
+#: gui.py:592 gui.py:727
+msgid "Monitor Plots"
+msgstr ""
+
+#: gui.py:606
+msgid "Reset plot button pressed."
+msgstr ""
+
+#: gui.py:636
+msgid "Continue button pressed, {cycle_count} cycles."
+msgstr ""
+
+#: gui.py:647 gui.py:656
+msgid "Nothing to Continue - try running the simulation first"
+msgstr ""
+
+#: gui.py:674 gui.py:677
+msgid "Invalid Device Type"
+msgstr ""
+
+#: gui.py:699 gui.py:719
+msgid "Monitor addition error"
+msgstr ""
+
+#: gui.py:780
+msgid "Clear button pressed."
+msgstr ""
+
+#: gui.py:786
+msgid "Reset view button pressed"
+msgstr ""
+
+#: gui.py:839
+msgid "Running simulation for {cycles} cycles.\n"
+msgstr ""
+
+#: gui.py:844 gui.py:868
+msgid "Invalid command. Please provide a valid number of cycles.\n"
+msgstr ""
+
+#: gui.py:860
+msgid "Continuing simulation for {cycles} cycles.\n"
+msgstr ""
+
+#: gui.py:864
+msgid "Nothing to continue - run the simulation first.\n"
+msgstr ""
+
+#: gui.py:878
+msgid "Switch value must be 0 or 1\n"
+msgstr ""
+
+#: gui.py:879
+msgid "Switch value must be 0 or 1"
+msgstr ""
+
+#: gui.py:883
+msgid "Switch set failed"
+msgstr ""
+
+#: gui.py:886
+msgid "Setting switch {switch_name} to {value}.\n"
+msgstr ""
+
+#: gui.py:890
+msgid "Invalid command format. Please provide switch ID and value.\n"
+msgstr ""
+
+#: gui.py:899
+msgid "Adding monitor on signal {signal}.\n"
+msgstr ""
+
+#: gui.py:903
+msgid "Monitor addition failed for signal {signal}.\n"
+msgstr ""
+
+#: gui.py:914
+msgid "Zapping monitor on signal {signal}.\n"
+msgstr ""
+
+#: gui.py:918
+msgid "Monitor zap failed for signal {signal}.\n"
+msgstr ""
+
+#: gui.py:924
+msgid ""
+"List of available commands:\n"
+"r N       - run the simulation for N cycles\n"
+"c N       - continue the simulation for N cycles\n"
+"s X N     - set switch X to N (0 or 1)\n"
+"m X       - add a monitor on signal X\n"
+"z X       - zap the monitor on signal X\n"
+"h         - print a list of available commands\n"
+"q         - quit the program\n"
+msgstr ""
+
+#: gui.py:940
+msgid ""
+"<{text}> is an invalid command. A list of available commands can be obtained "
+"by entering 'h', or navigating to 'Commands' in the Menu.\n"
+msgstr ""
+
+#: lang_demo.py:11
+msgid "Hello world"
+msgstr ""
+
+#: logsim.py:38
+msgid ""
+"Usage:\n"
+"Show help: logsim.py -h\n"
+"Command line user interface: logsim.py -c <file path>\n"
+"Graphical user interface: logsim.py <file path>"
+msgstr ""
+
+#: logsim.py:45
+msgid "Error: invalid command line arguments\n"
+msgstr ""
+
+#: logsim.py:70
+msgid "Error: one file path required and one language code optional\n"
+msgstr ""
+
+#: logsim.py:81
+msgid "Logic Simulator"
+msgstr ""
+
+#: names.py:67
+msgid "Expected num_error_codes to be an integer."
+msgstr ""
+
+#: names.py:80
+msgid "Need String argument"
+msgstr ""
+
+#: names.py:82
+msgid "Null Strings are not accepted"
+msgstr ""
+
+#: names.py:97
+msgid "Name list argument must be a list"
+msgstr ""
+
+#: names.py:102
+msgid "Names must be strings"
+msgstr ""
+
+#: names.py:120
+msgid "Name ID must be an integer"
+msgstr ""
+
+#: names.py:122
+msgid "Integer must be greater than or equal to 0"
+msgstr ""
+
+#: parse.py:87
+msgid "Error at line {line_number}, character {character}: {error_message}"
+msgstr ""
+
+#: parse.py:100
+msgid "Expected a name"
+msgstr ""
+
+#: parse.py:101
+msgid "CONNECT list must have individual connections delimited by ','"
+msgstr ""
+
+#: parse.py:102
+msgid "Semi-colons are required at the end of each line"
+msgstr ""
+
+#: parse.py:103
+msgid "Invalid keyword, could be missing or misspelled"
+msgstr ""
+
+#: parse.py:104
+msgid "No END statement after MONITOR clause"
+msgstr ""
+
+#: parse.py:105
+msgid "Expected a number"
+msgstr ""
+
+#: parse.py:106
+msgid "Inputs should be specified - expected a dot"
+msgstr ""
+
+#: parse.py:107
+msgid "Invalid pin reference"
+msgstr ""
+
+#: parse.py:108
+msgid "Expected an equals sign"
+msgstr ""
+
+#: parse.py:109
+msgid "Expected a DEFINE statement first"
+msgstr ""
+
+#: parse.py:110
+msgid "Expected a CONNECT statement second"
+msgstr ""
+
+#: parse.py:111
+msgid "Expected a MONITOR statement third"
+msgstr ""
+
+#: parse.py:112
+msgid "Expected an END statement fourth"
+msgstr ""
+
+#: parse.py:113
+msgid "Invalid parameter for device"
+msgstr ""
+
+#: parse.py:114
+msgid "DTYPE device must have 4 inputs"
+msgstr ""
+
+#: parse.py:115
+msgid "Passed a keyword when a name was expected"
+msgstr ""
+
+#: parse.py:116
+msgid "Passed a device when a name was expected"
+msgstr ""
+
+#: parse.py:117
+msgid "Passed a gate when a name was expected"
+msgstr ""
+
+#: parse.py:118
+msgid "No symbols detected, either an empty file or all comments"
+msgstr ""
+
+#: parse.py:120
+msgid "Device absent"
+msgstr ""
+
+#: parse.py:121
+msgid "Input is already connected"
+msgstr ""
+
+#: parse.py:122
+msgid "Cannot connect an input to another input"
+msgstr ""
+
+#: parse.py:123
+msgid "Port absent"
+msgstr ""
+
+#: parse.py:124
+msgid "Cannot connect an output to another output"
+msgstr ""
+
+#: parse.py:126
+msgid "Device already present"
+msgstr ""
+
+#: parse.py:127
+msgid "Qualifier is missing"
+msgstr ""
+
+#: parse.py:128
+msgid "Invalid qualifier"
+msgstr ""
+
+#: parse.py:129
+msgid "Qualifier should not be present"
+msgstr ""
+
+#: parse.py:130
+msgid "Invalid device type"
+msgstr ""
+
+#: parse.py:132
+msgid "Device output not found"
+msgstr ""
+
+#: parse.py:133
+msgid "Monitor already present"
+msgstr ""
+
+#: parse.py:137
+msgid "Unknown error"
+msgstr ""
+
+#: parse.py:146 parse.py:149
+msgid "Total Error Count: {error_count}"
+msgstr ""
+
+#: parse.py:152
+msgid "Syntax Error: {error}"
+msgstr ""
+
+#: textctrl.py:157
+msgid "Save"
+msgstr ""
+
+#: textctrl.py:184
+msgid "Save File"
+msgstr ""
+
+#: textctrl.py:200
+msgid "Cannot save current data to file."
+msgstr ""
+
+#: userint.py:91
+msgid ""
+"Logic Simulator: interactive command line user interface.\n"
+"Enter 'h' for help."
+msgstr ""
+
+#: userint.py:109
+msgid "Invalid command. Enter 'h' for help."
+msgstr ""
+
+#: userint.py:144
+msgid "Error! Expected a name."
+msgstr ""
+
+#: userint.py:162
+msgid "Error! Unknown name."
+msgstr ""
+
+#: userint.py:190
+msgid "Error! Expected a number."
+msgstr ""
+
+#: userint.py:199 userint.py:204
+msgid "Number out of range."
+msgstr ""
+
+#: userint.py:211
+msgid "User commands:"
+msgstr ""
+
+#: userint.py:212
+msgid "r N       - run the simulation for N cycles"
+msgstr ""
+
+#: userint.py:213
+msgid "c N       - continue the simulation for N cycles"
+msgstr ""
+
+#: userint.py:214
+msgid "s X N     - set switch X to N (0 or 1)"
+msgstr ""
+
+#: userint.py:215
+msgid "m X       - set a monitor on signal X"
+msgstr ""
+
+#: userint.py:216
+msgid "z X       - zap the monitor on signal X"
+msgstr ""
+
+#: userint.py:217
+msgid "h         - help (this command)"
+msgstr ""
+
+#: userint.py:218
+msgid "q         - quit the program"
+msgstr ""
+
+#: userint.py:227
+msgid "Successfully set switch."
+msgstr ""
+
+#: userint.py:229
+msgid "Error! Invalid switch."
+msgstr ""
+
+#: userint.py:239
+msgid "Successfully made monitor."
+msgstr ""
+
+#: userint.py:241
+msgid "Error! Could not make monitor."
+msgstr ""
+
+#: userint.py:249
+msgid "Successfully zapped monitor"
+msgstr ""
+
+#: userint.py:251
+msgid "Error! Could not zap monitor."
+msgstr ""
+
+#: userint.py:284
+msgid "Error! Nothing to continue. Run first."
+msgstr ""
