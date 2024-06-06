@@ -149,8 +149,11 @@ class ConnectDrawer3D:
     
                 con_tuple = device.inputs[input_id]
 
-                output_dev_id = con_tuple[0]
-                output_port_id = con_tuple[1]
+                try: 
+                    output_dev_id = con_tuple[0]
+                    output_port_id = con_tuple[1]
+                except: 
+                    continue
 
                 input_coords = self.inputs_dict[(device_id, input_id)]
                 output_coords = self.outputs_dict[(output_dev_id, output_port_id)]
