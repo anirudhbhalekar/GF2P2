@@ -7,12 +7,6 @@ the circuit and its outputs.
 
 Classes:
 --------
-MyGLCanvas - Handles all canvas drawing operations, including rendering devices,
-connections, and monitors. Supports panning and zooming.
-
-PromptedTextCtrl - Custom text control with a prompt symbol '>' that prevents
-deletion of history and only allows modification of the current line.
-
 Gui - Configures the main window and all the widgets, including menus, buttons,
 canvas, and text controls. Manages the interaction between the user and the
 simulation.
@@ -20,16 +14,9 @@ simulation.
 RunApp - Initializes and runs the application.
 """
 
-
 import wx
-import wx.grid as gridlib 
-import wx.glcanvas as wxcanvas
 import numpy as np
-from math import cos, sin, pi
 from OpenGL import GL, GLUT
-from OpenGL.GL import GL_LINE_STRIP, GL_LINE_LOOP, GL_POLYGON, GL_ENABLE_BIT, GL_LINE_STIPPLE
-from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, GL_LINE_STRIP, GL_TRIANGLE_FAN, GL_LINE_LOOP
-from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, glPushAttrib, glLineStipple, glPopAttrib, glEnable
 from OpenGL import GL, GLUT
 import matplotlib
 matplotlib.use('WXAgg')
@@ -38,6 +25,7 @@ from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg as NavigationToolbar2Wx
 from sys import platform
 import os
+import gettext
 
 from names import Names
 from devices import Devices
@@ -50,36 +38,23 @@ from connect_draw import ConnectDrawer
 from userint import UserInterface 
 from device_canvas_3D import MyGLCanvas3D
 from monitor_canvas_3D import MyGLCanvasMonitor3D
-
 from canvas import MyGLCanvas
 from textctrl import TextEditor, PromptedTextCtrl
-import gettext
-import sys
-'''
-# Initialize gettext translation
-locale = "en"
-if len(sys.argv) > 2:
-    if sys.argv[2] == "el" or sys.argv[2] == "el_GR" or sys.argv[2] == "el_GR.utf8":
-        locale = "el_GR.utf8"
-        #print("Locale: Ελληνικα")
-    elif sys.argv[2] == "en" or sys.argv[2] == "en_GB" or sys.argv[2] == "en_GB.utf8":
-        #print("Locale: English")
-        pass
-    else:
-        #print("Locale unknown, defaulting to English")
-        pass
-'''
+
+# Set up localization
 if os.getenv("LANG") == "el_GR.UTF-8":
     locale = "el_GR.utf8"
-    #print("Greek system language detected")
-elif os.getenv("LANG") == "en_US.UTF-8" or os.getenv("LANG") == "en_GB.UTF-8":
-    #print("Your system language is English.")
+elif os.getenv("LANG") in ["en_US.UTF-8", "en_GB.UTF-8"]:
     locale = "en_GB.utf8"
 else:
-    #print("Attention - your system language is neither English nor Greek. Logsim will run in English.")
     locale = "en_GB.utf8"
 
-lang = gettext.translation("logsim", localedir=os.path.join(os.path.dirname(__file__), 'locales'), languages=[locale], fallback=True)
+lang = gettext.translation(
+    "logsim",
+    localedir=os.path.join(os.path.dirname(__file__), 'locales'),
+    languages=[locale],
+    fallback=True
+)
 lang.install()
 _ = lang.gettext
 

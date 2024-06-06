@@ -9,31 +9,22 @@ Names - maps variable names and string names to unique integers.
 """
 
 import gettext
-import sys
 import os
-'''
-# Initialize gettext translation
-locale = "en"
-if len(sys.argv) > 2:
-    if sys.argv[2] == "el" or sys.argv[2] == "el_GR" or sys.argv[2] == "el_GR.utf8":
-        locale = "el_GR.utf8"
-        #print("Locale: Ελληνικα")
-    elif sys.argv[2] == "en" or sys.argv[2] == "en_GB" or sys.argv[2] == "en_GB.utf8":
-        print("Locale: English")
-    else:
-        #print("Locale unknown, defaulting to English")
-        pass
-'''
+
+# Set up localization
 if os.getenv("LANG") == "el_GR.UTF-8":
     locale = "el_GR.utf8"
-    #print("Greek system language detected")
-elif os.getenv("LANG") == "en_US.UTF-8" or os.getenv("LANG") == "en_GB.UTF-8":
-    #print("Your system language is English.")
+elif os.getenv("LANG") in ["en_US.UTF-8", "en_GB.UTF-8"]:
     locale = "en_GB.utf8"
 else:
-    #print("Attention - your system language is neither English nor Greek. Logsim will run in English.")
     locale = "en_GB.utf8"
-lang = gettext.translation("logsim", localedir=os.path.join(os.path.dirname(__file__), 'locales'), languages=[locale], fallback=True)
+
+lang = gettext.translation(
+    "logsim",
+    localedir=os.path.join(os.path.dirname(__file__), 'locales'),
+    languages=[locale],
+    fallback=True
+)
 lang.install()
 _ = lang.gettext
 
@@ -65,8 +56,6 @@ class Names:
     get_name_string(self, name_id): Returns the corresponding name string for
                         the name ID. Returns None if the ID is not present.
     """
-
-    
     def __init__(self):
         """Initialise names list."""
         self.error_code_count = 0
@@ -76,6 +65,7 @@ class Names:
         """Return a list of unique integer error codes."""
         if not isinstance(num_error_codes, int):
             raise TypeError(_("Expected num_error_codes to be an integer."))
+        
         self.error_code_count += num_error_codes
         return list(range(self.error_code_count - num_error_codes,
                           self.error_code_count))
@@ -85,10 +75,10 @@ class Names:
 
         If the name string is not present in the names list, return None.
         """
-
         # same as in prelim exercise - if name_string in the table, return position, else None
         if not isinstance(name_string, str):
             raise TypeError(_('Need String argument'))
+        
         if name_string == "":
             raise ValueError(_('Null Strings are not accepted'))
 
@@ -102,7 +92,6 @@ class Names:
 
         If the name string is not present in the names list, add it.
         """
-
         # Call query each time for name in name_string_list, if None - add it and return the length of list (at point)
         if not isinstance(name_string_list, list):
             raise TypeError(_("Name list argument must be a list"))
@@ -116,6 +105,7 @@ class Names:
             if name_id is None:
                 name_id = len(self.name_table)
                 self.name_table.append(name)
+
             id_arr.append(name_id)
 
         return id_arr
@@ -129,10 +119,12 @@ class Names:
         # return string from name table
         if not isinstance(name_id, int):
             raise TypeError(_('Name ID must be an integer'))
+        
         if name_id < 0:
             raise ValueError(_("Integer must be greater than or equal to 0"))
 
         if name_id < len(self.name_table):
             return self.name_table[name_id]
+        
         return None
         

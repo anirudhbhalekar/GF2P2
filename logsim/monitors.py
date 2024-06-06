@@ -8,9 +8,9 @@ Classes
 Monitors - records and displays specified output signals.
 
 """
+
 import collections
 
-#NB no translation is needed here as the only 'strings' are the command line symbols which need not be translated.
 
 class Monitors:
 
