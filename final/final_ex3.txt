@@ -1,0 +1,32 @@
+% toggles the state of the DTYPE Q output on each rising edge of the clock, 
+changed by the XOR of a switch input and the current state of Q%
+
+DEFINE 
+    clk AS CLOCK WITH cycle_rep=2, 
+    sw AS SWITCH WITH initial=1, 
+    sw_set AS SWITCH WITH initial=0, 
+    sw_clear AS SWITCH WITH initial=0, 
+    xor1 AS XOR, 
+    and1 AS AND WITH inputs=2, 
+    or1 AS OR WITH inputs=2, 
+    d1 AS DTYPE;
+
+CONNECT 
+    xor1.I1 = sw, 
+    xor1.I2 = d1.Q, 
+    and1.I1 = d1.Q, 
+    and1.I2 = clk, 
+    or1.I1 = and1, 
+    or1.I2 = xor1, 
+    d1.DATA = or1, 
+    d1.CLK = clk,
+    d1.SET = sw_set,
+    d1.CLEAR = sw_clear;
+
+MONITOR 
+    clk, 
+    d1.Q,
+    xor1,
+    or1;
+
+END;

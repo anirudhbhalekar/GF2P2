@@ -1,0 +1,61 @@
+% Just a clock % 
+DEFINE
+	
+	clk1 AS CLOCK WITH cycle_rep = 5, 
+	d1 AS DTYPE, 
+	d2 AS DTYPE, 
+	a1 AS AND WITH inputs = 2, 
+	a2 AS AND WITH inputs = 2, 
+	a3 AS AND WITH inputs = 2, 
+	a4 AS AND WITH inputs = 2, 
+	o1 AS OR WITH inputs = 2, 
+	o2 AS OR WITH inputs = 2, 
+	na1 AS NAND WITH inputs = 2, 
+	no1 AS NOR WITH inputs = 2,
+	sw AS SWITCH WITH initial = 0; 
+
+
+CONNECT
+
+	d1.DATA = o1, 
+	d1.CLK = clk1, 
+	d1.SET = sw, 
+	d1.CLEAR = sw, 
+
+	d2.DATA = o2, 
+	d2.CLK = clk1, 
+	d2.SET = sw, 
+	d2.CLEAR = sw, 
+
+	a1.I1 = d1.Q, 
+	a1.I2 = d2.QBAR, 
+
+	a2.I1 = d2.Q, 
+	a2.I2 = d1.QBAR, 
+
+	o1.I1 = a1, 
+	o1.I2 = a2, 
+
+	a3.I1 = d1.Q, 
+	a3.I2 = d2.QBAR,  
+
+	a4.I1 = d2.QBAR, 
+	a4.I2 = d1.QBAR, 
+
+	na1.I1 = clk1, 
+	na1.I2 = clk1, 
+
+	no1.I1 = clk1, 
+	no1.I2 = clk1, 
+
+	o2.I1 = a3, 
+	o2.I2 = a4; 
+
+
+	
+
+MONITOR 
+	clk1, 
+	d1.Q, 
+	d2.Q; 
+END; 
