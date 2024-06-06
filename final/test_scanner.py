@@ -31,7 +31,7 @@ def test_symbol_properties():
 @pytest.fixture
 def scanner_example_null():
     """Return a new instance of the Scanner class."""
-    return Scanner("test_definition_files/test_ex_null.txt", Names())
+    return Scanner("../test_definition_files/test_ex_null.txt", Names())
 
 
 @pytest.fixture
@@ -99,7 +99,7 @@ def test_get_EOF(scanner_example_null):
 @pytest.fixture
 def scanner_interim1_ex2():
     """Return a new instance of the Scanner class."""
-    return Scanner("test_definition_files/interim1_ex2.txt", Names())
+    return Scanner("../test_definition_files/interim1_ex2.txt", Names())
 
 
 def test_read_cycle_rep(scanner_interim1_ex2):
@@ -120,7 +120,7 @@ def test_read_cycle_rep(scanner_interim1_ex2):
 @pytest.fixture
 def scanner_test_ex0():
     """Return a new instance of the Scanner class."""
-    return Scanner("error_definition_files/test_ex0.txt", Names())
+    return Scanner("../error_definition_files/test_ex0.txt", Names())
 
 
 def test_skip_comment(scanner_test_ex0):
@@ -166,7 +166,7 @@ def test_con_symbol_sequence(scanner_test_ex0):
 @pytest.fixture
 def scanner_interim1_ex1():
     """Return a new instance of the Scanner class."""
-    return Scanner("error_definition_files/input_output_reversed.txt", Names())
+    return Scanner("../error_definition_files/input_output_reversed.txt", Names())
 
 
 def test_EOF(scanner_interim1_ex1):
@@ -180,7 +180,7 @@ def test_EOF(scanner_interim1_ex1):
 @pytest.fixture
 def scanner_test_ex7():
     """Return a new instance of the Scanner class."""
-    return Scanner("error_definition_files/test_ex7.txt", Names())
+    return Scanner("../error_definition_files/test_ex7.txt", Names())
 
 
 def test_ignore_invalid_char(scanner_test_ex7):
