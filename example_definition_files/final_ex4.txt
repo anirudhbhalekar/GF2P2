@@ -3,8 +3,8 @@ DEFINE SW1 AS SWITCH WITH initial = 0,
        SW2 AS SWITCH WITH initial = 0,
        XOR1 AS XOR,
        AND1 AS AND WITH inputs = 2,
-       NOR1 AS NOR WITH inputs = 2,
-       NOR2 AS NOR WITH inputs = 2;
+       NOR1 AS NOR WITH inputs = 4,
+       NOR2 AS NOR WITH inputs = 16;
 
 CONNECT NOR1.I1 = SW1,
         NOR1.I2 = NOR2,
