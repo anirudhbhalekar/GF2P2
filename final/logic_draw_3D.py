@@ -1,5 +1,3 @@
-import math
-import wx
 import wx.glcanvas as wxcanvas
 import numpy as np
 from OpenGL.GL import GL_LINE_STRIP, GL_LINE_LOOP, GL_POLYGON, GL_ENABLE_BIT, GL_LINE_STIPPLE
@@ -9,9 +7,9 @@ from OpenGL import platform
 import os
 
 class LogicDrawer3D: 
-    
+    """Class to handle all 3D logic drawing operations."""
     def __init__(self, names, devices, monitors, vertex_loader, face_loader) -> None:
-        
+        """Initialize the LogicDrawer3D class."""
         self.scale = 1
         self.names = names
         self.devices = devices
@@ -20,9 +18,6 @@ class LogicDrawer3D:
         self.master_obj_folder = os.path.join(current_dir, 'device_objs/')
         self.master_signal_folder = os.path.join(current_dir, 'monitor_objs/')
         self.vertex_folder = os.path.join(current_dir, 'vertices/')
-        # self.master_obj_folder = "device_objs/"
-        # self.master_signal_folder = "monitor_objs/"
-        # self.vertex_folder = "vertices/"
 
         self.operator_height = 30 # Z direction
 
@@ -59,15 +54,13 @@ class LogicDrawer3D:
         GL.glEnable(GL.GL_LIGHTING)
 
     def draw_with_id(self, device_id, x, y): 
-
+        """Draw a device with its id."""
         this_device = self.devices.get_device(device_id)
         device_name = self.names.get_name_string(this_device.device_id)
         device_kind = self.names.get_name_string(this_device.device_kind)
 
         obj_file_path = os.path.join(self.master_obj_folder, f"{device_kind}.obj")
         frame_file_path = os.path.join(self.master_obj_folder, f"{device_kind}_frame.obj")
-        # obj_file_path = self.master_obj_folder + str(device_kind) + ".obj"
-        # frame_file_path =  self.master_obj_folder + str(device_kind) + "_frame.obj"
         
         if not os.path.exists(obj_file_path) or not os.path.exists(frame_file_path): 
             raise FileNotFoundError
@@ -100,7 +93,7 @@ class LogicDrawer3D:
         self.draw_mesh(x, y, frame_file_path, str(str(device_id) + "_frame"))
 
     def draw_monitor(self, x, y, dev_id, port_id): 
-        
+        """Draw a monitor."""
         obj_file_path = os.path.join(self.master_obj_folder, "MONITOR.obj")
         frame_file_path = os.path.join(self.master_obj_folder, "MONITOR_frame.obj")
         # obj_file_path = self.master_obj_folder + "MONITOR.obj"
@@ -116,6 +109,7 @@ class LogicDrawer3D:
         self.draw_mesh(x, y, obj_file_path, unique_id)
 
     def draw_signal(self, x, y, signal_name, signal_color): 
+        """Draw a signal."""
         # Here signal is either "HIGH", "LOW", "FALLING" or "RISING"
 
         if signal_name != "BLANK":
@@ -132,7 +126,8 @@ class LogicDrawer3D:
         else: 
             pass
 
-    def draw_mesh(self, x, y, file_name, device_id): 
+    def draw_mesh(self, x, y, file_name, device_id):
+        """Draw the mesh.""" 
         mesh = Mesh(file_name, device_id, x, y, self.names, self.devices, self.monitors, self.vertex_loader, self.face_loader)
         
     def return_io_list(self, device_id, x, y): 
@@ -240,22 +235,6 @@ class Mesh(LogicDrawer3D):
             self.face_loader[str_id] = faces_data
 
         self.deprecated_face_draw()
-        # DOESN'T WORK ON LINUX BECUASE LINUX IS GARBAGE
-        #vertices = np.array(vertices, dtype=np.float32)
-        #self.vertex_count = len(vertices)//8
-
-        #self.vao = GL.glGenVertexArrays(1)
-        #GL.glBindVertexArray(self.vao)
-        ##Vertices
-        #self.vbo = GL.glGenBuffers(1)
-        #GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
-        #GL.glBufferData(GL.GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL.GL_STATIC_DRAW)
-        ##position
-        #GL.GL_CONTEXT_FLAG_NO_ERROR_BIT = True
-        #GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 32, GL.ctypes.c_void_p(0))
-        #GL.glEnableVertexAttribArray(0)
-        ##self.brute_force(vertices)
-        #self.draw()
 
     def load_mesh(self) -> list[float]: 
     
@@ -315,7 +294,6 @@ class Mesh(LogicDrawer3D):
             self.make_corner(words[2 + i], v, vt, vn, vertices)
             self.make_corner(words[3 + i], v, vt, vn, vertices)
 
-
     def make_corner(self, corner_description: str, 
                         v  : list[list[float]], 
                         vt : list[list[float]], 
@@ -340,6 +318,7 @@ class Mesh(LogicDrawer3D):
         GL.glDeleteBuffers(1, (self.vbo,))
 
     def draw(self) -> None:
+        """Draw the mesh."""
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.vertex_count)
 
     def deprecated_make_lists(self): 
@@ -363,15 +342,12 @@ class Mesh(LogicDrawer3D):
             else: 
                 continue
         
-            
             if len(this_normal) == 3: 
                 triangle_vertices.append(tuple(this_vertex))
                 triangle_normals.append(tuple(this_normal))
                 this_vertex.clear()
                 this_normal.clear()
-            
-            #print(triangle_vertices)
-            
+                    
             if len(triangle_normals) == 3: 
                 all_triangles.append(tuple(triangle_vertices))
                 all_normals.append(tuple(triangle_normals))
@@ -409,15 +385,12 @@ class Mesh(LogicDrawer3D):
             else: 
                 continue
         
-            
             if len(this_normal) == 3: 
                 triangle_vertices.append(tuple(this_vertex))
                 triangle_normals.append(tuple(this_normal))
                 this_vertex.clear()
                 this_normal.clear()
-            
-            #print(triangle_vertices)
-            
+                    
             if len(triangle_normals) == 3: 
                 GL.glBegin(GL.GL_TRIANGLES)
                 GL.glNormal3f(triangle_normals[0][0], triangle_normals[0][1], triangle_normals[0][2])

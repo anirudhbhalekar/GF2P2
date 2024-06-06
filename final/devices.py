@@ -8,9 +8,9 @@ Classes
 Device - stores device properties.
 Devices - makes and stores all the devices in the logic network.
 """
+
 import random
 
-# NB No translation needed -- all internal, and errors already translated in parse.py
 
 class Device:
 

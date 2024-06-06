@@ -10,32 +10,22 @@ Parser - parses the definition file and builds the logic network.
 """
 from scanner import Symbol
 import gettext
-import sys
 import os
-'''
-# Initialize gettext translation
-locale = "en"
-if len(sys.argv) > 2:
-    if sys.argv[2] == "el" or sys.argv[2] == "el_GR" or sys.argv[2] == "el_GR.utf8":
-        locale = "el_GR.utf8"
-        #print("Locale: Ελληνικα")
-    elif sys.argv[2] == "en" or sys.argv[2] == "en_GB" or sys.argv[2] == "en_GB.utf8":
-        #print("Locale: English")
-        pass
-    else:
-        #print("Locale unknown, defaulting to English")
-        pass
-'''
+
+# Set up localization
 if os.getenv("LANG") == "el_GR.UTF-8":
     locale = "el_GR.utf8"
-    #print("Greek system language detected")
-elif os.getenv("LANG") == "en_US.UTF-8" or os.getenv("LANG") == "en_GB.UTF-8":
-    #print("Your system language is English.")
+elif os.getenv("LANG") in ["en_US.UTF-8", "en_GB.UTF-8"]:
     locale = "en_GB.utf8"
 else:
-    #print("Attention - your system language is neither English nor Greek. Logsim will run in English.")
     locale = "en_GB.utf8"
-lang = gettext.translation("logsim", localedir=os.path.join(os.path.dirname(__file__), 'locales'), languages=[locale], fallback=True)
+
+lang = gettext.translation(
+    "logsim",
+    localedir=os.path.join(os.path.dirname(__file__), 'locales'),
+    languages=[locale],
+    fallback=True
+)
 lang.install()
 _ = lang.gettext
 
@@ -166,7 +156,7 @@ class Parser:
         
 
     def spec_file(self):
-        """Implements rule spec_file = definition, connection, monitor, end;."""
+        """Implement rule spec_file = definition, connection, monitor, end;."""
         self.definition({self.scanner.SEMICOLON})
         self.connection({self.scanner.SEMICOLON})
         self.monitor({self.scanner.SEMICOLON})
@@ -174,7 +164,7 @@ class Parser:
 
 
     def definition(self, stopping_symbols):
-        """Implements rule definition = "DEFINE", [def_list], ";";"""
+        """Implement rule definition = "DEFINE", [def_list], ";";"""
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.DEFINE_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
@@ -190,7 +180,7 @@ class Parser:
 
 
     def def_list(self, stopping_symbols):
-        """Implements rule def_list = name, "AS", (device | gate), ["WITH", set_param], {",", name, "AS", (device | gate), ["WITH", set_param]};"""
+        """Implement rule def_list = name, "AS", (device | gate), ["WITH", set_param], {",", name, "AS", (device | gate), ["WITH", set_param]};"""
         device_id = self.name(stopping_symbols)
         # If invalid keyword, skip to while loop for definition
         if device_id is not None:
@@ -242,7 +232,7 @@ class Parser:
 
 
     def set_param(self, device_kind, stopping_symbols):
-        """Implements rule set_param = param, "=", value;"""
+        """Implement rule set_param = param, "=", value;"""
         # Only one param for different devices, so just return the param value
         if self.param(device_kind, stopping_symbols):
             if self.symbol.type == self.scanner.EQUALS:
@@ -259,7 +249,7 @@ class Parser:
 
 
     def param(self, device_kind, stopping_symbols):
-        """Implements rule param = "inputs" | "initial" | "cycle_rep" | rc_cycles;"""
+        """Implement rule param = "inputs" | "initial" | "cycle_rep" | rc_cycles;"""
         if self.symbol.type == self.scanner.PARAM:
             # The scanner module does 
             device_string = self.names.get_name_string(device_kind)
@@ -283,14 +273,14 @@ class Parser:
             return False
 
     def value(self, stopping_symbols):
-        """Implements rule value = digit, [{digit}];"""
+        """Implement rule value = digit, [{digit}];"""
         # Because of scanner module implementation, we actually check for a format of number
         device_property = self.digit(stopping_symbols)
         return device_property
 
         
     def connection(self, stopping_symbols):
-        """Implements rule connection = "CONNECT", [con_list], ";";"""
+        """Implement rule connection = "CONNECT", [con_list], ";";"""
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.CONNECT_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
@@ -346,7 +336,7 @@ class Parser:
 
 
     def input_con(self, stopping_symbols):
-        """Implements rule input_con = name, ".", input_notation;"""
+        """Implement rule input_con = name, ".", input_notation;"""
         in_device_id = self.name(stopping_symbols)
         if in_device_id is not None:
             if self.symbol.type == self.scanner.DOT:
@@ -361,7 +351,7 @@ class Parser:
         
     
     def output_con(self, stopping_symbols):
-        """Implements rule output_con = name, [".", output_notation];"""
+        """Implement rule output_con = name, [".", output_notation];"""
         out_device_id = self.name(stopping_symbols)
         if out_device_id is not None:
             if self.symbol.type == self.scanner.DOT:
@@ -382,7 +372,7 @@ class Parser:
 
 
     def input_notation(self, stopping_symbols):
-        """Implements rule input_notation = "I", digit, {digit} | "DATA" | "CLK" | "CLEAR" | "SET";"""
+        """Implement rule input_notation = "I", digit, {digit} | "DATA" | "CLK" | "CLEAR" | "SET";"""
         # Check if proper dtype input, or if not the first letter must be "I", followed by digits (isnumeric)
         if self.symbol.type == self.scanner.DTYPE_INPUT:
             in_port_id = self.symbol.id
@@ -402,7 +392,7 @@ class Parser:
 
 
     def output_notation(self, stopping_symbols):
-        """Implements rule output_notation =  "Q" | "QBAR" ;"""
+        """Implement rule output_notation =  "Q" | "QBAR" ;"""
         if self.symbol.type == self.scanner.DTYPE_OUTPUT:
             out_port_id = self.symbol.id
             self.symbol = self.scanner.get_symbol()
@@ -412,7 +402,7 @@ class Parser:
         return out_port_id
 
     def name(self, stopping_symbols):
-        """Implements name = letter, {letter | digit};, but name is returned as a full symbol from scanner"""
+        """Implement name = letter, {letter | digit};, but name is returned as a full symbol from scanner"""
         if self.symbol.type == self.scanner.NAME:
             name = self.symbol.id
             self.symbol = self.scanner.get_symbol()
@@ -432,7 +422,7 @@ class Parser:
 
 
     def monitor(self, stopping_symbols):
-        """Implements rule monitor = "MONITOR", [output_con, {",", output_con}], ";";"""
+        """Implement rule monitor = "MONITOR", [output_con, {",", output_con}], ";";"""
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.MONITOR_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type != self.scanner.SEMICOLON:
@@ -459,7 +449,7 @@ class Parser:
 
 
     def end(self, stopping_symbols):
-        """Implements rule end = "END", ";";"""
+        """Implement rule end = "END", ";";"""
         if self.symbol.type == self.scanner.KEYWORD and self.symbol.id == self.scanner.END_ID:
             self.symbol = self.scanner.get_symbol()
             if self.symbol.type == self.scanner.SEMICOLON:
@@ -471,7 +461,7 @@ class Parser:
     
 
     def digit(self, stopping_symbols):
-        """Implements rule digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";"""
+        """Implement rule digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";"""
         if self.symbol.type == self.scanner.NUMBER:
             value = self.symbol.id
             self.symbol = self.scanner.get_symbol()
@@ -483,7 +473,7 @@ class Parser:
 
 
     def device(self, stopping_symbols):
-        """Implements rule device = "CLOCK" | "SWITCH" | "DTYPE" | "RC";"""
+        """Implement rule device = "CLOCK" | "SWITCH" | "DTYPE" | "RC";"""
         if self.symbol.type == self.scanner.DEVICE:
             device_kind = self.symbol.id
             self.symbol = self.scanner.get_symbol()

@@ -13,6 +13,7 @@ Symbol
 
 from devices import Devices
 
+
 class Symbol:
     """Encapsulate a symbol and store its properties."""
 

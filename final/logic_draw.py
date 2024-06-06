@@ -1,54 +1,54 @@
+"""
+This module contains the LogicDrawer class for rendering various logic gates and components on a canvas using OpenGL.
+"""
+
 from math import cos, sin, pi
 from OpenGL.GL import GL_LINE_STRIP, GL_LINE_LOOP, GL_POLYGON, GL_ENABLE_BIT, GL_LINE_STIPPLE
 from OpenGL.GL import glBegin, glEnd, glVertex2f, glColor3f, glPushAttrib, glLineStipple, glPopAttrib, glEnable
 from OpenGL import GL, GLUT
 
-# NB No translation needed here, only drawing shapes.
-
-"""
-LogicDrawer: A class for rendering various logic gates and components on a canvas using OpenGL.
-
-This class handles the drawing operations for different logic gates such as AND, NAND, OR, NOR, XOR, as well as components like clocks, switches, DTYPEs, and monitors. The gates are drawn based on their specified inputs and positions. The class supports various drawing methods for each gate type, providing functionality to render the shapes, connections, and labels on the canvas.
-
-Attributes:
-    id (int): The device id.
-    n_iter (int): Number of iterations used to draw circles for certain gates.
-    operator_height (int): Base height of the operator.
-    operator_length (int): Length of the operator.
-    inc_height (int): Height increment for additional inputs.
-    names (Names): Instance of the Names class.
-    devices (Devices): Instance of the Devices class.
-    monitors (Monitors): Instance of the Monitors class.
-    device (Device): The device object.
-    device_inputs (dict): Dictionary of device inputs.
-    device_outputs (dict): Dictionary of device outputs.
-    n_inputs (int): Number of inputs for the device.
-    height (int): Height of the gate.
-    length (int): Length of the gate.
-    input_dict (dict): Dictionary storing input coordinates.
-    output_dict (dict): Dictionary storing output coordinates.
-    monitor_dict (dict): Dictionary storing monitor coordinates.
-    domain (list): List of tuples representing the bounding domain.
-
-Methods:
-    draw_with_string(op_string, x, y): Calls the appropriate draw function based on the gate type.
-    bound_y(): Returns the y-coordinate padding bound of a device.
-    make_circle(x, y): Draws a dot at the specified (x, y) position to symbolize a connection point.
-    draw_and_gate(x, y): Renders and draws an AND gate at the specified position.
-    draw_nand_gate(x, y): Renders and draws a NAND gate at the specified position.
-    draw_or_gate(x, y): Renders and draws an OR gate at the specified position.
-    draw_nor_gate(x, y): Renders and draws a NOR gate at the specified position.
-    draw_xor_gate(x, y): Renders and draws an XOR gate at the specified position.
-    draw_switch(x, y): Renders and draws a switch at the specified position.
-    draw_clock(x, y): Renders and draws a clock at the specified position.
-    draw_dtype(x, y): Renders and draws a DTYPE at the specified position.
-    render_text(text, x_pos, y_pos, color): Handles text drawing operations at the specified position and color.
-    draw_monitor(x, y, m_name): Renders and draws a monitor at the specified position.
-"""
-
-
 class LogicDrawer:
-    """Handle all logic gate drawings."""
+    """
+    LogicDrawer: A class for rendering various logic gates and components on a canvas using OpenGL.
+
+    This class handles the drawing operations for different logic gates such as AND, NAND, OR, NOR, XOR, as well as components like clocks, switches, DTYPEs, and monitors. The gates are drawn based on their specified inputs and positions. The class supports various drawing methods for each gate type, providing functionality to render the shapes, connections, and labels on the canvas.
+
+    Attributes:
+        id (int): The device id.
+        n_iter (int): Number of iterations used to draw circles for certain gates.
+        operator_height (int): Base height of the operator.
+        operator_length (int): Length of the operator.
+        inc_height (int): Height increment for additional inputs.
+        names (Names): Instance of the Names class.
+        devices (Devices): Instance of the Devices class.
+        monitors (Monitors): Instance of the Monitors class.
+        device (Device): The device object.
+        device_inputs (dict): Dictionary of device inputs.
+        device_outputs (dict): Dictionary of device outputs.
+        n_inputs (int): Number of inputs for the device.
+        height (int): Height of the gate.
+        length (int): Length of the gate.
+        input_dict (dict): Dictionary storing input coordinates.
+        output_dict (dict): Dictionary storing output coordinates.
+        monitor_dict (dict): Dictionary storing monitor coordinates.
+        domain (list): List of tuples representing the bounding domain.
+
+    Methods:
+        draw_with_string(op_string, x, y): Calls the appropriate draw function based on the gate type.
+        bound_y(): Returns the y-coordinate padding bound of a device.
+        make_circle(x, y): Draws a dot at the specified (x, y) position to symbolize a connection point.
+        draw_and_gate(x, y): Renders and draws an AND gate at the specified position.
+        draw_nand_gate(x, y): Renders and draws a NAND gate at the specified position.
+        draw_or_gate(x, y): Renders and draws an OR gate at the specified position.
+        draw_nor_gate(x, y): Renders and draws a NOR gate at the specified position.
+        draw_xor_gate(x, y): Renders and draws an XOR gate at the specified position.
+        draw_switch(x, y): Renders and draws a switch at the specified position.
+        draw_clock(x, y): Renders and draws a clock at the specified position.
+        draw_dtype(x, y): Renders and draws a DTYPE at the specified position.
+        render_text(text, x_pos, y_pos, color): Handles text drawing operations at the specified position and color.
+        draw_monitor(x, y, m_name): Renders and draws a monitor at the specified position.
+        draw_RC(x, y): Renders and draws a RC at the specified position.
+    """
     
     def __init__(self, names, devices, monitors, id, n_iter=10):
             """Initialize logic drawer with the number of inputs for 
@@ -76,8 +76,6 @@ class LogicDrawer:
 
                 self.n_inputs = len(self.device_inputs.keys())
                 
-                # 5 pixels height increase for each additional input
-                # top and bottom padding 5 px each
                 # self.height is only the vertical straight bit
                 self.height = self.operator_height 
 
@@ -602,7 +600,6 @@ class LogicDrawer:
     def draw_xor_gate(self, x, y):
         """Render and draw an OR gate from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
-
         # n_inputs is ONLY 2 here -- don't modify n_inputs as its default is 2. 
         assert self.n_inputs == 2
         assert self.height == 30
@@ -651,7 +648,6 @@ class LogicDrawer:
     def draw_switch(self, x, y):
         """Render and draw a switch from the LogicDrawer on the canvas,
         with the position, inputs and iterations inherited from the class."""
-        
         self.x, self.y = x, y
         # Radius 20
         self.height = 40
@@ -793,7 +789,8 @@ class LogicDrawer:
             self.render_text(out_labels.pop(0), coord_output[0] - 5, coord_output[1])
 
     def draw_RC(self, x, y): 
-
+        """Render and draw a RC from the LogicDrawer on the canvas,
+        with the position, inputs and iterations inherited from the class."""
         self.x = x
         self.y = y 
         self.height = 40
@@ -833,7 +830,6 @@ class LogicDrawer:
 
     def draw_monitor(self, x, y, m_name: str):
         """Render and draw a Monitor"""
-        
         self.x, self.y = x, y 
         # x, y defined from bottom of vertical line below tringle
         glColor3f(1.0, 0.0, 1.0)  # Purple color
@@ -857,19 +853,14 @@ class LogicDrawer:
 
     def render_text(self, text, x_pos, y_pos, color = 'blue'):
         """Handle text drawing operations."""
-
         if color == "blue":
             GL.glColor3f(0.0, 0.0, 1.0)  # text is blue
-        
         elif color == "purple":
             GL.glColor3f(1.0, 0.0, 1.0)  # text is purple
-
         elif color == "black": 
             GL.glColor3f(0.0, 0.0, 0.0)  # text is black
-        
         elif color == "red":
             GL.glColor3f(1.0, 0.0, 0.0) # text is red
-        
         elif color == "green":
             GL.glColor3f(0.0, 1.0, 0.0) # text is green
 

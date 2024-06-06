@@ -1,9 +1,19 @@
+"""
+This module contains custom classes for creating a graphical user interface
+and handling OpenGL rendering within a wxPython application.
+
+Classes:
+--------
+    - MyGLCanvasMonitor3D: A custom wx.glcanvas.GLCanvas class for handling
+      OpenGL rendering, event handling, and drawing operations for 3D logic
+      signals.
+"""
+
 import wx
 import wx.glcanvas as wxcanvas
 import numpy as np
 import math
 from OpenGL import GL, GLU, GLUT
-import wx.glcanvas
 
 from names import Names
 from devices import Devices
@@ -11,8 +21,8 @@ from network import Network
 from monitors import Monitors
 from scanner import Scanner
 from parse import Parser
-
 from logic_draw_3D import LogicDrawer3D
+
 
 class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
     """Handle all drawing operations.
@@ -185,12 +195,16 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
             for signal in signal_list: 
                 if signal == self.devices.HIGH: 
                     s_name = "HIGH"
+
                 if signal == self.devices.LOW: 
                     s_name = "LOW"
+
                 if signal == self.devices.RISING: 
                     s_name = "RISING"
+
                 if signal == self.devices.FALLING: 
                     s_name = "FALLING"
+
                 if signal == self.devices.BLANK: 
                     s_name = "BLANK"
    
@@ -209,17 +223,20 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
         y_offset = 0
         x_offset = 0
 
+        GL.glColor3f(1.0,1.0,1.0)
+        self.signal_renderer.render_text("Time Axis", -15, 15 , 10)
         for i, signal_list in enumerate(self.all_signals): 
             x_offset = 0
             color = self.color_arr[i]
             monitor_name = self.m_names[i]
             
             signal_list = signal_list[self.scroll_val: self.scroll_val + self.max_view]
-
+            
             for j, s_name in enumerate(signal_list): 
                 if (j + self.scroll_val) % 10 == 0: 
                     GL.glColor3f(1.0,1.0,1.0)
                     self.signal_renderer.render_text(str(int(j + self.scroll_val)), x_offset, +15, 0)
+
                 self.signal_renderer.draw_signal(x_offset, y_offset, s_name, color)
                 x_offset += x_dist
 
@@ -277,11 +294,14 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
             y = event.GetY() - self.last_mouse_y
             if event.LeftIsDown():
                 GL.glRotatef(math.sqrt((x * x) + (y * y)), y, x, 0)
+
             if event.MiddleIsDown():
                 GL.glRotatef((x + y), 0, 0, 1)
+
             if event.RightIsDown():
                 self.pan_x += x
                 self.pan_y -= y
+                
             GL.glMultMatrixf(self.scene_rotate)
             GL.glGetFloatv(GL.GL_MODELVIEW_MATRIX, self.scene_rotate)
             self.last_mouse_x = event.GetX()
