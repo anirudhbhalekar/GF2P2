@@ -209,13 +209,15 @@ class MyGLCanvasMonitor3D(wxcanvas.GLCanvas):
         y_offset = 0
         x_offset = 0
 
+        GL.glColor3f(1.0,1.0,1.0)
+        self.signal_renderer.render_text("Time Axis", -15, 15 , 10)
         for i, signal_list in enumerate(self.all_signals): 
             x_offset = 0
             color = self.color_arr[i]
             monitor_name = self.m_names[i]
             
             signal_list = signal_list[self.scroll_val: self.scroll_val + self.max_view]
-
+            
             for j, s_name in enumerate(signal_list): 
                 if (j + self.scroll_val) % 10 == 0: 
                     GL.glColor3f(1.0,1.0,1.0)
