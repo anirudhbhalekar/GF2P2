@@ -1,13 +1,14 @@
-"""Implement the graphical user interface for the Logic Simulator.
+"""
+Implement the graphical user interface for the Logic Simulator.
 
 Used in the Logic Simulator project to enable the user to run the simulation
 or adjust the network properties.
 
 Classes:
 --------
-MyGLCanvas - handles all canvas drawing operations.
-Gui - configures the main window and all the widgets.
+MyGLCanvas3D - Handles all canvas drawing operations.
 """
+
 import wx
 import wx.glcanvas as wxcanvas
 import numpy as np
@@ -25,41 +26,40 @@ from logic_draw_3D import LogicDrawer3D
 from connect_draw_3D import ConnectDrawer3D
 import os
 
+
 class MyGLCanvas3D(wxcanvas.GLCanvas):
-    """Handle all drawing operations.
+    """
+    Handle all drawing operations.
 
     This class contains functions for drawing onto the canvas. It
     also contains handlers for events relating to the canvas.
 
     Parameters
     ----------
-    parent: parent window.
-    devices: instance of the devices.Devices() class.
-    monitors: instance of the monitors.Monitors() class.
+    parent : wx.Window
+        Parent window.
+    devices : Devices
+        Instance of the devices.Devices class.
+    monitors : Monitors
+        Instance of the monitors.Monitors class.
 
     Public methods
     --------------
-    init_gl(self): Configures the OpenGL context.
-
-    render(self): Handles all drawing operations.
-
-    on_paint(self, event): Handles the paint event.
-
-    on_size(self, event): Handles the canvas resize event.
-
-    on_mouse(self, event): Handles mouse events.
-
-    render_text(self, text, x_pos, y_pos, z_pos): Handles text drawing
-                                                  operations.
+    init_gl(self) : Configures the OpenGL context.
+    render(self, text=None) : Handles all drawing operations.
+    on_paint(self, event) : Handles the paint event.
+    on_size(self, event) : Handles the canvas resize event.
+    on_mouse(self, event) : Handles mouse events.
+    render_text(self, text, x_pos, y_pos, z_pos) : Handles text drawing
+                                                   operations.
     """
 
-    def __init__(self, parent, devices : Devices, monitors: Monitors):
-        """Initialise canvas properties and useful variables."""
-   
-        super().__init__(parent, -1,
-                         attribList=[wxcanvas.WX_GL_RGBA,
-                                    wxcanvas.WX_GL_DOUBLEBUFFER,
-                                   wxcanvas.WX_GL_DEPTH_SIZE, 16, 0])
+    def __init__(self, parent, devices: Devices, monitors: Monitors):
+        """Initialize canvas properties and useful variables."""
+        super().__init__(parent, -1, attribList=[
+            wxcanvas.WX_GL_RGBA, wxcanvas.WX_GL_DOUBLEBUFFER,
+            wxcanvas.WX_GL_DEPTH_SIZE, 16, 0
+        ])
         
         GLUT.glutInit()
         self.init = False
@@ -80,16 +80,16 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         self.full_specular = [0.5, 0.5, 0.5, 1.0]
         self.no_specular = [0.0, 0.0, 0.0, 1.0]
 
-        # Initialise variables for panning
+        # Initialize variables for panning
         self.pan_x = 0
         self.pan_y = 0
         self.last_mouse_x = 0  # previous mouse x position
         self.last_mouse_y = 0  # previous mouse y position
 
-        # Initialise the scene rotation matrix
+        # Initialize the scene rotation matrix
         self.scene_rotate = np.identity(4, 'f')
 
-        # Initialise variables for zooming
+        # Initialize variables for zooming
         self.zoom = 20
 
         self.names = parent.names
@@ -103,8 +103,8 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         self.depth_offset = 1000
 
         self.devices_list = self.devices.devices_list
-        self.obj_vertex_loader = {} # This will store the vertex data for all the objects!
-        self.face_loader = {} # For face storing data
+        self.obj_vertex_loader = {}  # This will store the vertex data for all the objects!
+        self.face_loader = {}  # For face storing data
         self.tube_vertices_list = []
         
         # Bind events to the canvas
@@ -116,7 +116,7 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         self.initialise_device_render()
 
     def init_gl(self):
-        """Configure and initialise the OpenGL context."""
+        """Configure and initialize the OpenGL context."""
         size = self.GetClientSize()
    
         GL.glClearColor(0.0, 0.0, 0.0, 1.0)
@@ -141,8 +141,7 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
 
         GL.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, self.mat_specular)
         GL.glMaterialfv(GL.GL_FRONT, GL.GL_SHININESS, self.mat_shininess)
-        GL.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE,
-                        self.mat_diffuse)
+        GL.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE, self.mat_diffuse)
         GL.glColorMaterial(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE)
 
         GL.glClearColor(0.0, 0.0, 0.0, 0.0)
@@ -166,63 +165,75 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         GL.glMultMatrixf(self.scene_rotate)
         GL.glScalef(self.zoom, self.zoom, self.zoom)
     
-    def initialise_device_render(self): 
+    def initialise_device_render(self):
+        """
+        Initialize device render settings.
 
-        """ The exact same as assemble devices - but its called only once 
-            to initialise the input_output coords list"""
+        This is the same as assemble_devices but called only once
+        to initialize the input_output coords list.
+        """
         x_start, y_start = 0, 30
         x_space, y_space = 20, 15
 
         curr_x, curr_y = x_start, y_start
-        for device in self.devices_list: 
-            # We render any object as it comes 
+        for device in self.devices_list:
+            # Render any object as it comes
             device_id = device.device_id
             self.scene_renderer.return_io_list(device_id, curr_x, curr_y)
             curr_y -= y_space
 
-            if curr_y < 0: 
+            if curr_y < 0:
                 curr_y = y_start
                 curr_x += x_space
 
         self.inputs_dict = self.scene_renderer.inputs_dict
-        self.outputs_dict= self.scene_renderer.outputs_dict
+        self.outputs_dict = self.scene_renderer.outputs_dict
 
         self.connect_render = ConnectDrawer3D(self.names, self.devices, self.monitors, self.network, 
                                               self.inputs_dict, self.outputs_dict)
 
         self.tube_vertices_list = self.connect_render.make_all_connections()
 
-    def assemble_devices(self): 
-
+    def assemble_devices(self):
+        """Assemble and render all devices."""
         x_start, y_start = 0, 30
         x_space, y_space = 20, 15
 
         curr_x, curr_y = x_start, y_start
-        for device in self.devices_list: 
-            # We render any object as it comes 
+        for device in self.devices_list:
+            # Render any object as it comes
             device_id = device.device_id
             self.scene_renderer.draw_with_id(device_id, curr_x, curr_y)
 
             curr_y -= y_space
 
-            if curr_y < 0: 
+            if curr_y < 0:
                 curr_y = y_start
                 curr_x += x_space
 
-    def assemble_connections(self): 
+    def assemble_connections(self):
+        """Assemble and render all connections."""
         self.connect_render.draw_connections(self.tube_vertices_list)
 
-    def assemble_monitors(self): 
+    def assemble_monitors(self):
+        """Assemble and render all monitors."""
         monitors_dict = self.monitors.monitors_dictionary
 
-        for key in monitors_dict.keys(): 
+        for key in monitors_dict.keys():
             dev_id = key[0]
             port_id = key[1]
             m_coord = self.outputs_dict[(dev_id, port_id)]
             self.scene_renderer.draw_monitor(m_coord[0], m_coord[1], dev_id, port_id)
 
-    def render(self, text = None):
-        """Handle all drawing operations."""
+    def render(self, text=None):
+        """
+        Handle all drawing operations.
+
+        Parameters
+        ----------
+        text : str, optional
+            Text to render (default is None).
+        """
         # Clear everything
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
 
@@ -231,7 +242,7 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
         self.assemble_devices()
         self.assemble_connections()
         self.assemble_monitors()
-        #self.draw_cuboid(None, None, None, None, None)
+
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front
         GL.glFlush()
@@ -240,15 +251,14 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
     def on_paint(self, event):
         """Handle the paint event."""
         self.SetCurrent(self.context)
-        if not not hasattr(self, 'init'):
+        if not hasattr(self, 'init'):
             # Configure the OpenGL rendering context
             self.init = True 
             self.init_gl()
         size = self.GetClientSize()
-        text = "".join(["Canvas redrawn on paint event, size is ",
-                        str(size.width), ", ", str(size.height)])
+        text = f"Canvas redrawn on paint event, size is {size.width}, {size.height}"
         self.render()
-        
+
     def on_size(self, event):
         """Handle the canvas resize event."""
         # Forces reconfiguration of the viewport, modelview and projection
@@ -258,7 +268,6 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
     def on_mouse(self, event):
         """Handle mouse events."""
         self.SetCurrent(self.context)
-        
 
         if event.ButtonDown():
             self.last_mouse_x = event.GetX()
@@ -283,19 +292,30 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
             self.init = False
 
         if event.GetWheelRotation() < 0:
-            self.zoom *= (1.0 + (
-                event.GetWheelRotation() / (20 * event.GetWheelDelta())))
+            self.zoom *= (1.0 + (event.GetWheelRotation() / (20 * event.GetWheelDelta())))
             self.init = False
 
         if event.GetWheelRotation() > 0:
-            self.zoom /= (1.0 - (
-                event.GetWheelRotation() / (20 * event.GetWheelDelta())))
+            self.zoom /= (1.0 - (event.GetWheelRotation() / (20 * event.GetWheelDelta())))
             self.init = False
 
         self.Refresh()  # triggers the paint event
 
     def render_text(self, text, x_pos, y_pos, z_pos):
-        """Handle text drawing operations."""
+        """
+        Handle text drawing operations.
+
+        Parameters
+        ----------
+        text : str
+            Text to render.
+        x_pos : float
+            X position.
+        y_pos : float
+            Y position.
+        z_pos : float
+            Z position.
+        """
         GL.glDisable(GL.GL_LIGHTING)
         GL.glRasterPos3f(x_pos, y_pos, z_pos)
         font = GLUT.GLUT_BITMAP_HELVETICA_10
@@ -308,5 +328,3 @@ class MyGLCanvas3D(wxcanvas.GLCanvas):
                 GLUT.glutBitmapCharacter(font, ord(character))
 
         GL.glEnable(GL.GL_LIGHTING)
-
-
