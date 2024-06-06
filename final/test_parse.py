@@ -12,7 +12,7 @@ def get_all_files(folder):
     ''' Return a list of all files in the given folder. '''
     return [os.path.join(folder, f) for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
 
-@pytest.mark.parametrize("file_path", get_all_files('test_definition_files/'))
+@pytest.mark.parametrize("file_path", get_all_files('../test_definition_files/'))
 def test_definition_files(file_path): 
     ''' Tests the definition files -- these should all return True as they don't contain errors'''
 
@@ -25,7 +25,7 @@ def test_definition_files(file_path):
     parser = Parser(names, devices, network, monitors, scanner) 
     assert parser.parse_network()
 
-@pytest.mark.parametrize("file_path", get_all_files('example_definition_files/'))
+@pytest.mark.parametrize("file_path", get_all_files('../example_definition_files/'))
 def test_definition_files(file_path): 
     ''' Tests the example definition files -- these should all return True as they don't contain errors'''
 
@@ -40,7 +40,7 @@ def test_definition_files(file_path):
 
 
 # Parameterize with (file_path)
-@pytest.mark.parametrize("error_file_path", get_all_files('error_definition_files/'))
+@pytest.mark.parametrize("error_file_path", get_all_files('../error_definition_files/'))
 def test_error_definition_files(error_file_path): 
     ''' Tests the definition files with errors -- these should all return False as they don't contain errors.
     Furthermore the number of errors should be equal to the actual (hardcoded) number of errors in each file'''
