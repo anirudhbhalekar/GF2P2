@@ -1,27 +1,32 @@
 """
-Description:
-    This script contains the implementation of a GUI application for the logic simulator.
-    It includes custom classes for creating a graphical user interface, managing text input, and editing files.
-    The application allows users to interact with various widgets,
-    edit text content, and save changes to files.
+Custom classes for creating a graphical user interface, managing text input, and editing files.
+
+This module allows users to interact with various widgets, edit text content, and save changes to files.
 
 Classes:
+--------
     - PromptedTextCtrl: A custom text control class for creating a command-line style text box.
     - TextEditor: A text editor window for editing source files.
-
-Dependencies:
-    - Python 3.x
-    - wxPython library
-    - gettext library
-
 """
 
 import wx
 import gettext
-import sys
-# Initialize gettext translation
-locale = sys.argv[2] if len(sys.argv) > 2 else "en"
-lang = gettext.translation("logsim", localedir=r'C:\Users\Shawn\Documents\Cambridge Part IIA\Project GF2\GF2P2\logsim\locales', languages=[locale], fallback=True)
+import os
+
+# Set up localization
+if os.getenv("LANG") == "el_GR.UTF-8":
+    locale = "el_GR.utf8"
+elif os.getenv("LANG") in ["en_US.UTF-8", "en_GB.UTF-8"]:
+    locale = "en_GB.utf8"
+else:
+    locale = "en_GB.utf8"
+
+lang = gettext.translation(
+    "logsim",
+    localedir=os.path.join(os.path.dirname(__file__), 'locales'),
+    languages=[locale],
+    fallback=True
+)
 lang.install()
 _ = lang.gettext
 

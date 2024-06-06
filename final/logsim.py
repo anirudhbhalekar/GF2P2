@@ -1,3 +1,10 @@
+"""
+This module initializes and runs the Logic Simulator.
+
+The simulator can be run through either a command line interface or a graphical user interface,
+based on user input. It supports localization for English and Greek languages.
+"""
+
 import getopt
 import sys
 import os
@@ -13,34 +20,30 @@ from scanner import Scanner
 from parse import Parser
 from userint import UserInterface
 from gui import Gui
-'''
-# Initialize gettext translation
-locale = "en"
-if len(sys.argv) > 2:
-    if sys.argv[2] == "el" or sys.argv[2] == "el_GR" or sys.argv[2] == "el_GR.utf8":
-        locale = "el_GR.utf8"
-        print("Locale: Ελληνικα")
-    elif sys.argv[2] == "en" or sys.argv[2] == "en_GB" or sys.argv[2] == "en_GB.utf8":
-        print("Locale: English")
-    else:
-        print("Locale unknown, defaulting to English")
-'''
+
+# Determine the system language and set locale accordingly
 if os.getenv("LANG") == "el_GR.UTF-8":
     locale = "el_GR.utf8"
     print("Greek system language detected")
-elif os.getenv("LANG") == "en_US.UTF-8" or os.getenv("LANG") == "en_GB.UTF-8":
+elif os.getenv("LANG") in ["en_US.UTF-8", "en_GB.UTF-8"]:
     print("Your system language is English.")
     locale = "en_GB.utf8"
 else:
     print("Attention - your system language is neither English nor Greek. Logsim will run in English.")
     locale = "en_GB.utf8"
 
-lang = gettext.translation("logsim", localedir=os.path.join(os.path.dirname(__file__), 'locales'), languages=[locale], fallback=True)
+lang = gettext.translation(
+    "logsim",
+    localedir=os.path.join(os.path.dirname(__file__), 'locales'),
+    languages=[locale],
+    fallback=True
+)
 lang.install()
 _ = lang.gettext
 
 def main(arg_list):
-    """Parse the command line options and arguments specified in arg_list.
+    """
+    Parse the command line options and arguments specified in arg_list.
 
     Run either the command line user interface, the graphical user interface,
     or display the usage message.
@@ -49,6 +52,7 @@ def main(arg_list):
 Show help: logsim.py -h
 Command line user interface: logsim.py -c <file path>
 Graphical user interface: logsim.py <file path>""")
+    
     try:
         options, arguments = getopt.getopt(arg_list, "hc:")
     except getopt.GetoptError:
@@ -75,14 +79,13 @@ Graphical user interface: logsim.py <file path>""")
                 userint.command_interface()
 
     if not options:  # no option given, use the graphical user interface
-
         if len(arguments) > 2:  # wrong number of arguments
             print(_("Error: one file path required and one language code optional\n"))
             print(usage_message)
             sys.exit()
-        try: 
+        try:
             path = arguments[0]
-        except: 
+        except IndexError:
             raise ValueError("Valid File Path Error")
         
         scanner = Scanner(path, names)
@@ -91,11 +94,9 @@ Graphical user interface: logsim.py <file path>""")
         assert parser.parse_network()
         # Initialise an instance of the gui.Gui() class
         app = wx.App()
-        gui = Gui(_("Logic Simulator"), path, names, devices, network,
-                    monitors)
+        gui = Gui(_("Logic Simulator"), path, names, devices, network, monitors)
         gui.Show(True)
         app.MainLoop()
-
 
 if __name__ == "__main__":
     main(sys.argv[1:])
