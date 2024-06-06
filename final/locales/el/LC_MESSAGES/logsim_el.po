@@ -1,0 +1,672 @@
+#: userint.py:274
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-06-04 16:23+0100\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: el\n"
+
+#: canvas.py:254
+msgid "Canvas redrawn on paint event, size is "
+msgstr "Ο καμβάς επανασχεδιάστηκε στο γεγονός ζωγραφικής, το μέγεθος είναι "
+
+#: canvas.py:317
+msgid "Monitor Removed\n"
+msgstr "Κατάργηση οθόνης\n"
+
+#: canvas.py:319
+msgid "Error! Monitor not found!"
+msgstr "Σφάλμα! Δεν βρέθηκε οθόνη!"
+
+#: canvas.py:329
+msgid "Monitor Added\n"
+msgstr "Προστέθηκε οθόνη\n"
+
+#: canvas.py:331
+msgid "Error! Monitor already added!"
+msgstr "Σφάλμα! Η οθόνη έχει ήδη προστεθεί!"
+
+#: canvas.py:348
+msgid "Mouse button pressed at: "
+msgstr "Πάτημα πλήκτρου ποντικιού στη θέση: "
+
+#: canvas.py:365
+msgid "Mouse button released at: "
+msgstr "Απελευθέρωση πλήκτρου ποντικιού στη θέση: "
+
+#: canvas.py:368
+msgid "Mouse left canvas at: "
+msgstr "Απομάκρυνση ποντικιού από το Canvas στη θέση: "
+
+#: canvas.py:376
+msgid "Mouse dragged to: "
+msgstr "Σύρσιμο ποντικιού προς τη θέση: "
+
+#: canvas.py:386
+msgid "Negative mouse wheel rotation. Zoom is now: "
+msgstr "Αρνητική περιστροφή τροχού ποντικιού. Η μεγέθυνση είναι τώρα: "
+
+#: canvas.py:395
+msgid "Positive mouse wheel rotation. Zoom is now: "
+msgstr "Θετική περιστροφή τροχού ποντικιού. Η μεγέθυνση είναι τώρα: "
+
+#: gui.py:140
+msgid "&About"
+msgstr "&Περί"
+
+#: gui.py:141
+msgid "&Exit"
+msgstr "&Έξοδος"
+
+#: gui.py:142
+msgid "&Open"
+msgstr "&Άνοιγμα"
+
+#: gui.py:143
+msgid "&Edit"
+msgstr "&Επεξεργασία"
+
+#: gui.py:144
+msgid "&Commands"
+msgstr "&Εντολές"
+
+#: gui.py:145
+msgid "&Change 3D Signal Max"
+msgstr "&Αλλαγή Μέγιστης Σήματος 3D"
+
+#: gui.py:146
+msgid "&Change 2D Signal Max"
+msgstr "&Αλλαγή Μέγιστης Σήματος 2D"
+
+#: gui.py:152
+msgid "&File"
+msgstr "&Αρχείο"
+
+#: gui.py:153
+msgid "&Source"
+msgstr "&Πηγή"
+
+#: gui.py:154
+msgid "&Command"
+msgstr "&Εντολή"
+
+#: gui.py:155
+msgid "&View Options"
+msgstr "&Προβολή επιλογών"
+
+#: gui.py:180 gui.py:381
+msgid "Cycles"
+msgstr "Κύκλοι"
+
+#: gui.py:182 gui.py:382
+msgid "Run"
+msgstr "Εκτέλεση"
+
+#: gui.py:183 gui.py:383
+msgid "Continue"
+msgstr "Συνέχεια"
+
+#: gui.py:184 gui.py:384
+msgid "Reset Plot"
+msgstr "Επαναφορά Πλοκής"
+
+#: gui.py:185 gui.py:385
+msgid "Zap Monitor"
+msgstr "Αποσύνδεση Οθόνης"
+
+#: gui.py:186 gui.py:386
+msgid "Add Monitor"
+msgstr "Προσθήκη Οθόνης"
+
+#: gui.py:187 gui.py:387
+msgid "Reset View"
+msgstr "Επαναφορά Προβολής"
+
+#: gui.py:189
+msgid "Clear terminal"
+msgstr "Καθαρισμός τερματικού"
+
+#: gui.py:190
+msgid "3D Mode"
+msgstr "Λειτουργία 3D"
+
+#: gui.py:388
+msgid "Clear Terminal"
+msgstr "Καθαρισμός τερματικού"
+
+#: gui.py:406 userint.py:262
+msgid "Error! Network oscillating."
+msgstr "Σφάλμα! Δίκτυο ανακλαστικό."
+
+#: gui.py:425
+msgid "Nothing to continue - run the simulation first"
+msgstr "Τίποτα να συνεχίσετε - εκτελέστε πρώτα την προσομοίωση"
+
+#: gui.py:440
+msgid "Logic Simulator for GF2P2\n"
+msgstr "Προσομοιωτής Λογικής για GF2P2\n"
+
+#: gui.py:441
+msgid "Created by Mojisola Agboola, 2017\n"
+msgstr "Δημιουργήθηκε από την Μονζιόλα Αγκμπόλα, 2017\n"
+
+#: gui.py:442
+msgid "Modified by Anirudh Bhalekar, Moses Liew, Shawn Li, 2024"
+msgstr "Τροποποιήθηκε από τους Ανίρουντ Μπαλέκαρ, Μόσες Λιου, Σον Λι, 2024"
+
+#: gui.py:443
+msgid "About Logsim"
+msgstr "Σχετικά με το Logsim"
+
+#: gui.py:459
+msgid ""
+"List of user commands: \n"
+"r N - run the simulation for N cycles\n"
+"c N - continue simulation for N cycles\n"
+"s X N - set switch X to N (0 or 1)\n"
+"m X - set a monitor on signal X\n"
+"z X - zap the monitor on signal X\n"
+"h - print a list of available commands on the terminal\n"
+"q - quit the simulation"
+msgstr ""
+"Λίστα εντολών χρήστη:\n"
+"r N - εκτέλεση της προσομοίωσης για N κύκλους\n"
+"c N - συνέχιση της προσομοίωσης για N κύκλους\n"
+"s X N - ρύθμιση του διακόπτη X σε N (0 ή 1)\n"
+"m X - ρύθμιση οθόνης στο σήμα X\n"
+"z X - απενεργοποίηση της οθόνης στο σήμα X\n"
+"h - εκτύπωση μιας λίστας διαθέσιμων εντολών στο τερματικό\n"
+"q - έξοδος από την προσομοίωση"
+
+#: gui.py:468
+msgid "Open New Source File"
+msgstr "Άνοιγμα Νέου Αρχείου Πηγής"
+
+#: gui.py:515
+msgid " Opened file:"
+msgstr " Άνοιξε αρχείο:"
+
+#: gui.py:520
+msgid "Error! Faulty definition file!"
+msgstr "Σφάλμα! Ελαττωματικό αρχείο ορισμού!"
+
+#: gui.py:521
+msgid "{num_errors} errors caught"
+msgstr "{num_errors} σφάλματα που εντοπίστηκαν"
+
+#: gui.py:524
+msgid "Cannot open file: {exception}"
+msgstr "Αδυναμία ανοίγματος αρχείου: {exception}"
+
+#: gui.py:527
+msgid "Change Value of 3D max view"
+msgstr "Αλλαγή τιμής προβολής 3D max"
+
+#: gui.py:534 gui.py:545
+#, fuzzy
+msgid "Value must be greater than 20"
+msgstr "Ο αριθμός πρέπει να είναι μεγαλύτερος ή ίσος με το 20"
+
+#: gui.py:536 gui.py:547
+msgid "Incorrect data type! Not saved"
+msgstr "Λανθασμένος τύπος δεδομένων! Δεν αποθηκεύτηκε"
+
+#: gui.py:538
+msgid "Change Value of 2D max view"
+msgstr "Αλλαγή τιμής προβολής 2D max"
+
+#: gui.py:555
+msgid "New spin control value: "
+msgstr "Νέα τιμή ελέγχου περιστροφής: "
+
+#: gui.py:561
+msgid "Run button pressed, {cycle_count} cycles."
+msgstr "Πατήθηκε το κουμπί Εκτέλεση, {cycle_count} κύκλοι."
+
+#: gui.py:565 gui.py:578 gui.py:639
+msgid "Max cycle count exceeded! Refresh the plot or edit the source data"
+msgstr "Υπέρβαση μέγιστου αριθμού κύκλων! Ανανεώστε την πλοκή ή επεξεργαστείτε τα δεδομένα πηγής"
+
+#: gui.py:574 gui.py:653 gui.py:835 gui.py:856
+msgid "Run failed - cannot plot monitors"
+msgstr "Η εκτέλεση απέτυχε - δεν είναι δυνατή η παρουσίαση των οθονών"
+
+#: gui.py:592 gui.py:727
+msgid "Monitor Plots"
+msgstr "Γραφικές Παραστάσεις Οθονών"
+
+#: gui.py:606
+msgid "Reset plot button pressed."
+msgstr "Πατήθηκε το κουμπί Επαναφοράς Πλοκής."
+
+#: gui.py:636
+msgid "Continue button pressed, {cycle_count} cycles."
+msgstr "Πατήθηκε το κουμπί Συνέχιση, {cycle_count} κύκλοι."
+
+#: gui.py:647 gui.py:656
+msgid "Nothing to Continue - try running the simulation first"
+msgstr ""
+"Δεν υπάρχει κάτι να συνεχίσετε - δοκιμάστε πρώτα να εκτελέσετε την "
+"προσομοίωση"
+
+#: gui.py:674 gui.py:677
+msgid "Invalid Device Type"
+msgstr "Μη έγκυρος Τύπος Συσκευής"
+
+#: gui.py:699 gui.py:719
+msgid "Monitor addition error"
+msgstr "Σφάλμα προσθήκης οθόνης"
+
+#: gui.py:780
+msgid "Clear button pressed."
+msgstr "Πατήθηκε το κουμπί Καθαρισμού."
+
+#: gui.py:786
+msgid "Reset view button pressed"
+msgstr "Πατήθηκε το κουμπί Επαναφοράς Προβολής"
+
+#: gui.py:839
+msgid "Running simulation for {cycles} cycles.\n"
+msgstr "Εκτέλεση προσομοίωσης για {cycles} κύκλους.\n"
+
+#: gui.py:844 gui.py:868
+msgid "Invalid command. Please provide a valid number of cycles.\n"
+msgstr "Μη έγκυρη εντολή. Παρακαλώ δώστε έναν έγκυρο αριθμό κύκλων.\n"
+
+#: gui.py:860
+msgid "Continuing simulation for {cycles} cycles.\n"
+msgstr "Συνέχιση της προσομοίωσης για {cycles} κύκλους.\n"
+
+#: gui.py:864
+msgid "Nothing to continue - run the simulation first.\n"
+msgstr "Δεν υπάρχει κάτι να συνεχίσετε - εκτελέστε πρώτα την προσομοίωση.\n"
+
+#: gui.py:878
+msgid "Switch value must be 0 or 1\n"
+msgstr "Η τιμή του διακόπτη πρέπει να είναι 0 ή 1\n"
+
+#: gui.py:879
+msgid "Switch value must be 0 or 1"
+msgstr "Η τιμή του διακόπτη πρέπει να είναι 0 ή 1"
+
+#: gui.py:883
+msgid "Switch set failed"
+msgstr "Αποτυχία ρύθμισης διακόπτη"
+
+#: gui.py:886
+msgid "Setting switch {switch_name} to {value}.\n"
+msgstr "Ρύθμιση διακόπτη {switch_name} σε {value}.\n"
+
+#: gui.py:890
+msgid "Invalid command format. Please provide switch ID and value.\n"
+msgstr "Μη έγκυρη μορφή εντολής. Παρακαλώ δώστε ταυτότητα διακόπτη και τιμή.\n"
+
+#: gui.py:899
+msgid "Adding monitor on signal {signal}.\n"
+msgstr "Προσθήκη οθόνης στο σήμα {signal}.\n"
+
+#: gui.py:903
+msgid "Monitor addition failed for signal {signal}.\n"
+msgstr "Αποτυχία προσθήκης οθόνης για το σήμα {signal}.\n"
+
+#: gui.py:914
+msgid "Zapping monitor on signal {signal}.\n"
+msgstr "Απενεργοποίηση οθόνης για το σήμα {signal}.\n"
+
+#: gui.py:918
+msgid "Monitor zap failed for signal {signal}.\n"
+msgstr "Αποτυχία απενεργοποίησης οθόνης για το σήμα {signal}.\n"
+
+#: gui.py:924
+msgid ""
+"List of available commands:\n"
+"r N       - run the simulation for N cycles\n"
+"c N       - continue the simulation for N cycles\n"
+"s X N     - set switch X to N (0 or 1)\n"
+"m X       - add a monitor on signal X\n"
+"z X       - zap the monitor on signal X\n"
+"h         - print a list of available commands\n"
+"q         - quit the program\n"
+msgstr ""
+"Λίστα διαθέσιμων εντολών:\n"
+"r N       - εκτέλεση της προσομοίωσης για N κύκλους\n"
+"c N       - συνέχιση της προσομοίωσης για N κύκλους\n"
+"s X N     - ρύθμιση του διακόπτη X σε N (0 ή 1)\n"
+"m X       - προσθήκη οθόνης στο σήμα X\n"
+"z X       - απενεργοποίηση της οθόνης στο σήμα X\n"
+"h         - εκτύπωση λίστας διαθέσιμων εντολών\n"
+"q         - έξοδος από το πρόγραμμα\n"
+
+#: gui.py:940
+msgid ""
+"<{text}> is an invalid command. A list of available commands can be obtained "
+"by entering 'h', or navigating to 'Commands' in the Menu.\n"
+msgstr ""
+"<{text}> είναι μια μη έγκυρη εντολή. Μια λίστα με τις διαθέσιμες εντολές "
+"μπορεί να ανακτηθεί πληκτρολογώντας 'h' ή πλοηγούμενοι στο 'Εντολές' στο "
+"μενού.\n"
+
+#: lang_demo.py:11
+msgid "Hello world"
+msgstr "αβγδε"
+
+#: logsim.py:38
+msgid ""
+"Usage:\n"
+"Show help: logsim.py -h\n"
+"Command line user interface: logsim.py -c <file path>\n"
+"Graphical user interface: logsim.py <file path>"
+msgstr ""
+"Χρήση:\n"
+"Εμφάνιση βοήθειας: logsim.py -h\n"
+"Διεπαφή γραμμής εντολών: logsim.py -c <διαδρομή αρχείου>\n"
+"Γραφική διεπαφή χρήστη: logsim.py <διαδρομή αρχείου>"
+
+#: logsim.py:45
+msgid "Error: invalid command line arguments\n"
+msgstr "Σφάλμα: μη έγκυρα ορίσματα γραμμής εντολών\n"
+
+#: logsim.py:70
+#, fuzzy
+msgid "Error: one file path required and one language code optional\n"
+msgstr "Σφάλμα: απαιτείται μία διαδρομή αρχείου\n"
+
+#: logsim.py:81
+msgid "Logic Simulator"
+msgstr "Λογικός Προσομοιωτής"
+
+#: names.py:67
+msgid "Expected num_error_codes to be an integer."
+msgstr "Αναμενόταν ο num_error_codes να είναι ακέραιος."
+
+#: names.py:80
+msgid "Need String argument"
+msgstr "Χρειάζεται ορισμός συμβολοσειράς"
+
+#: names.py:82
+msgid "Null Strings are not accepted"
+msgstr "Οι κενές συμβολοσειρές δεν γίνονται δεκτές"
+
+#: names.py:97
+msgid "Name list argument must be a list"
+msgstr "Η λίστα ονομάτων πρέπει να είναι λίστα"
+
+#: names.py:102
+msgid "Names must be strings"
+msgstr "Τα ονόματα πρέπει να είναι συμβολοσειρές"
+
+#: names.py:120
+msgid "Name ID must be an integer"
+msgstr "Το αναγνωριστικό του ονόματος πρέπει να είναι ακέραιος"
+
+#: names.py:122
+msgid "Integer must be greater than or equal to 0"
+msgstr "Ο αριθμός πρέπει να είναι μεγαλύτερος ή ίσος με το 0"
+
+#: parse.py:87
+msgid "Error at line {line_number}, character {character}: {error_message}"
+msgstr ""
+"Κωδικός σφάλματος {error_code} στη γραμμή {line_number}, χαρακτήρας "
+"{character}: {error_message}"
+
+#: parse.py:100
+msgid "Expected a name"
+msgstr "Αναμενόταν ένα όνομα"
+
+#: parse.py:101
+msgid "CONNECT list must have individual connections delimited by ','"
+msgstr ""
+"Η λίστα CONNECT πρέπει να έχει μεμονωμένες συνδέσεις διαχωρισμένες με ','"
+
+#: parse.py:102
+msgid "Semi-colons are required at the end of each line"
+msgstr "Απαιτούνται ερωτηματικά στο τέλος κάθε γραμμής"
+
+#: parse.py:103
+msgid "Invalid keyword, could be missing or misspelled"
+msgstr "Μη έγκυρη λέξη-κλειδί, ίσως να λείπει ή να έχει κακή ορθογραφία"
+
+#: parse.py:104
+msgid "No END statement after MONITOR clause"
+msgstr "Δεν υπάρχει δήλωση END μετά το τμήμα MONITOR"
+
+#: parse.py:105
+msgid "Expected a number"
+msgstr "Αναμενόταν ένας αριθμός"
+
+#: parse.py:106
+msgid "Inputs should be specified - expected a dot"
+msgstr "Πρέπει να καθοριστούν οι είσοδοι - αναμενόταν μια τελεία"
+
+#: parse.py:107
+msgid "Invalid pin reference"
+msgstr "Μη έγκυρη αναφορά ακίδας"
+
+#: parse.py:108
+msgid "Expected an equals sign"
+msgstr "Αναμενόταν ένα σύμβολο ισοδυναμίας"
+
+#: parse.py:109
+msgid "Expected a DEFINE statement first"
+msgstr "Αναμενόταν μια δήλωση DEFINE"
+
+#: parse.py:110
+msgid "Expected a CONNECT statement second"
+msgstr "Αναμενόταν μια δήλωση CONNECT"
+
+#: parse.py:111
+msgid "Expected a MONITOR statement third"
+msgstr "Αναμενόταν μια δήλωση MONITOR"
+
+#: parse.py:112
+msgid "Expected an END statement fourth"
+msgstr "Αναμενόταν μια δήλωση END"
+
+#: parse.py:113
+msgid "Invalid parameter for device"
+msgstr "Μη έγκυρη αναφορά ακίδας"
+
+#: parse.py:114
+msgid "DTYPE device must have 4 inputs"
+msgstr "Η συσκευή DTYPE πρέπει να έχει 4 εισόδους"
+
+#: parse.py:115
+msgid "Passed a keyword when a name was expected"
+msgstr "Δόθηκε μια λέξη-κλειδί όταν αναμενόταν ένα όνομα"
+
+#: parse.py:116
+msgid "Passed a device when a name was expected"
+msgstr "Δόθηκε μια συσκευή όταν αναμενόταν ένα όνομα"
+
+#: parse.py:117
+msgid "Passed a gate when a name was expected"
+msgstr "Δόθηκε μια πύλη όταν αναμενόταν ένα όνομα"
+
+#: parse.py:118
+msgid "No symbols detected, either an empty file or all comments"
+msgstr "Δεν εντοπίστηκαν σύμβολα, είτε ένα κενό αρχείο είτε μόνο σχόλια"
+
+#: parse.py:120
+msgid "Device absent"
+msgstr "Απουσία συσκευής"
+
+#: parse.py:121
+msgid "Input is already connected"
+msgstr "Η είσοδος είναι ήδη συνδεδεμένη"
+
+#: parse.py:122
+msgid "Cannot connect an input to another input"
+msgstr "Δεν είναι δυνατή η σύνδεση μιας εισόδου σε μια άλλη είσοδο"
+
+#: parse.py:123
+msgid "Port absent"
+msgstr "Απουσία θύρας"
+
+#: parse.py:124
+msgid "Cannot connect an output to another output"
+msgstr "Δεν είναι δυνατή η σύνδεση μιας εξόδου σε μια άλλη έξοδο"
+
+#: parse.py:126
+msgid "Device already present"
+msgstr "Η συσκευή υπάρχει ήδη"
+
+#: parse.py:127
+msgid "Qualifier is missing"
+msgstr "Λείπει ο προσδιορισμός"
+
+#: parse.py:128
+msgid "Invalid qualifier"
+msgstr "Μη έγκυρος προσδιορισμός"
+
+#: parse.py:129
+msgid "Qualifier should not be present"
+msgstr "Δεν πρέπει να υπάρχει προσδιορισμός"
+
+#: parse.py:130
+msgid "Invalid device type"
+msgstr "Μη έγκυρος τύπος συσκευής"
+
+#: parse.py:132
+msgid "Device output not found"
+msgstr "Η έξοδος της συσκευής δεν βρέθηκε"
+
+#: parse.py:133
+msgid "Monitor already present"
+msgstr "Ο ελεγκτής υπάρχει ήδη"
+
+#: parse.py:137
+msgid "Unknown error"
+msgstr "Άγνωστο σφάλμα"
+
+#: parse.py:146 parse.py:149
+msgid "Total Error Count: {error_count}"
+msgstr "Συνολικός Αριθμός Σφαλμάτων: {error_count}"
+
+#: parse.py:152
+msgid "Syntax Error: {error}"
+msgstr "Σφάλμα Σύνταξης: {error}"
+
+#: textctrl.py:157
+msgid "Save"
+msgstr "Αποθήκευση"
+
+#: textctrl.py:184
+msgid "Save File"
+msgstr "Αποθήκευση Αρχείου"
+
+#: textctrl.py:200
+msgid "Cannot save current data to file."
+msgstr "Δεν είναι δυνατή η αποθήκευση των τρέχοντων δεδομένων σε αρχείο."
+
+#: userint.py:91
+msgid ""
+"Logic Simulator: interactive command line user interface.\n"
+"Enter 'h' for help."
+msgstr ""
+"Λογικός Προσομοιωτής: διαδραστική γραμμή εντολών χρήστη.\n"
+"Εισαγωγή 'h' για βοήθεια."
+
+#: userint.py:109
+msgid "Invalid command. Enter 'h' for help."
+msgstr "Μη έγκυρη εντολή. Εισαγωγή 'h' για βοήθεια."
+
+#: userint.py:144
+msgid "Error! Expected a name."
+msgstr "Σφάλμα! Αναμενόταν ένα όνομα."
+
+#: userint.py:162
+msgid "Error! Unknown name."
+msgstr "Σφάλμα! Άγνωστο όνομα."
+
+#: userint.py:190
+msgid "Error! Expected a number."
+msgstr "Σφάλμα! Αναμενόταν ένας αριθμός."
+
+#: userint.py:199 userint.py:204
+msgid "Number out of range."
+msgstr "Ο αριθμός είναι εκτός εύρους."
+
+#: userint.py:211
+msgid "User commands:"
+msgstr "Εντολές χρήστη:"
+
+#: userint.py:212
+msgid "r N       - run the simulation for N cycles"
+msgstr "r N       - εκτέλεση της προσομοίωσης για N κύκλους"
+
+#: userint.py:213
+msgid "c N       - continue the simulation for N cycles"
+msgstr "c N       - συνέχιση της προσομοίωσης για N κύκλους"
+
+#: userint.py:214
+msgid "s X N     - set switch X to N (0 or 1)"
+msgstr "s X N     - ορισμός του διακόπτη X σε N (0 ή 1)"
+
+#: userint.py:215
+msgid "m X       - set a monitor on signal X"
+msgstr "m X       - ορισμός ενός ελέγχου στο σήμα X"
+
+#: userint.py:216
+msgid "z X       - zap the monitor on signal X"
+msgstr "z X       - αποσύνδεση του ελέγχου στο σήμα X"
+
+#: userint.py:217
+msgid "h         - help (this command)"
+msgstr "h         - βοήθεια (αυτή η εντολή)"
+
+#: userint.py:218
+msgid "q         - quit the program"
+msgstr "q         - τερματισμός του προγράμματος"
+
+#: userint.py:227
+msgid "Successfully set switch."
+msgstr "Ο διακόπτης ορίστηκε με επιτυχία."
+
+#: userint.py:229
+msgid "Error! Invalid switch."
+msgstr "Σφάλμα! Μη έγκυρος διακόπτης."
+
+#: userint.py:239
+msgid "Successfully made monitor."
+msgstr "Ο ελεγκτής δημιουργήθηκε με επιτυχία."
+
+#: userint.py:241
+msgid "Error! Could not make monitor."
+msgstr "Σφάλμα! Αδυναμία δημιουργίας ελεγκτή."
+
+#: userint.py:249
+msgid "Successfully zapped monitor"
+msgstr "Ο ελεγκτής αποσυνδέθηκε με επιτυχία"
+
+#: userint.py:251
+msgid "Error! Could not zap monitor."
+msgstr "Σφάλμα! Αδυναμία αποσύνδεσης του ελεγκτή."
+
+#: userint.py:284
+msgid "Error! Nothing to continue. Run first."
+msgstr "Σφάλμα! Δεν υπάρχει κάτι για συνέχεια. Εκτελέστε πρώτα."
+
+#~ msgid ""
+#~ "Symbol type: {symbol_type}, Symbol id: {symbol_id}, String: {name_string}"
+#~ msgstr ""
+#~ "Τύπος συμβόλου: {symbol_type}, Αναγνωριστικό συμβόλου: {symbol_id}, "
+#~ "Συμβολοσειρά: {name_string}"
+
+#~ msgid "Invalid character in name"
+#~ msgstr "Μη έγκυρος χαρακτήρας στο όνομα"
+
+#~ msgid "CONNECT list cannot have null devices"
+#~ msgstr "Η λίστα CONNECT δεν μπορεί να έχει κενές συσκευές"
+
+#~ msgid "Double punctuation marks are invalid"
+#~ msgstr "Διπλά σημεία στίξης είναι μη έγκυρα"
+
+#~ msgid "Comments starting or terminating with the wrong symbol"
+#~ msgstr "Σχόλια που ξεκινούν ή τερματίζουν με το λάθος σύμβολο"
+
+#~ msgid "Invalid order of DEFINE, CONNECT, and MONITOR blocks"
+#~ msgstr "Μη έγκυρη σειρά των τμημάτων DEFINE, CONNECT και MONITOR"
+
+#~ msgid "Expected a punctuation mark"
+#~ msgstr "Αναμενόταν ένα σημείο στίξης"
