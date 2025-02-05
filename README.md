@@ -9,12 +9,15 @@ This logic simulator allows combinatorial and clocked logic circuits to be simul
 To launch the simulator, run the following command in the command line:
 
 ```
-<path>logsim.py -c <definition_filepath>
+<path>logsim.py <definition_filepath>
 ```
 
 This will read a text file definition initializing the logic elements, connections, generators, and monitor points. The user can then execute the network in the GUI, choosing different methods of visualization, running, or language.
 
-Alternatively, the program can also be run in a command line interface using the `-c` flag.
+Alternatively, the program can also be run in a command line interface using the `-c` flag: 
+```
+<path>logsim.py -c <definition_filepath>
+```
 
 ### Available Devices for Simulation
 
